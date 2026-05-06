@@ -1,0 +1,87 @@
+<?php
+require_once __DIR__ . '/koneksi.php';
+
+if (!isset($conn)) {
+    die("❌ koneksi.php tidak terbaca");
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MatchaFlix 🍵</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+<header>
+    <div class="header-decoration">🍃 🍵 🍃</div>
+    <h1>🍵 MatchaFlix</h1>
+    <p>Review Film & Series Favorit Kamu 🎬</p>
+    <div class="matcha-leaf">🍃</div>
+</header>
+
+<nav>
+    <a href="index.php">🏠 Home</a>
+    <a href="#" class="disabled">✨ Rekomendasi</a>
+    <a href="#" class="disabled">🎬 Tentang</a>
+</nav>
+
+<div class="search-box">
+    <input type="text" id="search" placeholder="🔍 Cari film/series favoritmu...">
+</div>
+
+<div class="container" id="list">
+<?php
+$query = mysqli_query($conn, "SELECT * FROM film ORDER BY id DESC");
+
+if (!$query) {
+    die("Query error: " . mysqli_error($conn));
+}
+
+while($film = mysqli_fetch_assoc($query)){
+?>
+    <div class="card" data-id="<?= $film['id']; ?>">
+        <img src="img/<?= $film['poster']; ?>" class="poster" 
+             onerror="this.src='img/default.jpg'">
+        <h2><?= htmlspecialchars($film['judul']); ?></h2>
+        <p class="deskripsi-singkat"><?= htmlspecialchars(substr($film['deskripsi'], 0, 80)) . '...'; ?></p>
+        <button class="btn-review" data-id="<?= $film['id']; ?>" data-judul="<?= htmlspecialchars($film['judul']); ?>">
+            📝 Review Film Ini
+        </button>
+    </div>
+<?php } ?>
+</div>
+
+<!-- Modal untuk review -->
+<div id="reviewModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="modalJudul">Review Film</h2>
+        <form id="reviewForm" action="proses_review.php" method="POST">
+            <input type="hidden" id="film_id" name="film_id">
+            <input type="text" name="nama_reviewer" placeholder="Nama kamu" required>
+            <textarea name="review" placeholder="Tulis review kamu di sini..." rows="4" required></textarea>
+            <select name="rating" required>
+                <option value="">⭐ Pilih Rating</option>
+                <option value="5">⭐⭐⭐⭐⭐ 5/5</option>
+                <option value="4">⭐⭐⭐⭐ 4/5</option>
+                <option value="3">⭐⭐⭐ 3/5</option>
+                <option value="2">⭐⭐ 2/5</option>
+                <option value="1">⭐ 1/5</option>
+            </select>
+            <button type="submit">💚 Kirim Review</button>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <p>🍵 MatchaFlix — Sip manis seperti matcha latte 🍃</p>
+    <p>© 2026 MatchaFlix</p>
+</footer>
+
+</body>
+</html>
