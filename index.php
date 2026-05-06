@@ -1,9 +1,5 @@
 <?php
-require_once __DIR__ . '/koneksi.php';
-
-if (!isset($conn)) {
-    die("❌ koneksi.php tidak terbaca");
-}
+require_once 'koneksi.php';
 ?>
 
 <!DOCTYPE html>
@@ -26,8 +22,15 @@ if (!isset($conn)) {
 
 <nav>
     <a href="index.php">🏠 Home</a>
-    <a href="#" class="disabled">✨ Rekomendasi</a>
-    <a href="#" class="disabled">🎬 Tentang</a>
+    <a href="rekomendasi.php">✨ Rekomendasi</a>
+    <a href="tentang.php">🎬 Tentang</a>
+    <?php if(isset($_SESSION['user_id'])): ?>
+        <a href="<?= $_SESSION['role'] == 'admin' ? 'admin/dashboard.php' : 'user/dashboard.php' ?>">👤 Dashboard</a>
+        <a href="logout.php">🚪 Logout (<?= $_SESSION['username'] ?>)</a>
+    <?php else: ?>
+        <a href="login.php">🔐 Login</a>
+        <a href="register.php">📝 Daftar</a>
+    <?php endif; ?>
 </nav>
 
 <div class="search-box">
@@ -49,9 +52,15 @@ while($film = mysqli_fetch_assoc($query)){
              onerror="this.src='img/default.jpg'">
         <h2><?= htmlspecialchars($film['judul']); ?></h2>
         <p class="deskripsi-singkat"><?= htmlspecialchars(substr($film['deskripsi'], 0, 80)) . '...'; ?></p>
-        <button class="btn-review" data-id="<?= $film['id']; ?>" data-judul="<?= htmlspecialchars($film['judul']); ?>">
-            📝 Review Film Ini
-        </button>
+        <?php if(isset($_SESSION['user_id'])): ?>
+            <button class="btn-review" data-id="<?= $film['id']; ?>" data-judul="<?= htmlspecialchars($film['judul']); ?>">
+                📝 Review Film Ini
+            </button>
+        <?php else: ?>
+            <button class="btn-review" onclick="alert('Silakan login terlebih dahulu!')" style="background:#95d5b2;">
+                🔒 Login untuk Review
+            </button>
+        <?php endif; ?>
     </div>
 <?php } ?>
 </div>
@@ -63,7 +72,7 @@ while($film = mysqli_fetch_assoc($query)){
         <h2 id="modalJudul">Review Film</h2>
         <form id="reviewForm" action="proses_review.php" method="POST">
             <input type="hidden" id="film_id" name="film_id">
-            <input type="text" name="nama_reviewer" placeholder="Nama kamu" required>
+            <input type="text" name="nama_reviewer" placeholder="Nama kamu" value="<?= isset($_SESSION['username']) ? $_SESSION['username'] : '' ?>" required>
             <textarea name="review" placeholder="Tulis review kamu di sini..." rows="4" required></textarea>
             <select name="rating" required>
                 <option value="">⭐ Pilih Rating</option>
