@@ -1,84 +1,151 @@
-# 🍵 CineView
-### Sistem Review Film & Series *(Community Movie Review Platform)*
+🍵 CineView
+Sistem Review Film & Series (Community Movie Review Platform)
 
-Platform review film berbasis web yang memungkinkan pengguna untuk memberikan ulasan dan rating pada film & series favorit mereka secara mudah dan transparan.
+Platform review film dan series berbasis web yang memungkinkan pengguna untuk memberikan ulasan, rating, serta menemukan rekomendasi tontonan terbaik secara mudah dan interaktif.
 
----
+📋 Deskripsi
 
-## 📋 Deskripsi
+CineView adalah platform berbasis web yang dirancang untuk menjadi tempat bagi pengguna dalam mencari, membaca, dan membagikan review film maupun series favorit mereka. Sistem ini membantu pengguna menemukan rekomendasi tontonan berdasarkan rating dan ulasan komunitas.
 
-**CineView** adalah platform review film dan series yang terinspirasi dari kehangatan secangkir matcha latte. Warga bisa mendaftar, login, lalu langsung memberikan review dan rating pada film yang tersedia. Setiap review akan tampil di halaman utama dan berkontribusi pada sistem rekomendasi berbasis rating tertinggi.
+Melalui CineView, pengguna dapat membuat akun, login, memberikan review, memberi rating, serta melihat rekomendasi film dengan penilaian tertinggi. Semua review akan ditampilkan pada halaman utama sehingga pengguna lain dapat melihat pengalaman dan pendapat komunitas terhadap suatu film atau series.
 
-Admin dapat mengelola data film dan review melalui dashboard khusus, sementara user biasa cukup login dan mulai mereview film favorit mereka.
+Selain itu, admin memiliki akses khusus untuk mengelola data film, review pengguna, serta memantau aktivitas platform melalui dashboard admin.
 
----
+📝 Judul Proyek
+Pengembangan Sistem Review Film dan Series Berbasis Web Menggunakan Metode Scrum
+🌐 Gambaran Umum Sistem
 
-## 🗺️ Menu Utama
+CineView merupakan platform web untuk review film dan series yang menggabungkan fitur komunitas, sistem rating, dan rekomendasi film dalam satu website. Sistem ini dibuat untuk memudahkan pengguna dalam menemukan tontonan berkualitas sekaligus membagikan pendapat mereka terhadap film yang telah ditonton.
 
-```
-USER
-  - Landing Page (index.php)
-  - Sign Up / Registrasi
-  - Login
-      - Melihat Daftar Film
-      - Memberikan Review & Rating
-      - Melihat Rekomendasi Film
-      - Tentang Platform
+Platform menyediakan fitur login dan registrasi pengguna, manajemen review, rekomendasi film berdasarkan rating tertinggi, pencarian film, serta dashboard admin untuk pengelolaan sistem.
 
-ADMIN
-  - Login
-      - Dashboard Statistik (Total Film, User, Review)
-      - Manajemen Film (Tambah, Edit, Hapus)
-      - Manajemen Review (Hapus)
-```
+👥 Anggota Kelompok dan Tanggung Jawab
+No	Nama Anggota	Role	Tanggung Jawab
+1.	Bunga Salma Azzahrah	: Frontend / User Interface	Mendesain tampilan website, halaman landing page, halaman daftar film, form review, serta pengembangan antarmuka pengguna.
+2.	Naylarifa Maulida Asri	: Backend / User System	Mengembangkan sistem login, registrasi, session, database user, serta proses CRUD review dan rating.
+3.	Gayatri Pradnya Aira Putri :	Admin & Database System	Mengembangkan dashboard admin, manajemen film dan review, struktur database, serta integrasi sistem.
 
----
+🎓 NIM Anggota Kelompok
+Bunga Salma Azzahrah: F1D02410110
+Naylarifa Maulida Asri : F1D02410019
+Gayatri Pradnya Aira Putri : F1D02410113
 
-## 💻 Teknologi
+🔄 Metodologi
+Proyek ini menggunakan metode Scrum.
 
-`HTML` `CSS` `JavaScript` `PHP` `MySQL` `Apache`
+⚙️ Workflow Scrum
+Durasi sprint: 1 minggu per sprint
+Review progres: Dilakukan setiap akhir sprint
+Pembagian tugas: Setiap anggota fokus pada bagian utama sistem
+Tujuan: Mengembangkan sistem secara bertahap agar proses integrasi lebih mudah dan terstruktur
 
----
+📌 Contoh Alur Sprint
+Sprint 1 : Perancangan UI, Desain database, Pembuatan wireframe
+Sprint 2 : Sistem login dan registrasi, Struktur session user
+Sprint 3 : Landing page dan daftar film, Sistem pencarian film
+Sprint 4 : Sistem review dan rating, Penyimpanan review ke database
+Sprint 5 : Sistem rekomendasi film, Tampilan detail film
+Sprint 6 : Dashboard admin, Manajemen film dan review
+Sprint 7 : Testing, Debugging, Integrasi final sistem
 
-## 🗂️ Struktur Proyek
+💻 Teknologi yang Digunakan
+Frontend : HTML, CSS, JavaScript
+Backend : PHP
+Database : MySQL
+Local Server : XAMPP
+Version Control : Git / GitHub
 
-```
-CineView/
-├── index.php                  # Landing page & daftar film
-├── login.php                  # Login user
-├── register.php               # Registrasi akun baru
-├── logout.php                 # Logout & hapus session
-├── rekomendasi.php            # Film dengan rating tertinggi
-├── tentang.php                # Tentang platform
-├── proses_review.php          # Proses simpan review
-├── koneksi.php                # Konfigurasi koneksi database
-├── script.js                  # Search & modal review
-├── style.css                  # Tampilan keseluruhan
+🎨 Design System
+Color Palette
+Primary Matcha : #7D966D
+Cream : #F5F0E6
+Dark Text : #2D2D2D
+White : #FFFFFF
+Soft Brown : #B89B7A
+Fonts
+Logo / Heading : Poppins
+Main UI : Poppins, Sans-serif
+
+🗺️ Sitemap
+CineView
+├── Homepage
+│   ├── Navbar
+│   │   ├── Beranda
+│   │   ├── Explore Film
+│   │   ├── Login
+│   │   ├── Registrasi
+│   │   └── Tentang
+│   ├── Banner Utama
+│   ├── Daftar Film Populer
+│   ├── Rekomendasi Film
+│   └── Footer
 │
-├── admin/                     # Halaman khusus admin
-│   ├── dashboard.php          # Statistik & kelola film/review
-│   ├── tambah_film.php        # Form tambah film baru
-│   ├── edit_film.php          # Form edit film
-│   ├── hapus_film.php         # Proses hapus film
-│   ├── hapus_review.php       # Proses hapus review
-│   └── kelola_review.php      # Halaman kelola review
-├── user/                     # Halaman khusus admin
-│   ├── dashboard.php          # Statistik & kelola film/review
-│   ├── edit_review.php        # Form edit review
-│   └── hapus_review.php       # Proses hapus review
-├── img/                       # Poster film
+├── Login & Register
+│   ├── Login User
+│   ├── Registrasi Akun
+│   └── Logout
+│
+├── Halaman Film
+│   ├── Poster Film
+│   ├── Deskripsi Film
+│   ├── Rating
+│   ├── Review User
+│   ├── Tambah Review
+│   ├── Edit Review
+│   └── Hapus Review
+│
+├── Rekomendasi
+│   └── Film Rating Tertinggi
+│
+├── Profil User
+│   ├── Username
+│   ├── Email
+│   ├── Riwayat Review
+│   └── Logout
+│
+└── Admin Dashboard
+    ├── Statistik Website
+    ├── Kelola Film
+    │   ├── Tambah Film
+    │   ├── Edit Film
+    │   └── Hapus Film
+    ├── Kelola Review
+    │   ├── Lihat Review
+    │   └── Hapus Review
+    └── Kelola User
+    
+🗂️ Struktur Proyek
+CineView/
+├── index.php
+├── login.php
+├── register.php
+├── logout.php
+├── rekomendasi.php
+├── tentang.php
+├── detail_film.php
+├── proses_review.php
+├── config.php
+├── style.css
+├── script.js
+│
+├── admin/
+│   ├── dashboard.php
+│   ├── tambah_film.php
+│   ├── edit_film.php
+│   ├── hapus_film.php
+│   ├── kelola_review.php
+│   └── hapus_review.php
+│
+├── user/
+│   ├── edit_review.php
+│   ├── hapus_review.php
+│   └── profile.php
+│
+├── img/
 │   └── default.jpg
 │
 └── database/
-    └── movie_review.sql       # Struktur & data awal database
-```
-
-## 🌐 Alamat Website
-
-```
-http://localhost/matchaflix/
-```
-
----
-
-*© 2026 MatchaFlix · Sip manis seperti matcha latte 🍃*
+    └── cineview.sql
+    
+🌐 Alamat Website
+http://localhost/cineview/
