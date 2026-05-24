@@ -20,7 +20,7 @@ $reviews = mysqli_query($conn, "
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard User - MatchaFlix</title>
+    <title>Dashboard User - CineView</title>
     <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
@@ -151,7 +151,7 @@ $reviews = mysqli_query($conn, "
 </div>
 
 <footer>
-    <p>🍵 MatchaFlix — Kelola review filmmu dengan mudah 🍃</p>
+    <p>🍵 CineView — Kelola review filmmu dengan mudah 🍃</p>
 </footer>
 
 </body>

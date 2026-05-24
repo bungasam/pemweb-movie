@@ -5,14 +5,14 @@
 }
 
 body {
-    font-family: 'Quicksand', 'Poppins', 'Segoe UI', sans-serif;
-    background: #f4faf4;
-    color: #3e2a2f;
+    font-family: 'Inter', sans-serif;
+    background: #f5f5f5;
+    color: #222;
 }
 
 /* Header dengan hiasan */
 header {
-    background: #6f1d1b; /* maroon */
+    background: #BA3801; /* maroon */
     color: #e9f5e1;
     text-align: center;
     padding: 30px 20px;
@@ -21,7 +21,7 @@ header {
 }
 
 header h1 {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 2.8rem;
     font-weight: 700;
     letter-spacing: 2px;
@@ -51,7 +51,7 @@ header p {
 nav {
     display: flex;
     justify-content: center;
-    background: #2d6a4f; /* hijau matcha gelap */
+    background: #4A69B3; /* hijau matcha gelap */
     gap: 20px;
     padding: 12px 0;
 }
@@ -86,7 +86,7 @@ nav a:hover:not(.disabled) {
     width: 320px;
     border-radius: 40px;
     border: 2px solid #95d5b2;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 1rem;
     outline: none;
     transition: 0.3s;
@@ -110,7 +110,7 @@ nav a:hover:not(.disabled) {
 .card {
     background: white;
     width: 260px;
-    border-radius: 30px;
+    border-radius: 12px;
     padding: 18px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     text-align: center;
@@ -123,6 +123,14 @@ nav a:hover:not(.disabled) {
     transform: translateY(-8px);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
     border-color: #6f1d1b;
+}
+
+.card:hover img {
+    transform: scale(1.03);
+}
+
+.poster {
+    transition: 0.3s;
 }
 
 .poster {
@@ -147,7 +155,7 @@ nav a:hover:not(.disabled) {
 }
 
 .btn-review {
-    background: #40916c;
+    background: #BA3801;
     border: none;
     padding: 8px 18px;
     border-radius: 40px;
@@ -233,4 +241,41 @@ footer {
     padding: 20px;
     margin-top: 40px;
     font-size: 0.9rem;
+}
+
+.judul-section {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-left: 30px;
+    margin-top: 20px;
+    color: #BA3801;
+}
+
+.detail-container {
+    display: flex;
+    gap: 30px;
+    padding: 40px;
+    flex-wrap: wrap;
+}
+
+.detail-poster {
+    width: 300px;
+    border-radius: 12px;
+}
+
+.detail-text {
+    flex: 1;
+}
+
+.detail-text h2 {
+    margin-bottom: 10px;
+    color: #BA3801;
+}
+
+.review-box {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+    border-left: 5px solid #4A69B3;
 }

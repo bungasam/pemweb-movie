@@ -6,7 +6,7 @@ require_once 'koneksi.php';
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>MatchaFlix 🍵</title>
+    <title>CineView 🍵</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
     <script src="script.js" defer></script>
@@ -15,15 +15,14 @@ require_once 'koneksi.php';
 
 <header>
     <div class="header-decoration">🍃 🍵 🍃</div>
-    <h1>🍵 MatchaFlix</h1>
+    <h1>🍵 CineView</h1>
     <p>Review Film & Series Favorit Kamu 🎬</p>
-    <div class="matcha-leaf">🍃</div>
 </header>
 
 <nav>
     <a href="index.php">🏠 Home</a>
     <a href="rekomendasi.php">✨ Rekomendasi</a>
-    <a href="tentang.php">🎬 Tentang</a>
+    <a href="#list-film">🎬 List Film</a>
     <?php if(isset($_SESSION['user_id'])): ?>
         <a href="<?= $_SESSION['role'] == 'admin' ? 'admin/dashboard.php' : 'user/dashboard.php' ?>">👤 Dashboard</a>
         <a href="logout.php">🚪 Logout (<?= $_SESSION['username'] ?>)</a>
@@ -37,7 +36,10 @@ require_once 'koneksi.php';
     <input type="text" id="search" placeholder="🔍 Cari film/series favoritmu...">
 </div>
 
+<h2 class="judul-section" id="list-film">Daftar Film</h2>
+
 <div class="container" id="list">
+    
 <?php
 $query = mysqli_query($conn, "SELECT * FROM film ORDER BY id DESC");
 
@@ -47,7 +49,7 @@ if (!$query) {
 
 while($film = mysqli_fetch_assoc($query)){
 ?>
-    <div class="card" data-id="<?= $film['id']; ?>">
+    <div class="card" onclick="window.location='detail.php?id=<?= $film['id']; ?>'">
         <img src="img/<?= $film['poster']; ?>" class="poster" 
              onerror="this.src='img/default.jpg'">
         <h2><?= htmlspecialchars($film['judul']); ?></h2>
@@ -82,14 +84,15 @@ while($film = mysqli_fetch_assoc($query)){
                 <option value="2">⭐⭐ 2/5</option>
                 <option value="1">⭐ 1/5</option>
             </select>
-            <button type="submit">💚 Kirim Review</button>
+            <button type="submit"> Kirim Review</button>
         </form>
     </div>
 </div>
 
 <footer>
-    <p>🍵 MatchaFlix — Sip manis seperti matcha latte 🍃</p>
-    <p>© 2026 MatchaFlix</p>
+    <h3>CineView</h3>
+    <p>Website review dan rekomendasi film.</p>
+    <p>© 2026 CineView</p>
 </footer>
 
 </body>

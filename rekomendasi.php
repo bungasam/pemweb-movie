@@ -16,7 +16,7 @@ $query = mysqli_query($conn, "
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Rekomendasi - MatchaFlix 🍵</title>
+    <title>Rekomendasi - CineView 🍵</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
@@ -86,7 +86,7 @@ $query = mysqli_query($conn, "
 
 <header>
     <div class="header-decoration">🍃 🍵 🍃</div>
-    <h1>🍵 MatchaFlix</h1>
+    <h1>🍵 CineView</h1>
     <p>Rekomendasi Film & Series Terbaik 🎬</p>
 </header>
 
@@ -105,7 +105,7 @@ $query = mysqli_query($conn, "
 
 <div class="rekomendasi-header">
     <h2>✨ Rekomendasi Untukmu ✨</h2>
-    <p>Film dan series dengan rating tertinggi dari para penonton MatchaFlix</p>
+    <p>Film dan series dengan rating tertinggi dari para penonton CineView</p>
 </div>
 
 <div class="container" style="flex-direction: column; align-items: center;">
@@ -144,7 +144,7 @@ $query = mysqli_query($conn, "
 </div>
 
 <footer>
-    <p>🍵 MatchaFlix — Temukan tontonan terbaikmu berikutnya 🍃</p>
+    <p>🍵 CineView — Temukan tontonan terbaikmu berikutnya 🍃</p>
 </footer>
 
 </body>

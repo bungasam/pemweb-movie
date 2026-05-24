@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Edit Review - MatchaFlix</title>
+    <title>Edit Review - CineView</title>
     <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
 
 <header>
-    <h1>🍵 MatchaFlix</h1>
+    <h1>🍵 CineView</h1>
     <p>Edit Review Kamu</p>
 </header>
 
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 <footer>
-    <p>🍵 MatchaFlix — Terima kasih sudah berkontribusi 🍃</p>
+    <p>🍵 CineView — Terima kasih sudah berkontribusi 🍃</p>
 </footer>
 
 </body>

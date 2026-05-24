@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Login - MatchaFlix 🍵</title>
+    <title>Login - CineView 🍵</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <header>
     <div class="header-decoration">🍃 🍵 🍃</div>
-    <h1>🍵 MatchaFlix</h1>
+    <h1>🍵 CineView</h1>
     <p>Login untuk mulai mereview film favoritmu 🎬</p>
 </header>
 
@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 <footer>
-    <p>🍵 MatchaFlix — Sip manis seperti matcha latte 🍃</p>
+    <p>🍵 CineView — Sip manis seperti matcha latte 🍃</p>
 </footer>
 
 </body>
