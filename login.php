@@ -1,125 +1,143 @@
 <?php
-require_once 'koneksi.php';
+// =============================================
+// FILE: login.php
+// Fungsi: Halaman login untuk user dan admin
+// =============================================
 
+session_start();
+include 'koneksi.php';
+
+// Kalau sudah login, langsung ke halaman sesuai role
 if (isset($_SESSION['user_id'])) {
     if ($_SESSION['role'] == 'admin') {
         header("Location: admin/dashboard.php");
     } else {
-        header("Location: user/dashboard.php");
+        header("Location: index.php");
     }
-    exit();
+    exit;
 }
 
-$error = '';
+$pesan = ''; // Variabel untuk menyimpan pesan error
+
+// =============================================
+// PROSES LOGIN: hanya berjalan saat form di-submit
+// =============================================
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $password = md5($_POST['password']);
     
-    $query = mysqli_query($conn, "SELECT * FROM users WHERE username='$username' AND password='$password'");
+    // Ambil dan bersihkan input dari form
+    $username = trim($_POST['username']); // trim() hapus spasi di ujung
+    $password = $_POST['password'];
     
-    if (mysqli_num_rows($query) > 0) {
-        $user = mysqli_fetch_assoc($query);
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['username'] = $user['username'];
-        $_SESSION['role'] = $user['role'];
-        
-        if ($user['role'] == 'admin') {
-            header("Location: admin/dashboard.php");
-        } else {
-            header("Location: user/dashboard.php");
-        }
-        exit();
+    // Validasi: pastikan tidak kosong
+    if (empty($username) || empty($password)) {
+        $pesan = "Username dan password harus diisi!";
     } else {
-        $error = "Username atau password salah!";
+        // Cari user berdasarkan username di database
+        // Gunakan prepared statement untuk keamanan (hindari SQL Injection)
+        $stmt = mysqli_prepare($koneksi, "SELECT * FROM users WHERE username = ?");
+        mysqli_stmt_bind_param($stmt, "s", $username); // "s" = string
+        mysqli_stmt_execute($stmt);
+        $hasil = mysqli_stmt_get_result($stmt);
+        $user  = mysqli_fetch_assoc($hasil);
+        
+        if ($user) {
+            // User ditemukan, cek password
+            // password_verify() membandingkan password asli dengan hash
+            if (password_verify($password, $user['password'])) {
+                // Password cocok! Simpan data ke SESSION
+                $_SESSION['user_id']  = $user['id'];
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['role']     = $user['role'];
+                
+                // Arahkan ke halaman sesuai role
+                if ($user['role'] == 'admin') {
+                    header("Location: admin/dashboard.php");
+                } else {
+                    header("Location: index.php");
+                }
+                exit;
+            } else {
+                $pesan = "Password salah!";
+            }
+        } else {
+            $pesan = "Username tidak ditemukan!";
+        }
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Login - CineView 🍵</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — CineView</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
-    <style>
-        .login-container {
-            max-width: 400px;
-            margin: 80px auto;
-            background: white;
-            padding: 40px;
-            border-radius: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .login-container h2 {
-            color: #6f1d1b;
-            margin-bottom: 20px;
-        }
-        .login-container input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 30px;
-            border: 2px solid #95d5b2;
-            font-family: 'Quicksand', sans-serif;
-        }
-        .login-container button {
-            background: #6f1d1b;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 40px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-        }
-        .login-container button:hover {
-            background: #40916c;
-        }
-        .error {
-            color: red;
-            margin-bottom: 15px;
-        }
-        .register-link {
-            margin-top: 20px;
-        }
-        .back-home {
-            display: inline-block;
-            margin-top: 20px;
-            color: #40916c;
-            text-decoration: none;
-        }
-    </style>
 </head>
-<body style="background: #f4faf4;">
+<body>
 
-<header>
-    <div class="header-decoration">🍃 🍵 🍃</div>
-    <h1>🍵 CineView</h1>
-    <p>Login untuk mulai mereview film favoritmu 🎬</p>
-</header>
-
-<div class="login-container">
-    <h2>🔐 Login</h2>
-    <?php if($error): ?>
-        <div class="error"><?= $error ?></div>
-    <?php endif; ?>
-    <form method="POST">
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
-    <div class="register-link">
-        <p>Belum punya akun? <a href="register.php" style="color:#6f1d1b;">Daftar di sini</a></p>
+<!-- Navbar sederhana -->
+<nav class="navbar">
+    <div class="navbar-inner">
+        <a href="index.php" class="navbar-logo">Cine<span>View</span></a>
     </div>
-    <a href="index.php" class="back-home">← Kembali ke Beranda</a>
+</nav>
+
+<!-- Form Login -->
+<div class="form-container">
+    <div class="form-box">
+        
+        <!-- Logo & judul form -->
+        <div class="form-logo">
+            <h2>Selamat Datang</h2>
+            <p>Login untuk melanjutkan ke CineView</p>
+        </div>
+        
+        <!-- Tampilkan pesan error jika ada -->
+        <?php if ($pesan): ?>
+        <div class="alert alert-error"><?= $pesan ?></div>
+        <?php endif; ?>
+        
+        <!-- Form login -->
+        <form method="POST" action="login.php">
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" 
+                       id="username" 
+                       name="username" 
+                       placeholder="Masukkan username"
+                       value="<?= isset($_POST['username']) ? htmlspecialchars($_POST['username']) : '' ?>"
+                       required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" 
+                       id="password" 
+                       name="password" 
+                       placeholder="Masukkan password"
+                       required>
+            </div>
+            
+            <button type="submit" class="btn btn-merah btn-submit">
+                Masuk
+            </button>
+        </form>
+        
+        <!-- Link ke halaman register -->
+        <div class="form-link">
+            Belum punya akun? <a href="register.php">Daftar di sini</a>
+        </div>
+        
+        <!-- Info akun demo -->
+        <div style="margin-top:1.5rem; padding:1rem; background:rgba(74,105,179,0.1); border:1px solid #4A69B3; border-radius:6px; font-size:0.82rem; color:#aaa;">
+            <strong style="color:#FFEC89;">Demo Login:</strong><br>
+            Admin: <code>admin</code> / <code>admin123</code>
+        </div>
+    </div>
 </div>
 
-<footer>
-    <p>🍵 CineView — Sip manis seperti matcha latte 🍃</p>
-</footer>
-
+<script src="script.js"></script>
 </body>
 </html>
