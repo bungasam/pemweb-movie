@@ -1,99 +1,223 @@
 <?php
-require_once 'koneksi.php';
+// =============================================
+// FILE: index.php
+// Fungsi: Halaman utama / beranda CineView
+// =============================================
+
+session_start();       // Mulai session (wajib di awal)
+include 'koneksi.php'; // Hubungkan ke database
+
+// ---- Ambil film populer (rating rata-rata tertinggi) ----
+// Query ini menghitung rata-rata rating setiap film
+$query_populer = "
+    SELECT f.*, 
+           ROUND(AVG(r.rating), 1) AS rata_rating,
+           COUNT(r.id) AS jml_review
+    FROM films f
+    LEFT JOIN reviews r ON f.id = r.film_id
+    GROUP BY f.id
+    ORDER BY rata_rating DESC, jml_review DESC
+    LIMIT 6
+";
+$hasil_populer = mysqli_query($koneksi, $query_populer);
+
+// ---- Ambil film terbaru ----
+$query_terbaru = "SELECT * FROM films ORDER BY id DESC LIMIT 4";
+$hasil_terbaru = mysqli_query($koneksi, $query_terbaru);
+
+// ---- Hitung total statistik ----
+$total_film   = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM films"))[0];
+$total_review = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM reviews"))[0];
+$total_user   = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM users WHERE role='user'"))[0];
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>CineView 🍵</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineView — Rating Film Terpercaya</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
-    <script src="script.js" defer></script>
 </head>
 <body>
 
-<header>
-    <div class="header-decoration">🍃 🍵 🍃</div>
-    <h1>🍵 CineView</h1>
-    <p>Review Film & Series Favorit Kamu 🎬</p>
-</header>
-
-<nav>
-    <a href="index.php">🏠 Home</a>
-    <a href="rekomendasi.php">✨ Rekomendasi</a>
-    <a href="#list-film">🎬 List Film</a>
-    <?php if(isset($_SESSION['user_id'])): ?>
-        <a href="<?= $_SESSION['role'] == 'admin' ? 'admin/dashboard.php' : 'user/dashboard.php' ?>">👤 Dashboard</a>
-        <a href="logout.php">🚪 Logout (<?= $_SESSION['username'] ?>)</a>
-    <?php else: ?>
-        <a href="login.php">🔐 Login</a>
-        <a href="register.php">📝 Daftar</a>
-    <?php endif; ?>
+<!-- ==============================
+     NAVBAR
+============================== -->
+<nav class="navbar">
+    <div class="navbar-inner">
+        <a href="index.php" class="navbar-logo">Cine<span>View</span></a>
+        <ul class="navbar-menu">
+            <li><a href="index.php">Beranda</a></li>
+            <li><a href="rekomendasi.php">Rekomendasi</a></li>
+            <li><a href="tentang.php">Tentang</a></li>
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <!-- Menu kalau sudah login -->
+                <?php if ($_SESSION['role'] == 'admin'): ?>
+                    <li><a href="admin/dashboard.php">Dashboard Admin</a></li>
+                <?php else: ?>
+                    <li><a href="user/dashboard.php">Profil Saya</a></li>
+                <?php endif; ?>
+                <li><a href="logout.php">Logout</a></li>
+            <?php else: ?>
+                <!-- Menu kalau belum login -->
+                <li><a href="register.php">Daftar</a></li>
+                <li><a href="login.php" class="btn-nav-login">Login</a></li>
+            <?php endif; ?>
+        </ul>
+    </div>
 </nav>
 
-<div class="search-box">
-    <input type="text" id="search" placeholder="🔍 Cari film/series favoritmu...">
-</div>
-
-<h2 class="judul-section" id="list-film">Daftar Film</h2>
-
-<div class="container" id="list">
-    
-<?php
-$query = mysqli_query($conn, "SELECT * FROM film ORDER BY id DESC");
-
-if (!$query) {
-    die("Query error: " . mysqli_error($conn));
-}
-
-while($film = mysqli_fetch_assoc($query)){
-?>
-    <div class="card" onclick="window.location='detail.php?id=<?= $film['id']; ?>'">
-        <img src="img/<?= $film['poster']; ?>" class="poster" 
-             onerror="this.src='img/default.jpg'">
-        <h2><?= htmlspecialchars($film['judul']); ?></h2>
-        <p class="deskripsi-singkat"><?= htmlspecialchars(substr($film['deskripsi'], 0, 80)) . '...'; ?></p>
-        <?php if(isset($_SESSION['user_id'])): ?>
-            <button class="btn-review" data-id="<?= $film['id']; ?>" data-judul="<?= htmlspecialchars($film['judul']); ?>">
-                📝 Review Film Ini
-            </button>
-        <?php else: ?>
-            <button class="btn-review" onclick="alert('Silakan login terlebih dahulu!')" style="background:#95d5b2;">
-                🔒 Login untuk Review
-            </button>
+<!-- ==============================
+     HERO / BANNER UTAMA
+============================== -->
+<section class="hero">
+    <div class="hero-badge">✦ Platform Rating Film Indonesia</div>
+    <h1>Temukan Film <span class="highlight">Terbaik</span><br>Versi Kamu</h1>
+    <p>Baca ulasan jujur, beri rating, dan temukan rekomendasi film dari komunitas pecinta film.</p>
+    <div class="hero-buttons">
+        <a href="rekomendasi.php" class="btn btn-kuning">Jelajahi Film</a>
+        <?php if (!isset($_SESSION['user_id'])): ?>
+            <a href="register.php" class="btn btn-outline">Bergabung Gratis</a>
         <?php endif; ?>
     </div>
-<?php } ?>
+    
+    <!-- Statistik kecil di hero -->
+    <div style="margin-top:3rem; display:flex; justify-content:center; gap:3rem; flex-wrap:wrap;">
+        <div style="text-align:center;">
+            <div style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; color:#FFEC89;"><?= $total_film ?></div>
+            <div style="font-size:0.8rem; color:#aaa; letter-spacing:1px; text-transform:uppercase;">Film</div>
+        </div>
+        <div style="text-align:center;">
+            <div style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; color:#FFEC89;"><?= $total_review ?></div>
+            <div style="font-size:0.8rem; color:#aaa; letter-spacing:1px; text-transform:uppercase;">Review</div>
+        </div>
+        <div style="text-align:center;">
+            <div style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; color:#FFEC89;"><?= $total_user ?></div>
+            <div style="font-size:0.8rem; color:#aaa; letter-spacing:1px; text-transform:uppercase;">Pengguna</div>
+        </div>
+    </div>
+</section>
+
+<!-- ==============================
+     FILM POPULER
+============================== -->
+<div class="section">
+    <div class="section-header">
+        <h2 class="section-title">Film <span>Populer</span></h2>
+        <a href="rekomendasi.php" class="btn btn-outline btn-kecil">Lihat Semua</a>
+    </div>
+    <div class="garis-dekorasi"></div>
+    
+    <?php if (mysqli_num_rows($hasil_populer) > 0): ?>
+    <div class="film-grid">
+        <?php while ($film = mysqli_fetch_assoc($hasil_populer)): ?>
+        <a href="detail.php?id=<?= $film['id'] ?>" class="film-card">
+            <!-- Poster film -->
+            <img src="img/<?= htmlspecialchars($film['poster']) ?>"
+                 alt="<?= htmlspecialchars($film['judul']) ?>"
+                 onerror="this.src='img/default.jpg'">
+            
+            <div class="film-card-body">
+                <div class="film-card-judul"><?= htmlspecialchars($film['judul']) ?></div>
+                <div class="film-card-genre"><?= htmlspecialchars($film['genre']) ?> &bull; <?= $film['tahun'] ?></div>
+                
+                <!-- Tampilkan bintang rating -->
+                <div class="rating-stars">
+                    <?php
+                    $rating = $film['rata_rating'] ?? 0;
+                    for ($i = 1; $i <= 5; $i++) {
+                        echo $i <= round($rating) ? '★' : '☆';
+                    }
+                    ?>
+                    <span class="rating-angka">
+                        <?= $rating > 0 ? $rating : 'Belum ada' ?>
+                        <?= $film['jml_review'] > 0 ? "({$film['jml_review']} ulasan)" : '' ?>
+                    </span>
+                </div>
+            </div>
+        </a>
+        <?php endwhile; ?>
+    </div>
+    <?php else: ?>
+    <div class="empty-state">
+        <div class="ikon">🎬</div>
+        <p>Belum ada film. Admin perlu menambahkan film.</p>
+    </div>
+    <?php endif; ?>
 </div>
 
-<!-- Modal untuk review -->
-<div id="reviewModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2 id="modalJudul">Review Film</h2>
-        <form id="reviewForm" action="proses_review.php" method="POST">
-            <input type="hidden" id="film_id" name="film_id">
-            <input type="text" name="nama_reviewer" placeholder="Nama kamu" value="<?= isset($_SESSION['username']) ? $_SESSION['username'] : '' ?>" required>
-            <textarea name="review" placeholder="Tulis review kamu di sini..." rows="4" required></textarea>
-            <select name="rating" required>
-                <option value="">⭐ Pilih Rating</option>
-                <option value="5">⭐⭐⭐⭐⭐ 5/5</option>
-                <option value="4">⭐⭐⭐⭐ 4/5</option>
-                <option value="3">⭐⭐⭐ 3/5</option>
-                <option value="2">⭐⭐ 2/5</option>
-                <option value="1">⭐ 1/5</option>
-            </select>
-            <button type="submit"> Kirim Review</button>
-        </form>
+<!-- ==============================
+     FILM TERBARU DITAMBAHKAN
+============================== -->
+<div style="background: #1a1a1a; border-top: 1px solid #333; border-bottom: 1px solid #333;">
+<div class="section">
+    <div class="section-header">
+        <h2 class="section-title">Baru <span>Ditambahkan</span></h2>
+    </div>
+    <div class="garis-dekorasi"></div>
+    
+    <div class="film-grid">
+        <?php while ($film = mysqli_fetch_assoc($hasil_terbaru)): ?>
+        <a href="detail.php?id=<?= $film['id'] ?>" class="film-card">
+            <img src="img/<?= htmlspecialchars($film['poster']) ?>"
+                 alt="<?= htmlspecialchars($film['judul']) ?>"
+                 onerror="this.src='img/default.jpg'">
+            <div class="film-card-body">
+                <div class="film-card-judul"><?= htmlspecialchars($film['judul']) ?></div>
+                <div class="film-card-genre"><?= htmlspecialchars($film['genre']) ?> &bull; <?= $film['tahun'] ?></div>
+            </div>
+        </a>
+        <?php endwhile; ?>
     </div>
 </div>
+</div>
 
+<!-- ==============================
+     AJAKAN LOGIN (kalau belum login)
+============================== -->
+<?php if (!isset($_SESSION['user_id'])): ?>
+<div class="section" style="text-align:center; padding: 3rem 2rem;">
+    <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 3rem; max-width: 600px; margin: 0 auto;">
+        <div style="font-size:2rem; margin-bottom:1rem;">🎬</div>
+        <h3 style="font-family:'Playfair Display',serif; font-size:1.8rem; margin-bottom:0.5rem; color: #FFEC89;">Bergabung dengan CineView</h3>
+        <p style="color:#aaa; margin-bottom:1.5rem;">Daftar gratis dan mulai berikan ulasan film favoritmu kepada komunitas!</p>
+        <div style="display:flex; gap:1rem; justify-content:center;">
+            <a href="register.php" class="btn btn-merah">Daftar Sekarang</a>
+            <a href="login.php" class="btn btn-outline">Login</a>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+<!-- ==============================
+     FOOTER
+============================== -->
 <footer>
-    <h3>CineView</h3>
-    <p>Website review dan rekomendasi film.</p>
-    <p>© 2026 CineView</p>
+    <div class="footer-inner">
+        <div class="footer-atas">
+            <div class="footer-brand">
+                <h3>Cine<span style="color:#BA3801">View</span></h3>
+                <p>Platform ulasan dan rating film terpercaya untuk pecinta sinema Indonesia.</p>
+            </div>
+            <div class="footer-kolom">
+                <h4>Navigasi</h4>
+                <a href="index.php">Beranda</a>
+                <a href="rekomendasi.php">Rekomendasi</a>
+                <a href="tentang.php">Tentang</a>
+            </div>
+            <div class="footer-kolom">
+                <h4>Akun</h4>
+                <a href="login.php">Login</a>
+                <a href="register.php">Daftar</a>
+            </div>
+        </div>
+        <div class="footer-bawah">
+            &copy; 2024 CineView &mdash; Dibuat dengan <span>♥</span> untuk Tugas Akhir Web
+        </div>
+    </div>
 </footer>
 
+<script src="script.js"></script>
 </body>
 </html>
