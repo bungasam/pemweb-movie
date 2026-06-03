@@ -1,31 +1,74 @@
 <?php
-require_once 'koneksi.php';
+// =============================================
+// FILE: register.php
+// Fungsi: Halaman pendaftaran akun baru
+// =============================================
 
+session_start();
+include 'koneksi.php';
+
+// Kalau sudah login, redirect
 if (isset($_SESSION['user_id'])) {
     header("Location: index.php");
-    exit();
+    exit;
 }
 
-$error = '';
-$success = '';
+$pesan  = '';
+$sukses = false;
 
+// =============================================
+// PROSES REGISTER: saat form di-submit
+// =============================================
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $password = md5($_POST['password']);
-    $confirm_password = md5($_POST['confirm_password']);
     
-    if ($_POST['password'] !== $_POST['confirm_password']) {
-        $error = "Password tidak cocok!";
+    // Ambil data dari form
+    $username = trim($_POST['username']);
+    $email    = trim($_POST['email']);
+    $password = $_POST['password'];
+    $konfirm  = $_POST['konfirm_password'];
+    
+    // ---- Validasi satu per satu ----
+    if (empty($username) || empty($email) || empty($password)) {
+        $pesan = "Semua kolom harus diisi!";
+        
+    } elseif (strlen($username) < 3) {
+        $pesan = "Username minimal 3 karakter!";
+        
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        // filter_var() mengecek apakah email valid formatnya
+        $pesan = "Format email tidak valid!";
+        
+    } elseif (strlen($password) < 6) {
+        $pesan = "Password minimal 6 karakter!";
+        
+    } elseif ($password !== $konfirm) {
+        $pesan = "Password dan konfirmasi password tidak sama!";
+        
     } else {
-        $check = mysqli_query($conn, "SELECT id FROM users WHERE username='$username'");
-        if (mysqli_num_rows($check) > 0) {
-            $error = "Username sudah digunakan!";
+        // Cek apakah username sudah dipakai
+        $cek = mysqli_prepare($koneksi, "SELECT id FROM users WHERE username = ? OR email = ?");
+        mysqli_stmt_bind_param($cek, "ss", $username, $email);
+        mysqli_stmt_execute($cek);
+        mysqli_stmt_store_result($cek);
+        
+        if (mysqli_stmt_num_rows($cek) > 0) {
+            $pesan = "Username atau email sudah terdaftar!";
         } else {
-            $query = mysqli_query($conn, "INSERT INTO users (username, password, role) VALUES ('$username', '$password', 'user')");
-            if ($query) {
-                $success = "Pendaftaran berhasil! Silakan login.";
+            // Hash password sebelum disimpan ke database
+            // JANGAN simpan password asli! Selalu hash dulu.
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+            
+            // Simpan user baru ke database
+            $simpan = mysqli_prepare($koneksi, 
+                "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'user')"
+            );
+            mysqli_stmt_bind_param($simpan, "sss", $username, $email, $password_hash);
+            
+            if (mysqli_stmt_execute($simpan)) {
+                $sukses = true;
+                $pesan  = "Akun berhasil dibuat! Silakan login.";
             } else {
-                $error = "Pendaftaran gagal: " . mysqli_error($conn);
+                $pesan = "Gagal membuat akun. Coba lagi.";
             }
         }
     }
@@ -33,84 +76,95 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Daftar - CineView 🍵</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar — CineView</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
-    <style>
-        .register-container {
-            max-width: 400px;
-            margin: 80px auto;
-            background: white;
-            padding: 40px;
-            border-radius: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .register-container h2 {
-            color: #6f1d1b;
-            margin-bottom: 20px;
-        }
-        .register-container input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 30px;
-            border: 2px solid #95d5b2;
-            font-family: 'Quicksand', sans-serif;
-        }
-        .register-container button {
-            background: #6f1d1b;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 40px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-        }
-        .register-container button:hover {
-            background: #40916c;
-        }
-        .error { color: red; margin-bottom: 15px; }
-        .success { color: green; margin-bottom: 15px; }
-        .login-link { margin-top: 20px; }
-    </style>
 </head>
-<body style="background: #f4faf4;">
+<body>
 
-<header>
-    <div class="header-decoration">🍃 🍵 🍃</div>
-    <h1>🍵 CineView</h1>
-    <p>Daftar akun baru ✨</p>
-</header>
-
-<div class="register-container">
-    <h2>📝 Daftar Akun</h2>
-    <?php if($error): ?>
-        <div class="error"><?= $error ?></div>
-    <?php endif; ?>
-    <?php if($success): ?>
-        <div class="success"><?= $success ?></div>
-    <?php endif; ?>
-    <form method="POST">
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <input type="password" name="confirm_password" placeholder="Konfirmasi Password" required>
-        <button type="submit">Daftar</button>
-    </form>
-    <div class="login-link">
-        <p>Sudah punya akun? <a href="login.php" style="color:#6f1d1b;">Login di sini</a></p>
+<nav class="navbar">
+    <div class="navbar-inner">
+        <a href="index.php" class="navbar-logo">Cine<span>View</span></a>
     </div>
-    <a href="index.php" class="back-home">← Kembali ke Beranda</a>
+</nav>
+
+<div class="form-container">
+    <div class="form-box">
+        
+        <div class="form-logo">
+            <h2>Buat Akun Baru</h2>
+            <p>Bergabung dengan komunitas CineView</p>
+        </div>
+        
+        <!-- Pesan sukses atau error -->
+        <?php if ($pesan): ?>
+        <div class="alert <?= $sukses ? 'alert-sukses' : 'alert-error' ?>">
+            <?= $pesan ?>
+        </div>
+        <?php endif; ?>
+        
+        <?php if ($sukses): ?>
+        <!-- Kalau sukses, tampilkan tombol ke login -->
+        <div style="text-align:center; margin-top:1rem;">
+            <a href="login.php" class="btn btn-merah btn-submit">Pergi ke Login</a>
+        </div>
+        <?php else: ?>
+        <!-- Form registrasi -->
+        <form method="POST" action="register.php">
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" 
+                       id="username" 
+                       name="username" 
+                       placeholder="Minimal 3 karakter"
+                       value="<?= isset($_POST['username']) ? htmlspecialchars($_POST['username']) : '' ?>"
+                       required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" 
+                       id="email" 
+                       name="email" 
+                       placeholder="contoh@email.com"
+                       value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>"
+                       required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" 
+                       id="password" 
+                       name="password" 
+                       placeholder="Minimal 6 karakter"
+                       required>
+            </div>
+            
+            <div class="form-group">
+                <label for="konfirm_password">Konfirmasi Password</label>
+                <input type="password" 
+                       id="konfirm_password" 
+                       name="konfirm_password" 
+                       placeholder="Ulangi password"
+                       required>
+            </div>
+            
+            <button type="submit" class="btn btn-merah btn-submit">
+                Buat Akun
+            </button>
+        </form>
+        <?php endif; ?>
+        
+        <div class="form-link">
+            Sudah punya akun? <a href="login.php">Login di sini</a>
+        </div>
+    </div>
 </div>
 
-<footer>
-    <p>🍵 CineView — Sip manis seperti matcha latte 🍃</p>
-</footer>
-
+<script src="script.js"></script>
 </body>
 </html>
