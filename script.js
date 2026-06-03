@@ -1,49 +1,124 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // Search filter
-    const search = document.getElementById("search");
-    if (search) {
-        search.addEventListener("keyup", function () {
-            let filter = this.value.toLowerCase();
-            let cards = document.querySelectorAll(".card");
-            cards.forEach(card => {
-                let title = card.querySelector("h2").innerText.toLowerCase();
-                card.style.display = title.includes(filter) ? "block" : "none";
-            });
-        });
-    }
+// =============================================
+// FILE: script.js
+// Fungsi: Interaksi JavaScript untuk CineView
+// =============================================
 
-    // Modal logic
-    const modal = document.getElementById("reviewModal");
-    const span = document.getElementsByClassName("close")[0];
-    const reviewButtons = document.querySelectorAll(".btn-review");
+// =============================================
+// 1. KONFIRMASI HAPUS
+//    Muncul dialog tanya sebelum data dihapus
+// =============================================
+function konfirmasiHapus(pesan) {
+    // window.confirm() menampilkan popup YA/TIDAK
+    // Mengembalikan true jika klik OK, false jika Cancel
+    return window.confirm(pesan || "Yakin ingin menghapus data ini?");
+}
 
-    reviewButtons.forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            let filmId = btn.getAttribute("data-id");
-            let judul = btn.getAttribute("data-judul");
-            document.getElementById("film_id").value = filmId;
-            document.getElementById("modalJudul").innerHTML = `📝 Review: ${judul}`;
-            modal.style.display = "flex";
-        });
+// =============================================
+// 2. AUTO-HIDE ALERT
+//    Pesan sukses/error otomatis hilang setelah 4 detik
+// =============================================
+window.addEventListener('DOMContentLoaded', function () {
+    
+    // Cari semua elemen dengan class 'alert'
+    var alerts = document.querySelectorAll('.alert');
+    
+    alerts.forEach(function(alert) {
+        // Set timer 4000ms = 4 detik
+        setTimeout(function() {
+            // Animasi fade out (transparansi berkurang perlahan)
+            alert.style.transition = 'opacity 0.5s ease';
+            alert.style.opacity = '0';
+            
+            // Setelah animasi selesai, hapus dari halaman
+            setTimeout(function() {
+                alert.remove();
+            }, 500);
+        }, 4000);
     });
 
-    if (span) {
-        span.onclick = () => {
-            modal.style.display = "none";
-        };
+    // =============================================
+    // 3. PREVIEW GAMBAR
+    //    Menampilkan preview poster sebelum di-upload
+    // =============================================
+    var inputGambar = document.getElementById('poster');
+    var previewGambar = document.getElementById('preview-poster');
+    
+    if (inputGambar && previewGambar) {
+        inputGambar.addEventListener('change', function() {
+            var file = this.files[0]; // Ambil file pertama yang dipilih
+            
+            if (file) {
+                var reader = new FileReader(); // Objek untuk membaca file
+                
+                // Ketika file selesai dibaca
+                reader.onload = function(e) {
+                    previewGambar.src = e.target.result; // Tampilkan gambar
+                    previewGambar.style.display = 'block';
+                };
+                
+                reader.readAsDataURL(file); // Baca file sebagai URL data
+            }
+        });
     }
 
-    window.onclick = (event) => {
-        if (event.target === modal) {
-            modal.style.display = "none";
+    // =============================================
+    // 4. AKTIFKAN LINK SIDEBAR
+    //    Tandai menu yang sedang aktif di sidebar
+    // =============================================
+    var linkSidebar = document.querySelectorAll('.sidebar a');
+    var urlSekarang = window.location.pathname; // URL halaman saat ini
+    
+    linkSidebar.forEach(function(link) {
+        // Cek apakah URL link cocok dengan halaman sekarang
+        if (link.getAttribute('href') && urlSekarang.includes(link.getAttribute('href'))) {
+            link.classList.add('active'); // Tambah class active
         }
-    };
+    });
 
-    // Notifikasi sukses jika ada parameter success
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('success')) {
-        alert("✨ Review berhasil disimpan! Terima kasih ✨");
-        history.replaceState({}, document.title, window.location.pathname);
-    }
 });
+
+// =============================================
+// 5. VALIDASI FORM REVIEW
+//    Pastikan rating sudah dipilih sebelum submit
+// =============================================
+function validasiReview() {
+    // Cek apakah ada radio button rating yang dipilih
+    var ratingTerpilih = document.querySelector('input[name="rating"]:checked');
+    
+    if (!ratingTerpilih) {
+        alert('⚠️ Pilih rating bintang terlebih dahulu!');
+        return false; // Batalkan submit form
+    }
+    
+    var komentar = document.getElementById('komentar');
+    if (komentar && komentar.value.trim().length < 5) {
+        alert('⚠️ Tulis komentar minimal 5 karakter!');
+        return false;
+    }
+    
+    return true; // Lanjutkan submit
+}
+
+// =============================================
+// 6. SEARCH FILM (Filter tabel secara real-time)
+// =============================================
+function cariFilm() {
+    var inputCari  = document.getElementById('cari-film');
+    var tabel      = document.getElementById('tabel-film');
+    
+    if (!inputCari || !tabel) return;
+    
+    var kata = inputCari.value.toLowerCase(); // Ubah ke huruf kecil
+    var baris = tabel.querySelectorAll('tbody tr');
+    
+    baris.forEach(function(row) {
+        var teks = row.textContent.toLowerCase(); // Teks di baris
+        
+        // Tampilkan baris jika teks mengandung kata pencarian
+        if (teks.includes(kata)) {
+            row.style.display = '';    // Tampilkan
+        } else {
+            row.style.display = 'none'; // Sembunyikan
+        }
+    });
+}

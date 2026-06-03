@@ -1,281 +1,1074 @@
+/* =============================================
+   FILE: style.css
+   Fungsi: Tampilan utama seluruh website CineView
+   Tema: Y2K Professional + Estetik Modern
+   Palet Warna:
+     - Merah Tua : #BA3801 (aksen utama)
+     - Kuning     : #FFEC89 (highlight)
+     - Biru       : #4A69B3 (aksen sekunder)
+     - Hitam      : #1a1a1a (background)
+     - Abu Gelap  : #2a2a2a (card)
+============================================= */
+
+/* ---- IMPORT FONT dari Google Fonts ---- */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* ---- VARIABEL WARNA (mudah diubah di satu tempat) ---- */
+:root {
+    --merah       : #BA3801;
+    --merah-muda  : #d44a10;
+    --kuning      : #FFEC89;
+    --biru        : #4A69B3;
+    --biru-muda   : #6b8fd4;
+    --hitam       : #111111;
+    --gelap       : #1a1a1a;
+    --card        : #242424;
+    --card-border : #333333;
+    --teks-putih  : #f0f0f0;
+    --teks-abu    : #aaaaaa;
+    --font-judul  : 'Playfair Display', serif;
+    --font-teks   : 'DM Sans', sans-serif;
+}
+
+/* ---- RESET: Hapus style bawaan browser ---- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* ---- BODY: Pengaturan dasar halaman ---- */
 body {
-    font-family: 'Inter', sans-serif;
-    background: #f5f5f5;
-    color: #222;
+    font-family: var(--font-teks);
+    background-color: var(--hitam);
+    color: var(--teks-putih);
+    min-height: 100vh;
+    line-height: 1.6;
 }
 
-/* Header dengan hiasan */
-header {
-    background: #BA3801; /* maroon */
-    color: #e9f5e1;
-    text-align: center;
-    padding: 30px 20px;
-    position: relative;
-    overflow: hidden;
-}
-
-header h1 {
-    font-family: 'Inter', sans-serif;
-    font-size: 2.8rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-}
-
-header p {
-    font-size: 1.1rem;
-    font-weight: 300;
-}
-
-.header-decoration {
-    font-size: 2rem;
-    opacity: 0.6;
-    margin-bottom: 5px;
-}
-
-.matcha-leaf {
-    position: absolute;
-    bottom: -15px;
-    right: 20px;
-    font-size: 4rem;
-    opacity: 0.2;
-    transform: rotate(15deg);
-}
-
-/* Navbar */
-nav {
-    display: flex;
-    justify-content: center;
-    background: #4A69B3; /* hijau matcha gelap */
-    gap: 20px;
-    padding: 12px 0;
-}
-
-nav a {
-    color: #f9f7f3;
-    text-decoration: none;
-    font-weight: 600;
-    padding: 5px 15px;
-    border-radius: 30px;
-    transition: 0.3s;
-}
-
-nav a:hover:not(.disabled) {
-    background: #1b4d3e;
-    transform: scale(1.05);
-}
-
-.disabled {
-    opacity: 0.6;
-    cursor: default;
-}
-
-/* Search box */
-.search-box {
-    text-align: center;
-    margin: 30px 20px;
-}
-
-.search-box input {
-    padding: 12px 20px;
-    width: 320px;
-    border-radius: 40px;
-    border: 2px solid #95d5b2;
-    font-family: 'Inter', sans-serif;
-    font-size: 1rem;
-    outline: none;
-    transition: 0.3s;
-    background: white;
-}
-
-.search-box input:focus {
-    border-color: #6f1d1b;
-    box-shadow: 0 0 8px rgba(111, 29, 27, 0.2);
-}
-
-/* Container card */
-.container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 25px;
-    padding: 20px;
-}
-
-.card {
-    background: white;
-    width: 260px;
-    border-radius: 12px;
-    padding: 18px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    text-align: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    border: 1px solid #d8f3dc;
-}
-
-.card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
-    border-color: #6f1d1b;
-}
-
-.card:hover img {
-    transform: scale(1.03);
-}
-
-.poster {
-    transition: 0.3s;
-}
-
-.poster {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 20px;
-    background: #e9ecef;
-}
-
-.card h2 {
-    font-size: 1.4rem;
-    margin: 12px 0 5px;
-    font-family: 'Poppins', sans-serif;
-    color: #6f1d1b;
-}
-
-.deskripsi-singkat {
-    font-size: 0.85rem;
-    color: #5a4a4f;
-    margin-bottom: 15px;
-}
-
-.btn-review {
-    background: #BA3801;
-    border: none;
-    padding: 8px 18px;
-    border-radius: 40px;
-    font-family: 'Quicksand', sans-serif;
-    font-weight: bold;
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
-    font-size: 0.9rem;
-}
-
-.btn-review:hover {
-    background: #6f1d1b;
-    transform: scale(1.02);
-}
-
-/* Modal */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 999;
-    left: 0;
+/* =========================================
+   NAVBAR (Menu Navigasi Atas)
+========================================= */
+.navbar {
+    background: rgba(17, 17, 17, 0.95);
+    border-bottom: 2px solid var(--merah);
+    padding: 0 2rem;
+    position: sticky;
     top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.navbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+}
+
+/* Logo CineView */
+.navbar-logo {
+    font-family: var(--font-judul);
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--kuning);
+    text-decoration: none;
+    letter-spacing: -1px;
+}
+
+.navbar-logo span {
+    color: var(--merah);
+}
+
+/* Menu navigasi */
+.navbar-menu {
+    display: flex;
+    list-style: none;
+    gap: 0.5rem;
     align-items: center;
 }
 
-.modal-content {
-    background: #fffcf5;
-    border-radius: 40px;
-    width: 400px;
-    max-width: 90%;
-    padding: 25px;
-    text-align: center;
-    font-family: 'Quicksand', sans-serif;
-    position: relative;
-    box-shadow: 0 20px 30px rgba(0,0,0,0.2);
-    border: 2px solid #d8f3dc;
-}
-
-.close {
-    position: absolute;
-    top: 12px;
-    right: 20px;
-    font-size: 28px;
-    cursor: pointer;
-    color: #6f1d1b;
-}
-
-.modal-content input, 
-.modal-content textarea, 
-.modal-content select {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 30px;
-    border: 1px solid #95d5b2;
-    font-family: 'Quicksand', sans-serif;
-}
-
-.modal-content button {
-    background: #6f1d1b;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 40px;
-    font-weight: bold;
-    cursor: pointer;
-    font-family: 'Quicksand', sans-serif;
-}
-
-.modal-content button:hover {
-    background: #40916c;
-}
-
-footer {
-    text-align: center;
-    background: #2d6a4f;
-    color: #e9f5e1;
-    padding: 20px;
-    margin-top: 40px;
+.navbar-menu a {
+    color: var(--teks-putih);
+    text-decoration: none;
     font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    letter-spacing: 0.5px;
 }
 
-.judul-section {
-    font-size: 2rem;
+.navbar-menu a:hover {
+    color: var(--kuning);
+    background: rgba(255, 236, 137, 0.1);
+}
+
+/* Tombol login di navbar */
+.btn-nav-login {
+    background: var(--merah) !important;
+    color: white !important;
+    border-radius: 4px !important;
+    padding: 0.45rem 1.2rem !important;
+}
+
+.btn-nav-login:hover {
+    background: var(--merah-muda) !important;
+    color: white !important;
+}
+
+/* =========================================
+   TOMBOL-TOMBOL (Buttons)
+========================================= */
+
+/* Tombol utama merah */
+.btn {
+    display: inline-block;
+    padding: 0.6rem 1.4rem;
+    border-radius: 4px;
+    font-family: var(--font-teks);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    transition: all 0.2s ease;
+    letter-spacing: 0.5px;
+}
+
+.btn-merah {
+    background: var(--merah);
+    color: white;
+}
+
+.btn-merah:hover {
+    background: var(--merah-muda);
+    transform: translateY(-1px);
+}
+
+.btn-biru {
+    background: var(--biru);
+    color: white;
+}
+
+.btn-biru:hover {
+    background: var(--biru-muda);
+    transform: translateY(-1px);
+}
+
+.btn-kuning {
+    background: var(--kuning);
+    color: var(--hitam);
     font-weight: 700;
-    margin-left: 30px;
-    margin-top: 20px;
-    color: #BA3801;
 }
 
-.detail-container {
+.btn-kuning:hover {
+    background: #f5e070;
+    transform: translateY(-1px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--teks-putih);
+    border: 1px solid var(--card-border);
+}
+
+.btn-outline:hover {
+    border-color: var(--kuning);
+    color: var(--kuning);
+}
+
+.btn-hapus {
+    background: #c0392b;
+    color: white;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.9rem;
+}
+
+.btn-hapus:hover {
+    background: #e74c3c;
+}
+
+.btn-kecil {
+    padding: 0.35rem 0.8rem;
+    font-size: 0.8rem;
+}
+
+/* =========================================
+   HERO / BANNER UTAMA
+========================================= */
+.hero {
+    background: linear-gradient(135deg, #1a0a00 0%, #1a1a2e 50%, #16213e 100%);
+    padding: 5rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--card-border);
+}
+
+/* Efek garis dekoratif Y2K */
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 80px,
+            rgba(186, 56, 1, 0.04) 80px,
+            rgba(186, 56, 1, 0.04) 81px
+        );
+    pointer-events: none;
+}
+
+.hero-badge {
+    display: inline-block;
+    background: rgba(186, 56, 1, 0.2);
+    border: 1px solid var(--merah);
+    color: var(--kuning);
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.hero h1 {
+    font-family: var(--font-judul);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1.2rem;
+    color: var(--teks-putih);
+}
+
+.hero h1 .highlight {
+    color: var(--kuning);
+}
+
+.hero p {
+    font-size: 1.1rem;
+    color: var(--teks-abu);
+    max-width: 550px;
+    margin: 0 auto 2rem;
+}
+
+.hero-buttons {
     display: flex;
-    gap: 30px;
-    padding: 40px;
+    gap: 1rem;
+    justify-content: center;
     flex-wrap: wrap;
 }
 
-.detail-poster {
-    width: 300px;
+/* =========================================
+   SECTION (Bagian-bagian halaman)
+========================================= */
+.section {
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-family: var(--font-judul);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--teks-putih);
+}
+
+.section-title span {
+    color: var(--kuning);
+}
+
+.garis-dekorasi {
+    height: 3px;
+    background: linear-gradient(to right, var(--merah), transparent);
+    margin-bottom: 2rem;
+    border-radius: 2px;
+}
+
+/* =========================================
+   CARD FILM
+========================================= */
+.film-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.film-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.film-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--merah);
+    box-shadow: 0 8px 25px rgba(186, 56, 1, 0.3);
+}
+
+.film-card img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    display: block;
+}
+
+.film-card-body {
+    padding: 1rem;
+}
+
+.film-card-judul {
+    font-family: var(--font-judul);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    color: var(--teks-putih);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.film-card-genre {
+    font-size: 0.78rem;
+    color: var(--teks-abu);
+    margin-bottom: 0.5rem;
+}
+
+/* Bintang rating */
+.rating-stars {
+    color: var(--kuning);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.rating-angka {
+    color: var(--teks-abu);
+    font-size: 0.8rem;
+}
+
+/* =========================================
+   HALAMAN FORM (Login, Register, dll)
+========================================= */
+.form-container {
+    max-width: 450px;
+    margin: 4rem auto;
+    padding: 0 1.5rem;
+}
+
+.form-box {
+    background: var(--card);
+    border: 1px solid var(--card-border);
     border-radius: 12px;
+    padding: 2.5rem;
 }
 
-.detail-text {
-    flex: 1;
+.form-logo {
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
-.detail-text h2 {
-    margin-bottom: 10px;
-    color: #BA3801;
+.form-logo h2 {
+    font-family: var(--font-judul);
+    font-size: 1.8rem;
+    color: var(--kuning);
 }
 
-.review-box {
-    background: white;
-    padding: 15px;
+.form-logo p {
+    color: var(--teks-abu);
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+}
+
+/* Grup input form */
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--teks-abu);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: var(--hitam);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    color: var(--teks-putih);
+    font-family: var(--font-teks);
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--biru);
+    box-shadow: 0 0 0 3px rgba(74, 105, 179, 0.15);
+}
+
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Rating bintang interaktif */
+.rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 0.3rem;
+}
+
+.rating-input input[type="radio"] {
+    display: none; /* Sembunyikan input asli */
+}
+
+.rating-input label {
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--card-border);
+    transition: color 0.2s;
+}
+
+/* Logika CSS untuk bintang: hover & checked */
+.rating-input label:hover,
+.rating-input label:hover ~ label,
+.rating-input input:checked ~ label {
+    color: var(--kuning);
+}
+
+/* Tombol submit di form */
+.btn-submit {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+.form-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--teks-abu);
+}
+
+.form-link a {
+    color: var(--biru-muda);
+    text-decoration: none;
+}
+
+.form-link a:hover {
+    text-decoration: underline;
+}
+
+/* =========================================
+   PESAN NOTIFIKASI (Alert)
+========================================= */
+.alert {
+    padding: 0.8rem 1.2rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-left: 4px solid;
+}
+
+.alert-sukses {
+    background: rgba(39, 174, 96, 0.15);
+    border-color: #27ae60;
+    color: #2ecc71;
+}
+
+.alert-error {
+    background: rgba(192, 57, 43, 0.15);
+    border-color: #c0392b;
+    color: #e74c3c;
+}
+
+.alert-info {
+    background: rgba(74, 105, 179, 0.15);
+    border-color: var(--biru);
+    color: var(--biru-muda);
+}
+
+/* =========================================
+   HALAMAN DETAIL FILM
+========================================= */
+.detail-film-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+}
+
+.detail-film-atas {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.detail-poster {
     border-radius: 10px;
-    margin-top: 15px;
-    border-left: 5px solid #4A69B3;
+    overflow: hidden;
+    border: 2px solid var(--card-border);
+}
+
+.detail-poster img {
+    width: 100%;
+    display: block;
+}
+
+.detail-info h1 {
+    font-family: var(--font-judul);
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+}
+
+.detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.meta-tag {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    color: var(--teks-abu);
+}
+
+.meta-tag span {
+    color: var(--kuning);
+    font-weight: 600;
+}
+
+.detail-rating-besar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    width: fit-content;
+}
+
+.angka-rating {
+    font-family: var(--font-judul);
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--kuning);
+}
+
+.detail-sinopsis {
+    color: var(--teks-abu);
+    line-height: 1.8;
+    font-size: 0.95rem;
+}
+
+/* =========================================
+   KARTU REVIEW
+========================================= */
+.review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.review-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.7rem;
+}
+
+.review-user {
+    font-weight: 700;
+    color: var(--teks-putih);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.avatar-kecil {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--merah);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: white;
+    text-transform: uppercase;
+}
+
+.review-tanggal {
+    font-size: 0.8rem;
+    color: var(--teks-abu);
+}
+
+.review-komentar {
+    color: var(--teks-abu);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.review-actions {
+    margin-top: 0.8rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* =========================================
+   ADMIN & USER DASHBOARD
+========================================= */
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    min-height: calc(100vh - 70px);
+}
+
+.sidebar {
+    background: var(--card);
+    border-right: 1px solid var(--card-border);
+    padding: 2rem 0;
+}
+
+.sidebar-title {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--teks-abu);
+    padding: 0 1.5rem;
+    margin-bottom: 0.8rem;
+    margin-top: 1.5rem;
+}
+
+.sidebar-title:first-child {
+    margin-top: 0;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.7rem 1.5rem;
+    color: var(--teks-abu);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.sidebar a:hover, .sidebar a.active {
+    color: var(--teks-putih);
+    background: rgba(255,255,255,0.05);
+    border-left-color: var(--merah);
+}
+
+.dashboard-konten {
+    padding: 2.5rem;
+    overflow-y: auto;
+}
+
+/* Kartu statistik di dashboard */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.stat-angka {
+    font-family: var(--font-judul);
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--kuning);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--teks-abu);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.3rem;
+}
+
+/* =========================================
+   TABEL DATA
+========================================= */
+.tabel-wrapper {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    overflow: hidden;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: rgba(186, 56, 1, 0.2);
+    border-bottom: 2px solid var(--merah);
+}
+
+th {
+    padding: 1rem 1.2rem;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--kuning);
+}
+
+td {
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1px solid var(--card-border);
+    font-size: 0.9rem;
+    color: var(--teks-abu);
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background: rgba(255,255,255,0.02);
+    color: var(--teks-putih);
+}
+
+/* =========================================
+   KONTEN KOSONG (Empty State)
+========================================= */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--teks-abu);
+}
+
+.empty-state .ikon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.4;
+}
+
+.empty-state p {
+    font-size: 0.95rem;
+}
+
+/* =========================================
+   FOOTER
+========================================= */
+footer {
+    background: var(--card);
+    border-top: 1px solid var(--card-border);
+    padding: 3rem 2rem 1.5rem;
+    margin-top: 4rem;
+}
+
+.footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-atas {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-brand h3 {
+    font-family: var(--font-judul);
+    font-size: 1.5rem;
+    color: var(--kuning);
+    margin-bottom: 0.5rem;
+}
+
+.footer-brand p {
+    color: var(--teks-abu);
+    font-size: 0.85rem;
+    line-height: 1.7;
+}
+
+.footer-kolom h4 {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--teks-putih);
+    margin-bottom: 1rem;
+}
+
+.footer-kolom a {
+    display: block;
+    color: var(--teks-abu);
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    transition: color 0.2s;
+}
+
+.footer-kolom a:hover {
+    color: var(--kuning);
+}
+
+.footer-bawah {
+    border-top: 1px solid var(--card-border);
+    padding-top: 1.2rem;
+    text-align: center;
+    color: var(--teks-abu);
+    font-size: 0.82rem;
+}
+
+.footer-bawah span {
+    color: var(--merah);
+}
+
+/* =========================================
+   HALAMAN TENTANG
+========================================= */
+.tentang-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+.tentang-judul {
+    font-family: var(--font-judul);
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    color: var(--kuning);
+}
+
+.tim-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.tim-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.tim-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--merah);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-judul);
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: white;
+    margin: 0 auto 0.8rem;
+}
+
+/* =========================================
+   PROFIL USER
+========================================= */
+.profil-wrapper {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+}
+
+.profil-header {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.profil-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--merah);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-judul);
+    font-size: 2rem;
+    font-weight: 900;
+    color: white;
+    flex-shrink: 0;
+}
+
+.profil-nama {
+    font-family: var(--font-judul);
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.profil-email {
+    color: var(--teks-abu);
+    font-size: 0.9rem;
+}
+
+.profil-badge {
+    display: inline-block;
+    background: rgba(74, 105, 179, 0.2);
+    border: 1px solid var(--biru);
+    color: var(--biru-muda);
+    font-size: 0.72rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-top: 0.3rem;
+}
+
+/* =========================================
+   HALAMAN REKOMENDASI
+========================================= */
+.rekomendasi-banner {
+    background: linear-gradient(135deg, #1a0a00, #0f0f1a);
+    border-bottom: 1px solid var(--card-border);
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.rekomendasi-banner h1 {
+    font-family: var(--font-judul);
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--kuning);
+}
+
+/* Nomor peringkat di film rekomendasi */
+.ranking-badge {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--merah);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 0.85rem;
+    color: white;
+}
+
+.film-card-wrapper {
+    position: relative;
+}
+
+/* =========================================
+   UTILITAS (Helper Classes)
+========================================= */
+.text-center { text-align: center; }
+.text-kuning { color: var(--kuning); }
+.text-abu    { color: var(--teks-abu); }
+.text-merah  { color: var(--merah); }
+.mb-1 { margin-bottom: 1rem; }
+.mb-2 { margin-bottom: 2rem; }
+.mt-1 { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+.gap-1 { gap: 0.5rem; }
+.flex { display: flex; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+
+/* =========================================
+   RESPONSIVE (Tampilan di HP)
+========================================= */
+@media (max-width: 768px) {
+    .navbar-menu { display: none; }
+    
+    .hero h1 { font-size: 2rem; }
+    
+    .detail-film-atas {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        display: none;
+    }
+    
+    .footer-atas {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
