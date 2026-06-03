@@ -1,120 +1,196 @@
 <?php
-require_once '../koneksi.php';
+// =============================================
+// FILE: admin/tambah_film.php
+// Fungsi: Form untuk admin menambah film baru
+// =============================================
 
+session_start();
+include '../koneksi.php';
+
+// Proteksi: hanya admin
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header("Location: ../login.php");
-    exit();
+    exit;
 }
 
+$pesan  = '';
+$sukses = false;
+
+// =============================================
+// PROSES: Simpan film baru ke database
+// =============================================
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $judul = mysqli_real_escape_string($conn, $_POST['judul']);
-    $deskripsi = mysqli_real_escape_string($conn, $_POST['deskripsi']);
-    $genre = mysqli_real_escape_string($conn, $_POST['genre']);
-    $tahun = (int)$_POST['tahun'];
     
-    // Upload poster
-    $poster = 'default.jpg';
-    if (isset($_FILES['poster']) && $_FILES['poster']['error'] == 0) {
-        $allowed = ['jpg', 'jpeg', 'png', 'gif'];
-        $filename = $_FILES['poster']['name'];
-        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        
-        if (in_array($ext, $allowed)) {
-            $poster = time() . '_' . uniqid() . '.' . $ext;
-            move_uploaded_file($_FILES['poster']['tmp_name'], '../img/' . $poster);
-        }
-    }
+    // Ambil data dari form
+    $judul     = trim($_POST['judul']);
+    $genre     = trim($_POST['genre']);
+    $tahun     = intval($_POST['tahun']);
+    $sutradara = trim($_POST['sutradara']);
+    $sinopsis  = trim($_POST['sinopsis']);
+    $poster    = 'default.jpg'; // Default gambar
     
-    $query = mysqli_query($conn, "INSERT INTO film (judul, poster, deskripsi, genre, tahun) VALUES ('$judul', '$poster', '$deskripsi', '$genre', '$tahun')");
-    
-    if ($query) {
-        header("Location: dashboard.php?success=1");
+    // Validasi input wajib
+    if (empty($judul)) {
+        $pesan = "Judul film harus diisi!";
+    } elseif ($tahun < 1900 || $tahun > 2030) {
+        $pesan = "Tahun tidak valid!";
     } else {
-        $error = "Gagal menambah film: " . mysqli_error($conn);
+        
+        // ---- Upload poster (opsional) ----
+        if (isset($_FILES['poster']) && $_FILES['poster']['error'] == 0) {
+            $file     = $_FILES['poster'];
+            $ekstensi = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $boleh    = ['jpg', 'jpeg', 'png', 'webp']; // Ekstensi yang diizinkan
+            
+            if (in_array($ekstensi, $boleh)) {
+                if ($file['size'] <= 2 * 1024 * 1024) { // Maksimal 2MB
+                    // Buat nama file unik menggunakan timestamp
+                    $nama_file = 'poster_' . time() . '.' . $ekstensi;
+                    $tujuan    = '../img/' . $nama_file;
+                    
+                    if (move_uploaded_file($file['tmp_name'], $tujuan)) {
+                        $poster = $nama_file; // Simpan nama file baru
+                    }
+                } else {
+                    $pesan = "Ukuran file maksimal 2MB!";
+                }
+            } else {
+                $pesan = "Format file harus jpg, jpeg, png, atau webp!";
+            }
+        }
+        
+        // Simpan ke database kalau tidak ada error
+        if (empty($pesan)) {
+            $stmt = mysqli_prepare($koneksi, "
+                INSERT INTO films (judul, genre, tahun, sutradara, sinopsis, poster) 
+                VALUES (?, ?, ?, ?, ?, ?)
+            ");
+            mysqli_stmt_bind_param($stmt, "ssisss", $judul, $genre, $tahun, $sutradara, $sinopsis, $poster);
+            
+            if (mysqli_stmt_execute($stmt)) {
+                $sukses = true;
+                $pesan  = "Film berhasil ditambahkan!";
+            } else {
+                $pesan = "Gagal menyimpan. Coba lagi.";
+            }
+        }
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Tambah Film - Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Film — CineView Admin</title>
     <link rel="stylesheet" href="../style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet">
-    <style>
-        .form-container {
-            max-width: 600px;
-            margin: 40px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        .form-container h2 {
-            color: #6f1d1b;
-            margin-bottom: 20px;
-        }
-        .form-container input, .form-container textarea, .form-container select {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 30px;
-            border: 2px solid #95d5b2;
-            font-family: 'Quicksand', sans-serif;
-        }
-        .form-container button {
-            background: #6f1d1b;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 40px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-        }
-        .form-container button:hover {
-            background: #40916c;
-        }
-        .error {
-            color: red;
-            margin-bottom: 15px;
-        }
-    </style>
 </head>
 <body>
 
-<header>
-    <h1>🍵 MatchaFlix - Admin</h1>
-    <p>Tambah Film Baru</p>
-</header>
-
-<nav>
-    <a href="../index.php">🏠 Home</a>
-    <a href="dashboard.php">📊 Dashboard</a>
-    <a href="../logout.php">🚪 Logout</a>
+<nav class="navbar">
+    <div class="navbar-inner">
+        <a href="../index.php" class="navbar-logo">Cine<span>View</span></a>
+        <ul class="navbar-menu">
+            <li><a href="dashboard.php">← Dashboard</a></li>
+            <li><a href="../logout.php">Logout</a></li>
+        </ul>
+    </div>
 </nav>
 
-<div class="form-container">
-    <h2>➕ Tambah Film</h2>
-    <?php if(isset($error)): ?>
-        <div class="error"><?= $error ?></div>
-    <?php endif; ?>
-    <form method="POST" enctype="multipart/form-data">
-        <input type="text" name="judul" placeholder="Judul Film" required>
-        <input type="text" name="genre" placeholder="Genre (contoh: Action, Drama)">
-        <input type="number" name="tahun" placeholder="Tahun Rilis">
-        <textarea name="deskripsi" placeholder="Deskripsi film..." rows="5" required></textarea>
-        <input type="file" name="poster" accept="image/*">
-        <small style="color:#666;">Biarkan kosong untuk menggunakan poster default</small>
-        <button type="submit">💾 Simpan Film</button>
-    </form>
-    <a href="dashboard.php" style="display:block; text-align:center; margin-top:20px; color:#40916c;">← Kembali ke Dashboard</a>
+<div class="dashboard-layout">
+    <aside class="sidebar">
+        <div class="sidebar-title">Menu Admin</div>
+        <a href="dashboard.php">📊 Dashboard</a>
+        <div class="sidebar-title">Kelola Film</div>
+        <a href="tambah_film.php" class="active">➕ Tambah Film</a>
+        <div class="sidebar-title">Kelola Lainnya</div>
+        <a href="kelola_review.php">💬 Kelola Review</a>
+        <a href="kelola_user.php">👥 Kelola User</a>
+        <div class="sidebar-title">Sistem</div>
+        <a href="../logout.php">🚪 Logout</a>
+    </aside>
+    
+    <main class="dashboard-konten">
+        <div style="max-width:700px;">
+            
+            <h1 style="font-family:'Playfair Display',serif; font-size:1.8rem; color:#FFEC89; margin-bottom:0.5rem;">
+                Tambah Film Baru
+            </h1>
+            <div class="garis-dekorasi"></div>
+            
+            <!-- Notifikasi -->
+            <?php if ($pesan): ?>
+            <div class="alert <?= $sukses ? 'alert-sukses' : 'alert-error' ?>"><?= $pesan ?></div>
+            <?php endif; ?>
+            
+            <?php if ($sukses): ?>
+            <div style="display:flex; gap:1rem;">
+                <a href="tambah_film.php" class="btn btn-merah">+ Tambah Lagi</a>
+                <a href="dashboard.php" class="btn btn-outline">← Kembali</a>
+            </div>
+            <?php else: ?>
+            
+            <!-- Form tambah film -->
+            <form method="POST" enctype="multipart/form-data">
+                <!-- enctype ini WAJIB untuk upload file -->
+                
+                <div class="form-group">
+                    <label>Judul Film *</label>
+                    <input type="text" name="judul" placeholder="Contoh: Avengers: Endgame"
+                           value="<?= isset($_POST['judul']) ? htmlspecialchars($_POST['judul']) : '' ?>"
+                           required>
+                </div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <div class="form-group">
+                        <label>Genre</label>
+                        <input type="text" name="genre" placeholder="Action, Drama, ..."
+                               value="<?= isset($_POST['genre']) ? htmlspecialchars($_POST['genre']) : '' ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Tahun Rilis</label>
+                        <input type="number" name="tahun" placeholder="2024"
+                               min="1900" max="2030"
+                               value="<?= isset($_POST['tahun']) ? intval($_POST['tahun']) : date('Y') ?>">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Sutradara</label>
+                    <input type="text" name="sutradara" placeholder="Nama sutradara"
+                           value="<?= isset($_POST['sutradara']) ? htmlspecialchars($_POST['sutradara']) : '' ?>">
+                </div>
+                
+                <div class="form-group">
+                    <label>Sinopsis</label>
+                    <textarea name="sinopsis" placeholder="Deskripsi singkat film..."><?= isset($_POST['sinopsis']) ? htmlspecialchars($_POST['sinopsis']) : '' ?></textarea>
+                </div>
+                
+                <!-- Upload poster -->
+                <div class="form-group">
+                    <label>Poster Film (Opsional)</label>
+                    <input type="file" id="poster" name="poster" accept="image/*"
+                           style="color:#aaa;">
+                    <small style="color:#555; font-size:0.8rem;">Format: jpg, png, webp. Maks: 2MB</small>
+                    
+                    <!-- Preview gambar (diaktifkan oleh script.js) -->
+                    <div style="margin-top:0.8rem;">
+                        <img id="preview-poster" src="" 
+                             style="display:none; max-width:150px; border-radius:6px; border:1px solid #333;">
+                    </div>
+                </div>
+                
+                <div style="display:flex; gap:1rem; margin-top:1rem;">
+                    <button type="submit" class="btn btn-merah">Simpan Film</button>
+                    <a href="dashboard.php" class="btn btn-outline">Batal</a>
+                </div>
+            </form>
+            <?php endif; ?>
+        </div>
+    </main>
 </div>
 
-<footer>
-    <p>🍵 MatchaFlix — Kelola film dengan mudah 🍃</p>
-</footer>
-
+<script src="../script.js"></script>
 </body>
 </html>
