@@ -25,10 +25,7 @@ $hasil_populer = mysqli_query($koneksi, $query_populer);
 $query_terbaru = "SELECT * FROM films ORDER BY id DESC LIMIT 4";
 $hasil_terbaru = mysqli_query($koneksi, $query_terbaru);
 
-// ---- Hitung total statistik ----
-$total_film   = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM films"))[0];
-$total_review = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM reviews"))[0];
-$total_user   = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM users WHERE role='user'"))[0];
+
 ?>
 
 <!DOCTYPE html>
@@ -81,22 +78,7 @@ $total_user   = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM us
             <a href="register.php" class="btn btn-outline">Bergabung Gratis</a>
         <?php endif; ?>
     </div>
-    
-    <!-- Statistik kecil di hero -->
-    <div style="margin-top:3rem; display:flex; justify-content:center; gap:3rem; flex-wrap:wrap;">
-        <div style="text-align:center;">
-            <div style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; color:#FFEC89;"><?= $total_film ?></div>
-            <div style="font-size:0.8rem; color:#aaa; letter-spacing:1px; text-transform:uppercase;">Film</div>
-        </div>
-        <div style="text-align:center;">
-            <div style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; color:#FFEC89;"><?= $total_review ?></div>
-            <div style="font-size:0.8rem; color:#aaa; letter-spacing:1px; text-transform:uppercase;">Review</div>
-        </div>
-        <div style="text-align:center;">
-            <div style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; color:#FFEC89;"><?= $total_user ?></div>
-            <div style="font-size:0.8rem; color:#aaa; letter-spacing:1px; text-transform:uppercase;">Pengguna</div>
-        </div>
-    </div>
+
 </section>
 
 <!-- ==============================
