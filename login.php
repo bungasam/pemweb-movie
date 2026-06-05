@@ -130,11 +130,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             Belum punya akun? <a href="register.php">Daftar di sini</a>
         </div>
         
-        <!-- Info akun demo -->
-        <div style="margin-top:1.5rem; padding:1rem; background:rgba(74,105,179,0.1); border:1px solid #4A69B3; border-radius:6px; font-size:0.82rem; color:#aaa;">
-            <strong style="color:#FFEC89;">Demo Login:</strong><br>
-            Admin: <code>admin</code> / <code>admin123</code>
-        </div>
     </div>
 </div>
 
