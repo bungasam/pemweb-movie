@@ -58,8 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (in_array($ekstensi, $boleh) && $file['size'] <= 2*1024*1024) {
                 $nama_file = 'poster_' . time() . '.' . $ekstensi;
                 if (move_uploaded_file($file['tmp_name'], '../img/' . $nama_file)) {
-                    // Hapus poster lama (kalau bukan default)
-                    if ($film['poster'] != 'default.jpg') {
+                    // Hapus poster lama (kalau bukan gambar default)
+                    if ($film['poster'] != 'default.jpg' && $film['poster'] != 'default.svg') {
                         @unlink('../img/' . $film['poster']); // @ untuk suppress error
                     }
                     $poster = $nama_file;
@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <!-- Poster saat ini -->
             <div style="margin-bottom:1.5rem;">
                 <p style="font-size:0.8rem; color:#aaa; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:1px;">Poster Saat Ini</p>
-                <img src="../img/<?= htmlspecialchars($film['poster']) ?>"
+                <img src="../img/<?= htmlspecialchars(!empty($film['poster']) ? $film['poster'] : 'default.jpg') ?>"
                      alt="Poster"
                      onerror="this.src='../img/default.jpg'"
                      style="height:150px; border-radius:6px; border:1px solid #333;">

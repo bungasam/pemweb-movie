@@ -115,7 +115,7 @@ $hasil_genre = mysqli_query($koneksi, "SELECT DISTINCT genre FROM films ORDER BY
             <?php endif; ?>
             
             <a href="detail.php?id=<?= $film['id'] ?>" class="film-card">
-                <img src="img/<?= htmlspecialchars($film['poster']) ?>"
+                <img src="img/<?= htmlspecialchars(!empty($film['poster']) ? $film['poster'] : 'default.jpg') ?>"
                      alt="<?= htmlspecialchars($film['judul']) ?>"
                      onerror="this.src='img/default.jpg'">
                 <div class="film-card-body">

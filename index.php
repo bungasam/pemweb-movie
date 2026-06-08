@@ -96,10 +96,9 @@ $hasil_terbaru = mysqli_query($koneksi, $query_terbaru);
         <?php while ($film = mysqli_fetch_assoc($hasil_populer)): ?>
         <a href="detail.php?id=<?= $film['id'] ?>" class="film-card">
             <!-- Poster film -->
-            <img src="img/<?= htmlspecialchars($film['poster']) ?>"
+            <img src="img/<?= htmlspecialchars(!empty($film['poster']) ? $film['poster'] : 'default.jpg') ?>"
                  alt="<?= htmlspecialchars($film['judul']) ?>"
                  onerror="this.src='img/default.jpg'">
-            
             <div class="film-card-body">
                 <div class="film-card-judul"><?= htmlspecialchars($film['judul']) ?></div>
                 <div class="film-card-genre"><?= htmlspecialchars($film['genre']) ?> &bull; <?= $film['tahun'] ?></div>
@@ -142,7 +141,7 @@ $hasil_terbaru = mysqli_query($koneksi, $query_terbaru);
     <div class="film-grid">
         <?php while ($film = mysqli_fetch_assoc($hasil_terbaru)): ?>
         <a href="detail.php?id=<?= $film['id'] ?>" class="film-card">
-            <img src="img/<?= htmlspecialchars($film['poster']) ?>"
+            <img src="img/<?= htmlspecialchars(!empty($film['poster']) ? $film['poster'] : 'default.jpg') ?>"
                  alt="<?= htmlspecialchars($film['judul']) ?>"
                  onerror="this.src='img/default.jpg'">
             <div class="film-card-body">

@@ -1,9 +1,9 @@
-🍵 CineView
+CINEVIEW
 Sistem Review Film & Series (Community Movie Review Platform)
 
 Platform review film dan series berbasis web yang memungkinkan pengguna untuk memberikan ulasan, rating, serta menemukan rekomendasi tontonan terbaik secara mudah dan interaktif.
 
-📋 Deskripsi
+DESKRIPSI
 
 CineView adalah platform berbasis web yang dirancang untuk menjadi tempat bagi pengguna dalam mencari, membaca, dan membagikan review film maupun series favorit mereka. Sistem ini membantu pengguna menemukan rekomendasi tontonan berdasarkan rating dan ulasan komunitas.
 
@@ -57,14 +57,17 @@ Version Control : Git / GitHub
 
 🎨 Design System
 Color Palette
-Primary Matcha : #7D966D
-Cream : #F5F0E6
-Dark Text : #2D2D2D
-White : #FFFFFF
-Soft Brown : #B89B7A
+merah tua : #BA3801 
+Kuning : #FFEC89 
+Biru : #4A69B3 
+Hitam : #1a1a1a 
+Abu Gelap : #242424 
+Border : #333333 
+Putih : #f0f0f0 
+Abu-abu : #aaaaaa 
 Fonts
-Logo / Heading : Poppins
-Main UI : Poppins, Sans-serif
+Logo / Headings :  serif 
+Body Text / UI : sans-serif 
 
 🗺️ Sitemap
 CineView
@@ -122,9 +125,9 @@ CineView/
 ├── logout.php
 ├── rekomendasi.php
 ├── tentang.php
-├── detail_film.php
+├── detail.php
 ├── proses_review.php
-├── config.php
+├── koneksi.php
 ├── style.css
 ├── script.js
 │
@@ -134,6 +137,7 @@ CineView/
 │   ├── edit_film.php
 │   ├── hapus_film.php
 │   ├── kelola_review.php
+│   ├── kelola_user.php
 │   └── hapus_review.php
 │
 ├── user/
@@ -145,7 +149,7 @@ CineView/
 │   └── default.jpg
 │
 └── database/
-    └── cineview.sql
+    └── movie_review.sql
     
 🌐 Alamat Website
 http://localhost/cineview/

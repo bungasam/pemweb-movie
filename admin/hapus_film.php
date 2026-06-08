@@ -30,7 +30,7 @@ $film = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 
 if ($film) {
     // Hapus poster dari folder img (kalau bukan gambar default)
-    if ($film['poster'] != 'default.jpg') {
+    if (!empty($film['poster']) && $film['poster'] != 'default.jpg' && $film['poster'] != 'default.svg') {
         $path_poster = '../img/' . $film['poster'];
         if (file_exists($path_poster)) {
             unlink($path_poster); // Hapus file fisik
