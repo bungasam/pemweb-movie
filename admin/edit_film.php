@@ -140,9 +140,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <!-- Poster saat ini -->
             <div style="margin-bottom:1.5rem;">
                 <p style="font-size:0.8rem; color:#aaa; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:1px;">Poster Saat Ini</p>
-                <img src="../img/<?= htmlspecialchars(!empty($film['poster']) ? $film['poster'] : 'default.jpg') ?>"
+                <img src="../img/<?= htmlspecialchars(!empty($film['poster']) ? $film['poster'] : 'default.svg') ?>"
                      alt="Poster"
-                     onerror="this.src='../img/default.jpg'"
+                     onerror="this.src='../img/default.svg'"
                      style="height:150px; border-radius:6px; border:1px solid #333;">
             </div>
             
@@ -158,8 +158,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                     <div class="form-group">
                         <label>Genre</label>
-                        <input type="text" name="genre" 
-                               value="<?= htmlspecialchars($film['genre']) ?>">
+                        <select name="genre" required>
+                            <option value="">-- Pilih Genre --</option>
+                            <option value="Action" <?= $film['genre'] == 'Action' ? 'selected' : '' ?>>Action</option>
+                            <option value="Comedy" <?= $film['genre'] == 'Comedy' ? 'selected' : '' ?>>Comedy</option>
+                            <option value="Drama" <?= $film['genre'] == 'Drama' ? 'selected' : '' ?>>Drama</option>
+                            <option value="Horror" <?= $film['genre'] == 'Horror' ? 'selected' : '' ?>>Horror</option>
+                            <option value="Romance" <?= $film['genre'] == 'Romance' ? 'selected' : '' ?>>Romance</option>
+                            <option value="Sci-Fi" <?= $film['genre'] == 'Sci-Fi' ? 'selected' : '' ?>>Sci-Fi</option>
+                            <option value="Thriller" <?= $film['genre'] == 'Thriller' ? 'selected' : '' ?>>Thriller</option>
+                            <option value="Adventure" <?= $film['genre'] == 'Adventure' ? 'selected' : '' ?>>Adventure</option>
+                            <option value="Animation" <?= $film['genre'] == 'Animation' ? 'selected' : '' ?>>Animation</option>
+                            <option value="Crime" <?= $film['genre'] == 'Crime' ? 'selected' : '' ?>>Crime</option>
+                            <option value="Fantasy" <?= $film['genre'] == 'Fantasy' ? 'selected' : '' ?>>Fantasy</option>
+                            <option value="Mystery" <?= $film['genre'] == 'Mystery' ? 'selected' : '' ?>>Mystery</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Tahun</label>

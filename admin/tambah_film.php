@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tahun     = intval($_POST['tahun']);
     $sutradara = trim($_POST['sutradara']);
     $sinopsis  = trim($_POST['sinopsis']);
-    $poster    = 'default.jpg'; // Default gambar
+    $poster    = 'default.svg'; // Default gambar
     
     // Validasi input wajib
     if (empty($judul)) {
@@ -145,8 +145,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                     <div class="form-group">
                         <label>Genre</label>
-                        <input type="text" name="genre" placeholder="Action, Drama, ..."
-                               value="<?= isset($_POST['genre']) ? htmlspecialchars($_POST['genre']) : '' ?>">
+                        <select name="genre" required>
+                            <option value="">-- Pilih Genre --</option>
+                            <option value="Action" <?= isset($_POST['genre']) && $_POST['genre'] == 'Action' ? 'selected' : '' ?>>Action</option>
+                            <option value="Comedy" <?= isset($_POST['genre']) && $_POST['genre'] == 'Comedy' ? 'selected' : '' ?>>Comedy</option>
+                            <option value="Drama" <?= isset($_POST['genre']) && $_POST['genre'] == 'Drama' ? 'selected' : '' ?>>Drama</option>
+                            <option value="Horror" <?= isset($_POST['genre']) && $_POST['genre'] == 'Horror' ? 'selected' : '' ?>>Horror</option>
+                            <option value="Romance" <?= isset($_POST['genre']) && $_POST['genre'] == 'Romance' ? 'selected' : '' ?>>Romance</option>
+                            <option value="Sci-Fi" <?= isset($_POST['genre']) && $_POST['genre'] == 'Sci-Fi' ? 'selected' : '' ?>>Sci-Fi</option>
+                            <option value="Thriller" <?= isset($_POST['genre']) && $_POST['genre'] == 'Thriller' ? 'selected' : '' ?>>Thriller</option>
+                            <option value="Adventure" <?= isset($_POST['genre']) && $_POST['genre'] == 'Adventure' ? 'selected' : '' ?>>Adventure</option>
+                            <option value="Animation" <?= isset($_POST['genre']) && $_POST['genre'] == 'Animation' ? 'selected' : '' ?>>Animation</option>
+                            <option value="Crime" <?= isset($_POST['genre']) && $_POST['genre'] == 'Crime' ? 'selected' : '' ?>>Crime</option>
+                            <option value="Fantasy" <?= isset($_POST['genre']) && $_POST['genre'] == 'Fantasy' ? 'selected' : '' ?>>Fantasy</option>
+                            <option value="Mystery" <?= isset($_POST['genre']) && $_POST['genre'] == 'Mystery' ? 'selected' : '' ?>>Mystery</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Tahun Rilis</label>

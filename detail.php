@@ -111,9 +111,9 @@ $tipe  = $_GET['tipe'] ?? '';
         
         <!-- Poster -->
         <div class="detail-poster">
-            <img src="img/<?= htmlspecialchars(!empty($film['poster']) ? $film['poster'] : 'default.jpg') ?>"
+            <img src="img/<?= htmlspecialchars(!empty($film['poster']) ? $film['poster'] : 'default.svg') ?>"
                  alt="<?= htmlspecialchars($film['judul']) ?>"
-                 onerror="this.src='img/default.jpg'">
+                 onerror="this.src='img/default.svg'">
         </div>
         
         <!-- Informasi Film -->

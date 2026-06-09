@@ -100,25 +100,48 @@ function validasiReview() {
 }
 
 // =============================================
-// 6. SEARCH FILM (Filter tabel secara real-time)
+// 6. SEARCH FILM (Filter grid film secara real-time)
+//    Bekerja dengan card-based grid, bukan tabel
 // =============================================
 function cariFilm() {
-    var inputCari  = document.getElementById('cari-film');
-    var tabel      = document.getElementById('tabel-film');
+    var inputCari = document.getElementById('cari-film');
+    var container = document.getElementById('tabel-film');
     
-    if (!inputCari || !tabel) return;
+    if (!inputCari || !container) return;
     
     var kata = inputCari.value.toLowerCase(); // Ubah ke huruf kecil
-    var baris = tabel.querySelectorAll('tbody tr');
+    var cards = container.querySelectorAll('.film-card-wrapper');
+    var jumlahTampil = 0;
     
-    baris.forEach(function(row) {
-        var teks = row.textContent.toLowerCase(); // Teks di baris
+    cards.forEach(function(card) {
+        // Ambil judul film dari .film-card-judul
+        var judulElement = card.querySelector('.film-card-judul');
+        var judul = judulElement ? judulElement.textContent.toLowerCase() : '';
         
-        // Tampilkan baris jika teks mengandung kata pencarian
-        if (teks.includes(kata)) {
-            row.style.display = '';    // Tampilkan
+        // Cek apakah judul mengandung kata pencarian
+        if (kata === '' || judul.includes(kata)) {
+            card.style.display = '';    // Tampilkan
+            jumlahTampil++;
         } else {
-            row.style.display = 'none'; // Sembunyikan
+            card.style.display = 'none'; // Sembunyikan
         }
     });
+    
+    // Tampilkan pesan jika tidak ada film yang ditemukan
+    var pesanKosong = container.querySelector('.pesan-kosong-cari');
+    if (jumlahTampil === 0 && kata !== '') {
+        // Buat atau tampilkan pesan kosong
+        if (!pesanKosong) {
+            pesanKosong = document.createElement('div');
+            pesanKosong.className = 'pesan-kosong-cari';
+            pesanKosong.style.textAlign = 'center';
+            pesanKosong.style.padding = '2rem';
+            pesanKosong.style.color = '#aaa';
+            container.appendChild(pesanKosong);
+        }
+        pesanKosong.innerHTML = '🎬 Tidak ada film yang cocok dengan "' + inputCari.value + '"';
+        pesanKosong.style.display = 'block';
+    } else if (pesanKosong) {
+        pesanKosong.style.display = 'none';
+    }
 }
