@@ -21,10 +21,9 @@ if ($film_id == 0) {
 }
 
 // Ambil data film yang akan diedit
-$stmt = mysqli_prepare($koneksi, "SELECT * FROM films WHERE id = ?");
-mysqli_stmt_bind_param($stmt, "i", $film_id);
-mysqli_stmt_execute($stmt);
-$film = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+$stmt = $pdo->prepare("SELECT * FROM films WHERE id = ?");
+$stmt->execute([$film_id]);
+$film = $stmt->fetch();
 
 if (!$film) {
     header("Location: dashboard.php?pesan=Film+tidak+ditemukan&tipe=error");
@@ -43,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tahun     = intval($_POST['tahun']);
     $sutradara = trim($_POST['sutradara']);
     $sinopsis  = trim($_POST['sinopsis']);
-    $poster    = $film['poster']; // Gunakan poster lama dulu
+    $poster    = $film['poster'];
     
     if (empty($judul)) {
         $pesan = "Judul tidak boleh kosong!";
@@ -58,9 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (in_array($ekstensi, $boleh) && $file['size'] <= 2*1024*1024) {
                 $nama_file = 'poster_' . time() . '.' . $ekstensi;
                 if (move_uploaded_file($file['tmp_name'], '../img/' . $nama_file)) {
-                    // Hapus poster lama (kalau bukan gambar default)
+                    // Hapus poster lama
                     if ($film['poster'] != 'default.jpg' && $film['poster'] != 'default.svg') {
-                        @unlink('../img/' . $film['poster']); // @ untuk suppress error
+                        @unlink('../img/' . $film['poster']);
                     }
                     $poster = $nama_file;
                 }
@@ -68,26 +67,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         
         // Update data di database
-        $stmt = mysqli_prepare($koneksi, "
-            UPDATE films 
-            SET judul=?, genre=?, tahun=?, sutradara=?, sinopsis=?, poster=?
-            WHERE id=?
-        ");
-        mysqli_stmt_bind_param($stmt, "ssisssi", $judul, $genre, $tahun, $sutradara, $sinopsis, $poster, $film_id);
-        
-        if (mysqli_stmt_execute($stmt)) {
+        try {
+            $stmt = $pdo->prepare("UPDATE films SET judul=?, genre=?, tahun=?, sutradara=?, sinopsis=?, poster=? WHERE id=?");
+            $stmt->execute([$judul, $genre, $tahun, $sutradara, $sinopsis, $poster, $film_id]);
+            
             header("Location: dashboard.php?pesan=Film+berhasil+diupdate&tipe=sukses");
             exit;
-        } else {
+        } catch (PDOException $e) {
             $pesan = "Gagal mengupdate data!";
         }
     }
     
-    // Refresh data film (tampilkan nilai terbaru di form)
-    $stmt2 = mysqli_prepare($koneksi, "SELECT * FROM films WHERE id = ?");
-    mysqli_stmt_bind_param($stmt2, "i", $film_id);
-    mysqli_stmt_execute($stmt2);
-    $film = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt2));
+    // Refresh data film
+    $stmt2 = $pdo->prepare("SELECT * FROM films WHERE id = ?");
+    $stmt2->execute([$film_id]);
+    $film = $stmt2->fetch();
 }
 ?>
 
@@ -134,10 +128,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="garis-dekorasi"></div>
             
             <?php if ($pesan): ?>
-            <div class="alert alert-error"><?= $pesan ?></div>
+            <div class="alert alert-error"><?= htmlspecialchars($pesan) ?></div>
             <?php endif; ?>
             
-            <!-- Poster saat ini -->
             <div style="margin-bottom:1.5rem;">
                 <p style="font-size:0.8rem; color:#aaa; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:1px;">Poster Saat Ini</p>
                 <img src="../img/<?= htmlspecialchars(!empty($film['poster']) ? $film['poster'] : 'default.svg') ?>"
@@ -146,7 +139,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                      style="height:150px; border-radius:6px; border:1px solid #333;">
             </div>
             
-            <!-- Form edit film -->
             <form method="POST" enctype="multipart/form-data">
                 
                 <div class="form-group">

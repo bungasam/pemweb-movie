@@ -8,23 +8,23 @@ session_start();
 include '../koneksi.php'; // Naik satu folder ke root
 
 // ---- Cek apakah yang akses adalah admin ----
-// Kalau bukan admin, paksa ke login
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header("Location: ../login.php");
     exit;
 }
 
-// ---- Ambil statistik untuk dashboard ----
-$total_film    = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM films"))[0];
-$total_review  = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM reviews"))[0];
-$total_user    = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM users WHERE role='user'"))[0];
-$rata_rating   = mysqli_fetch_row(mysqli_query($koneksi, "SELECT ROUND(AVG(rating),1) FROM reviews"))[0] ?? 0;
+// ---- Ambil statistik untuk dashboard menggunakan PDO ----
+$total_film   = $pdo->query("SELECT COUNT(*) FROM films")->fetchColumn();
+$total_review = $pdo->query("SELECT COUNT(*) FROM reviews")->fetchColumn();
+$total_user   = $pdo->query("SELECT COUNT(*) FROM users WHERE role='user'")->fetchColumn();
+$rata_rating  = $pdo->query("SELECT ROUND(AVG(rating),1) FROM reviews")->fetchColumn();
+$rata_rating = $rata_rating ?: 0;
 
 // ---- Ambil film terbaru ----
-$film_terbaru  = mysqli_query($koneksi, "SELECT * FROM films ORDER BY id DESC LIMIT 5");
+$film_terbaru = $pdo->query("SELECT * FROM films ORDER BY id DESC LIMIT 5");
 
 // ---- Ambil review terbaru ----
-$review_terbaru = mysqli_query($koneksi, "
+$review_terbaru = $pdo->query("
     SELECT r.*, u.username, f.judul 
     FROM reviews r 
     JOIN users u ON r.user_id = u.id 
@@ -47,7 +47,6 @@ $tipe  = $_GET['tipe'] ?? '';
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar">
     <div class="navbar-inner">
         <a href="../index.php" class="navbar-logo">Cine<span>View</span></a>
@@ -58,10 +57,8 @@ $tipe  = $_GET['tipe'] ?? '';
     </div>
 </nav>
 
-<!-- LAYOUT DASHBOARD -->
 <div class="dashboard-layout">
     
-    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-title">Menu Admin</div>
         <a href="dashboard.php" class="active">📊 Dashboard</a>
@@ -78,10 +75,8 @@ $tipe  = $_GET['tipe'] ?? '';
         <a href="../logout.php">🚪 Logout</a>
     </aside>
     
-    <!-- KONTEN UTAMA -->
     <main class="dashboard-konten">
         
-        <!-- Header halaman -->
         <div style="margin-bottom:2rem;">
             <h1 style="font-family:'Playfair Display',serif; font-size:2rem; color:#FFEC89;">
                 Selamat Datang, <?= htmlspecialchars($_SESSION['username']) ?>!
@@ -89,16 +84,12 @@ $tipe  = $_GET['tipe'] ?? '';
             <p style="color:#aaa; font-size:0.9rem;">Panel administrasi CineView</p>
         </div>
         
-        <!-- Notifikasi -->
         <?php if ($pesan): ?>
         <div class="alert <?= $tipe == 'sukses' ? 'alert-sukses' : 'alert-error' ?>">
             <?= htmlspecialchars($pesan) ?>
         </div>
         <?php endif; ?>
         
-        <!-- ==============================
-             KARTU STATISTIK
-        ============================== -->
         <div class="stat-grid">
             <div class="stat-card">
                 <div class="stat-angka"><?= $total_film ?></div>
@@ -118,9 +109,6 @@ $tipe  = $_GET['tipe'] ?? '';
             </div>
         </div>
         
-        <!-- ==============================
-             TABEL FILM TERBARU
-        ============================== -->
         <div id="film" style="margin-bottom:2rem;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
                 <h2 style="font-family:'Playfair Display',serif; font-size:1.4rem;">Film Terbaru</h2>
@@ -141,7 +129,7 @@ $tipe  = $_GET['tipe'] ?? '';
                     <tbody>
                         <?php 
                         $no = 1;
-                        while ($f = mysqli_fetch_assoc($film_terbaru)): ?>
+                        foreach ($film_terbaru as $f): ?>
                         <tr>
                             <td><?= $no++ ?></td>
                             <td style="color:#f0f0f0; font-weight:600;">
@@ -161,17 +149,14 @@ $tipe  = $_GET['tipe'] ?? '';
                                         Hapus
                                     </a>
                                 </div>
-                            </td>
+                             </td>
                         </tr>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
         </div>
         
-        <!-- ==============================
-             REVIEW TERBARU
-        ============================== -->
         <div>
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
                 <h2 style="font-family:'Playfair Display',serif; font-size:1.4rem;">Review Terbaru</h2>
@@ -190,7 +175,7 @@ $tipe  = $_GET['tipe'] ?? '';
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while ($r = mysqli_fetch_assoc($review_terbaru)): ?>
+                        <?php foreach ($review_terbaru as $r): ?>
                         <tr>
                             <td style="color:#f0f0f0;"><?= htmlspecialchars($r['username']) ?></td>
                             <td><?= htmlspecialchars($r['judul']) ?></td>
@@ -208,7 +193,7 @@ $tipe  = $_GET['tipe'] ?? '';
                                 </a>
                             </td>
                         </tr>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>

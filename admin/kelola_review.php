@@ -13,14 +13,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
 }
 
 // Ambil semua review beserta info user dan film
-$query = "
+$semua_review = $pdo->query("
     SELECT r.*, u.username, f.judul AS judul_film
     FROM reviews r
     JOIN users u ON r.user_id = u.id
     JOIN films f ON r.film_id = f.id
     ORDER BY r.created_at DESC
-";
-$semua_review = mysqli_query($koneksi, $query);
+");
 
 $pesan = $_GET['pesan'] ?? '';
 $tipe  = $_GET['tipe'] ?? '';
@@ -86,8 +85,8 @@ $tipe  = $_GET['tipe'] ?? '';
                 <tbody>
                     <?php
                     $no = 1;
-                    if (mysqli_num_rows($semua_review) > 0):
-                    while ($r = mysqli_fetch_assoc($semua_review)): ?>
+                    if ($semua_review->rowCount() > 0):
+                    foreach ($semua_review as $r): ?>
                     <tr>
                         <td><?= $no++ ?></td>
                         <td style="color:#f0f0f0; font-weight:600;"><?= htmlspecialchars($r['username']) ?></td>
@@ -110,7 +109,7 @@ $tipe  = $_GET['tipe'] ?? '';
                             </a>
                         </td>
                     </tr>
-                    <?php endwhile;
+                    <?php endforeach;
                     else: ?>
                     <tr><td colspan="7" style="text-align:center; padding:2rem; color:#aaa;">Belum ada review</td></tr>
                     <?php endif; ?>

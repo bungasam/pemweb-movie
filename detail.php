@@ -7,8 +7,7 @@
 session_start();
 include 'koneksi.php';
 
-// Ambil ID film dari URL: detail.php?id=1
-// intval() memastikan input adalah angka (keamanan)
+// Ambil ID film dari URL
 $film_id = intval($_GET['id'] ?? 0);
 
 if ($film_id == 0) {
@@ -17,50 +16,40 @@ if ($film_id == 0) {
 }
 
 // ---- Ambil data film ----
-$stmt = mysqli_prepare($koneksi, "SELECT * FROM films WHERE id = ?");
-mysqli_stmt_bind_param($stmt, "i", $film_id);
-mysqli_stmt_execute($stmt);
-$film = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+$stmt = $pdo->prepare("SELECT * FROM films WHERE id = ?");
+$stmt->execute([$film_id]);
+$film = $stmt->fetch();
 
-// Film tidak ditemukan, kembali ke beranda
 if (!$film) {
     header("Location: index.php");
     exit;
 }
 
 // ---- Hitung rata-rata rating ----
-$stmt_rating = mysqli_prepare($koneksi, 
-    "SELECT ROUND(AVG(rating),1) AS rata, COUNT(*) AS total FROM reviews WHERE film_id = ?"
-);
-mysqli_stmt_bind_param($stmt_rating, "i", $film_id);
-mysqli_stmt_execute($stmt_rating);
-$data_rating = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_rating));
+$stmt_rating = $pdo->prepare("SELECT ROUND(AVG(rating),1) AS rata, COUNT(*) AS total FROM reviews WHERE film_id = ?");
+$stmt_rating->execute([$film_id]);
+$data_rating = $stmt_rating->fetch();
 
 // ---- Cek apakah user sudah pernah review film ini ----
 $sudah_review = false;
 if (isset($_SESSION['user_id'])) {
-    $cek = mysqli_prepare($koneksi, 
-        "SELECT id FROM reviews WHERE user_id = ? AND film_id = ?"
-    );
-    mysqli_stmt_bind_param($cek, "ii", $_SESSION['user_id'], $film_id);
-    mysqli_stmt_execute($cek);
-    mysqli_stmt_store_result($cek);
-    $sudah_review = mysqli_stmt_num_rows($cek) > 0;
+    $cek = $pdo->prepare("SELECT id FROM reviews WHERE user_id = ? AND film_id = ?");
+    $cek->execute([$_SESSION['user_id'], $film_id]);
+    $sudah_review = $cek->rowCount() > 0;
 }
 
 // ---- Ambil semua review untuk film ini ----
-$stmt_review = mysqli_prepare($koneksi, "
+$stmt_review = $pdo->prepare("
     SELECT r.*, u.username 
     FROM reviews r 
     JOIN users u ON r.user_id = u.id 
     WHERE r.film_id = ? 
     ORDER BY r.created_at DESC
 ");
-mysqli_stmt_bind_param($stmt_review, "i", $film_id);
-mysqli_stmt_execute($stmt_review);
-$semua_review = mysqli_stmt_get_result($stmt_review);
+$stmt_review->execute([$film_id]);
+$semua_review = $stmt_review;
 
-// ---- Pesan notifikasi (dari proses_review.php) ----
+// ---- Pesan notifikasi ----
 $pesan = $_GET['pesan'] ?? '';
 $tipe  = $_GET['tipe'] ?? '';
 ?>
@@ -99,35 +88,29 @@ $tipe  = $_GET['tipe'] ?? '';
 <!-- DETAIL FILM -->
 <div class="detail-film-wrapper">
     
-    <!-- Notifikasi -->
     <?php if ($pesan): ?>
     <div class="alert <?= $tipe == 'sukses' ? 'alert-sukses' : 'alert-error' ?>">
         <?= htmlspecialchars($pesan) ?>
     </div>
     <?php endif; ?>
 
-    <!-- Bagian atas: poster + info -->
     <div class="detail-film-atas">
         
-        <!-- Poster -->
         <div class="detail-poster">
             <img src="img/<?= htmlspecialchars(!empty($film['poster']) ? $film['poster'] : 'default.svg') ?>"
                  alt="<?= htmlspecialchars($film['judul']) ?>"
                  onerror="this.src='img/default.svg'">
         </div>
         
-        <!-- Informasi Film -->
         <div class="detail-info">
             <h1><?= htmlspecialchars($film['judul']) ?></h1>
             
-            <!-- Meta info (genre, tahun, sutradara) -->
             <div class="detail-meta">
                 <div class="meta-tag">🎬 <span><?= htmlspecialchars($film['genre']) ?></span></div>
                 <div class="meta-tag">📅 <span><?= $film['tahun'] ?></span></div>
                 <div class="meta-tag">🎥 <span><?= htmlspecialchars($film['sutradara']) ?></span></div>
             </div>
             
-            <!-- Rating keseluruhan -->
             <div class="detail-rating-besar">
                 <div class="angka-rating">
                     <?= $data_rating['rata'] ?? '—' ?>
@@ -147,46 +130,37 @@ $tipe  = $_GET['tipe'] ?? '';
                 </div>
             </div>
             
-            <!-- Sinopsis -->
             <p class="detail-sinopsis"><?= nl2br(htmlspecialchars($film['sinopsis'])) ?></p>
         </div>
     </div>
 
-    <!-- ==============================
-         FORM TAMBAH REVIEW
-    ============================== -->
+    <!-- FORM TAMBAH REVIEW -->
     <div style="margin-bottom:3rem;">
         <h2 class="section-title" style="margin-bottom:1rem;">Tulis <span>Ulasanmu</span></h2>
         <div class="garis-dekorasi"></div>
         
         <?php if (!isset($_SESSION['user_id'])): ?>
-        <!-- Belum login -->
         <div class="alert alert-info">
             <a href="login.php" style="color:#6b8fd4;">Login</a> terlebih dahulu untuk menulis ulasan.
         </div>
         
         <?php elseif ($_SESSION['role'] == 'admin'): ?>
-        <!-- Admin tidak bisa review -->
         <div class="alert alert-info">Admin tidak dapat menulis ulasan.</div>
         
         <?php elseif ($sudah_review): ?>
-        <!-- Sudah pernah review -->
         <div class="alert alert-info">
             Kamu sudah mengulas film ini. 
             <a href="user/edit_review.php?film_id=<?= $film_id ?>" style="color:#6b8fd4;">Edit ulasanmu</a>.
         </div>
         
         <?php else: ?>
-        <!-- Form review -->
         <div style="background:var(--card); border:1px solid var(--card-border); border-radius:10px; padding:2rem; max-width:600px;">
             <form method="POST" action="proses_review.php" onsubmit="return validasiReview()">
-                <!-- Input tersembunyi: ID film -->
                 <input type="hidden" name="film_id" value="<?= $film_id ?>">
                 <input type="hidden" name="aksi" value="tambah">
                 
                 <div class="form-group">
                     <label>Rating Bintang</label>
-                    <!-- Rating bintang interaktif (CSS trick flex-direction: row-reverse) -->
                     <div class="rating-input">
                         <input type="radio" name="rating" id="bintang5" value="5">
                         <label for="bintang5" title="5 Bintang">★</label>
@@ -214,9 +188,7 @@ $tipe  = $_GET['tipe'] ?? '';
         <?php endif; ?>
     </div>
 
-    <!-- ==============================
-         DAFTAR REVIEW
-    ============================== -->
+    <!-- DAFTAR REVIEW -->
     <div>
         <h2 class="section-title" style="margin-bottom:1rem;">
             Semua <span>Ulasan</span>
@@ -226,13 +198,12 @@ $tipe  = $_GET['tipe'] ?? '';
         </h2>
         <div class="garis-dekorasi"></div>
         
-        <?php if (mysqli_num_rows($semua_review) > 0): ?>
+        <?php if ($semua_review->rowCount() > 0): ?>
         <div class="review-list">
-            <?php while ($review = mysqli_fetch_assoc($semua_review)): ?>
+            <?php while ($review = $semua_review->fetch()): ?>
             <div class="review-card">
                 <div class="review-header">
                     <div class="review-user">
-                        <!-- Avatar inisial -->
                         <div class="avatar-kecil"><?= strtoupper(substr($review['username'], 0, 1)) ?></div>
                         <?= htmlspecialchars($review['username']) ?>
                     </div>
@@ -241,7 +212,6 @@ $tipe  = $_GET['tipe'] ?? '';
                     </div>
                 </div>
                 
-                <!-- Bintang rating review ini -->
                 <div class="rating-stars" style="margin-bottom:0.5rem;">
                     <?php for ($i = 1; $i <= 5; $i++): ?>
                         <?= $i <= $review['rating'] ? '★' : '☆' ?>
@@ -250,7 +220,6 @@ $tipe  = $_GET['tipe'] ?? '';
                 
                 <p class="review-komentar"><?= nl2br(htmlspecialchars($review['komentar'])) ?></p>
                 
-                <!-- Tombol edit/hapus: hanya untuk pemilik review atau admin -->
                 <?php
                 $boleh_edit   = isset($_SESSION['user_id']) && $_SESSION['user_id'] == $review['user_id'];
                 $boleh_hapus  = $boleh_edit || (isset($_SESSION['role']) && $_SESSION['role'] == 'admin');
@@ -285,7 +254,6 @@ $tipe  = $_GET['tipe'] ?? '';
     
 </div>
 
-<!-- FOOTER -->
 <footer>
     <div class="footer-inner">
         <div class="footer-bawah">

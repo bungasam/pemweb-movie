@@ -1,27 +1,32 @@
 <?php
 // =============================================
 // FILE: koneksi.php
-// Fungsi: Menghubungkan PHP ke database MySQL
+// Fungsi: Menghubungkan PHP ke database MySQL menggunakan PDO
 // =============================================
 
 // Pengaturan koneksi database
-$host     = "localhost";      // Lokasi server database (biasanya localhost)
-$username = "root";           // Username MySQL (default XAMPP: root)
-$password = "";               // Password MySQL (default XAMPP: kosong)
-$database = "movie_review1";   // Nama database yang kita buat
+$host     = "localhost";
+$dbname   = "movie_review1";
+$username = "root";
+$password = "";
 
-// Membuat koneksi menggunakan mysqli
-$koneksi = mysqli_connect($host, $username, $password, $database);
-
-// Cek apakah koneksi berhasil
-if (!$koneksi) {
+try {
+    // Membuat koneksi PDO
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+    
+    // Set mode error PDO menjadi exception (agar mudah menangkap error)
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // Set default fetch mode menjadi associative array
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    
+    // Koneksi berhasil (opsional, untuk debugging)
+    // echo "Koneksi berhasil";
+    
+} catch(PDOException $e) {
     // Jika gagal, tampilkan pesan error dan hentikan script
-    die("Koneksi database gagal: " . mysqli_connect_error());
+    die("Koneksi database gagal: " . $e->getMessage());
 }
 
-// Set charset ke UTF-8 agar karakter Indonesia tampil dengan benar
-mysqli_set_charset($koneksi, "utf8");
-
-// Koneksi berhasil, file ini siap digunakan
-// Cara pakai di file lain: include 'koneksi.php';
+// Variabel $pdo sekarang bisa digunakan di file lain yang meng-include file ini
 ?>

@@ -2,7 +2,6 @@
 // =============================================
 // FILE: proses_review.php
 // Fungsi: Memproses tambah review dari user
-// File ini tidak punya tampilan (hanya proses)
 // =============================================
  
 session_start();
@@ -46,17 +45,14 @@ if ($aksi == 'tambah') {
         exit;
     }
     
-    // Simpan review ke database
-    // ON DUPLICATE KEY UPDATE: jika sudah ada review, update saja
-    $stmt = mysqli_prepare($koneksi, "
-        INSERT INTO reviews (user_id, film_id, rating, komentar) 
-        VALUES (?, ?, ?, ?)
-    ");
-    mysqli_stmt_bind_param($stmt, "iiis", $user_id, $film_id, $rating, $komentar);
-    
-    if (mysqli_stmt_execute($stmt)) {
+    // Simpan review ke database menggunakan PDO
+    try {
+        $stmt = $pdo->prepare("INSERT INTO reviews (user_id, film_id, rating, komentar) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$user_id, $film_id, $rating, $komentar]);
+        
         header("Location: detail.php?id=$film_id&pesan=Ulasan+berhasil+ditambahkan!&tipe=sukses");
-    } else {
+    } catch (PDOException $e) {
+        // Jika terjadi error (misal duplicate entry)
         header("Location: detail.php?id=$film_id&pesan=Gagal+menyimpan+ulasan&tipe=error");
     }
     exit;
@@ -66,4 +62,3 @@ if ($aksi == 'tambah') {
 header("Location: index.php");
 exit;
 ?>
- 

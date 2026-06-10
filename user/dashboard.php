@@ -22,23 +22,21 @@ if ($_SESSION['role'] == 'admin') {
 $user_id = $_SESSION['user_id'];
 
 // Ambil data user terkini dari database
-$stmt = mysqli_prepare($koneksi, "SELECT * FROM users WHERE id = ?");
-mysqli_stmt_bind_param($stmt, "i", $user_id);
-mysqli_stmt_execute($stmt);
-$user = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt->execute([$user_id]);
+$user = $stmt->fetch();
 
 // Ambil semua review yang dibuat user ini
-$stmt_review = mysqli_prepare($koneksi, "
+$stmt_review = $pdo->prepare("
     SELECT r.*, f.judul AS judul_film, f.id AS film_id
     FROM reviews r
     JOIN films f ON r.film_id = f.id
     WHERE r.user_id = ?
     ORDER BY r.created_at DESC
 ");
-mysqli_stmt_bind_param($stmt_review, "i", $user_id);
-mysqli_stmt_execute($stmt_review);
-$review_user = mysqli_stmt_get_result($stmt_review);
-$jml_review  = mysqli_num_rows($review_user);
+$stmt_review->execute([$user_id]);
+$review_user = $stmt_review;
+$jml_review  = $stmt_review->rowCount();
 
 $pesan = $_GET['pesan'] ?? '';
 $tipe  = $_GET['tipe'] ?? '';
@@ -69,16 +67,13 @@ $tipe  = $_GET['tipe'] ?? '';
 
 <div class="profil-wrapper">
     
-    <!-- Notifikasi -->
     <?php if ($pesan): ?>
     <div class="alert <?= $tipe == 'sukses' ? 'alert-sukses' : 'alert-error' ?>">
         <?= htmlspecialchars($pesan) ?>
     </div>
     <?php endif; ?>
     
-    <!-- Header Profil -->
     <div class="profil-header">
-        <!-- Avatar dengan inisial nama -->
         <div class="profil-avatar">
             <?= strtoupper(substr($user['username'], 0, 1)) ?>
         </div>
@@ -92,30 +87,13 @@ $tipe  = $_GET['tipe'] ?? '';
         </div>
     </div>
     
-    <!-- Statistik user -->
-    <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-bottom:2rem;">
-        <div style="background:var(--card); border:1px solid var(--card-border); border-radius:8px; padding:1.2rem; text-align:center;">
-            <div style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; color:#FFEC89;"><?= $jml_review ?></div>
-            <div style="font-size:0.8rem; color:#aaa; text-transform:uppercase; letter-spacing:1px;">Review Ditulis</div>
-        </div>
-        <div style="background:var(--card); border:1px solid var(--card-border); border-radius:8px; padding:1.2rem; text-align:center;">
-            <div style="font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; color:#4A69B3;">
-                <?php
-                // Hitung rata-rata rating yang pernah diberikan user
-                $stmt_avg = mysqli_prepare($koneksi, "SELECT ROUND(AVG(rating),1) FROM reviews WHERE user_id = ?");
-                mysqli_stmt_bind_param($stmt_avg, "i", $user_id);
-                mysqli_stmt_execute($stmt_avg);
-                $avg = mysqli_fetch_row(mysqli_stmt_get_result($stmt_avg))[0];
-                echo $avg ?: '—';
-                ?>
-            </div>
-            <div style="font-size:0.8rem; color:#aaa; text-transform:uppercase; letter-spacing:1px;">Avg. Rating</div>
-        </div>
+  <div style="margin-bottom:2rem;">
+    <div style="background:var(--card); border:0.5px solid var(--card-border); border-radius:5px; padding:0.3rem; text-align:center;">
+        <div style="font-family:'Playfair Display',serif; font-size:5rem; font-weight:950; color:#FFEC89;"><?= $jml_review ?></div>
+        <div style="font-size:0.85rem; color:#aaa; text-transform:uppercase; letter-spacing:1px; margin-top:5px;">Review Ditulis</div>
     </div>
+</div>
     
-    <!-- ==============================
-         RIWAYAT REVIEW
-    ============================== -->
     <h2 style="font-family:'Playfair Display',serif; font-size:1.5rem; margin-bottom:1rem;">
         Riwayat <span style="color:#FFEC89;">Ulasan</span>
     </h2>
@@ -123,11 +101,10 @@ $tipe  = $_GET['tipe'] ?? '';
     
     <?php if ($jml_review > 0): ?>
     <div class="review-list">
-        <?php while ($r = mysqli_fetch_assoc($review_user)): ?>
+        <?php while ($r = $review_user->fetch()): ?>
         <div class="review-card">
             <div class="review-header">
                 <div>
-                    <!-- Link ke film yang di-review -->
                     <a href="../detail.php?id=<?= $r['film_id'] ?>" 
                        style="color:#FFEC89; font-weight:700; text-decoration:none; font-size:1rem;">
                         🎬 <?= htmlspecialchars($r['judul_film']) ?>
@@ -144,7 +121,6 @@ $tipe  = $_GET['tipe'] ?? '';
             
             <p class="review-komentar"><?= nl2br(htmlspecialchars($r['komentar'])) ?></p>
             
-            <!-- Tombol edit & hapus review sendiri -->
             <div class="review-actions" style="margin-top:0.8rem;">
                 <a href="edit_review.php?id=<?= $r['id'] ?>" class="btn btn-biru btn-kecil">Edit</a>
                 <a href="hapus_review.php?id=<?= $r['id'] ?>"
@@ -165,7 +141,6 @@ $tipe  = $_GET['tipe'] ?? '';
     </div>
     <?php endif; ?>
     
-    <!-- Tombol logout -->
     <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--card-border);">
         <a href="../logout.php" class="btn btn-outline">🚪 Logout</a>
     </div>
@@ -174,7 +149,7 @@ $tipe  = $_GET['tipe'] ?? '';
 <footer>
     <div class="footer-inner">
         <div class="footer-bawah">
-            &copy; 2024 CineView &mdash; Dibuat dengan <span style="color:#BA3801;">♥</span>
+            &copy; 2026 CineView &mdash; Dibuat dengan <span style="color:#BA3801;">♥</span>
         </div>
     </div>
 </footer>

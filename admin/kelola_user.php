@@ -16,17 +16,16 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
 if (isset($_GET['hapus'])) {
     $hapus_id = intval($_GET['hapus']);
     
-    // Jangan hapus diri sendiri
     if ($hapus_id == $_SESSION['user_id']) {
         $pesan_hapus = "Tidak bisa menghapus akun sendiri!";
         $tipe_hapus  = "error";
     } else {
-        $stmt = mysqli_prepare($koneksi, "DELETE FROM users WHERE id = ? AND role = 'user'");
-        mysqli_stmt_bind_param($stmt, "i", $hapus_id);
-        if (mysqli_stmt_execute($stmt)) {
+        try {
+            $stmt = $pdo->prepare("DELETE FROM users WHERE id = ? AND role = 'user'");
+            $stmt->execute([$hapus_id]);
             $pesan_hapus = "User berhasil dihapus!";
             $tipe_hapus  = "sukses";
-        } else {
+        } catch (PDOException $e) {
             $pesan_hapus = "Gagal menghapus user!";
             $tipe_hapus  = "error";
         }
@@ -34,7 +33,7 @@ if (isset($_GET['hapus'])) {
 }
 
 // Ambil semua user (bukan admin)
-$semua_user = mysqli_query($koneksi, "
+$semua_user = $pdo->query("
     SELECT u.*, COUNT(r.id) AS jml_review
     FROM users u
     LEFT JOIN reviews r ON u.id = r.user_id
@@ -106,25 +105,24 @@ $tipe  = $_GET['tipe']  ?? ($tipe_hapus  ?? '');
                 <tbody>
                     <?php 
                     $no = 1;
-                    if (mysqli_num_rows($semua_user) > 0):
-                    while ($u = mysqli_fetch_assoc($semua_user)): ?>
+                    if ($semua_user->rowCount() > 0):
+                    foreach ($semua_user as $u): ?>
                     <tr>
                         <td><?= $no++ ?></td>
                         <td style="color:#f0f0f0; font-weight:600;">
-                            <!-- Avatar inisial -->
                             <span style="display:inline-flex; align-items:center; gap:0.5rem;">
                                 <span style="width:28px; height:28px; border-radius:50%; background:#BA3801; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; color:white;">
                                     <?= strtoupper(substr($u['username'],0,1)) ?>
                                 </span>
                                 <?= htmlspecialchars($u['username']) ?>
                             </span>
-                        </td>
+                         </td>
                         <td><?= htmlspecialchars($u['email']) ?></td>
                         <td>
                             <span style="background:rgba(74,105,179,0.2); border:1px solid #4A69B3; color:#6b8fd4; padding:0.2rem 0.6rem; border-radius:10px; font-size:0.8rem;">
                                 <?= $u['jml_review'] ?> review
                             </span>
-                        </td>
+                         </td>
                         <td><?= date('d M Y', strtotime($u['created_at'])) ?></td>
                         <td>
                             <a href="kelola_user.php?hapus=<?= $u['id'] ?>"
@@ -132,14 +130,14 @@ $tipe  = $_GET['tipe']  ?? ($tipe_hapus  ?? '');
                                onclick="return konfirmasiHapus('Hapus user <?= addslashes($u['username']) ?>? Semua reviewnya juga akan terhapus.')">
                                 Hapus
                             </a>
-                        </td>
+                         </td>
                     </tr>
-                    <?php endwhile;
+                    <?php endforeach;
                     else: ?>
                     <tr>
                         <td colspan="6" style="text-align:center; padding:2rem; color:#aaa;">
                             Belum ada user terdaftar
-                        </td>
+                         </td>
                     </tr>
                     <?php endif; ?>
                 </tbody>

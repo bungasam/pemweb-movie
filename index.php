@@ -4,11 +4,10 @@
 // Fungsi: Halaman utama / beranda CineView
 // =============================================
 
-session_start();       // Mulai session (wajib di awal)
-include 'koneksi.php'; // Hubungkan ke database
+session_start();
+include 'koneksi.php'; // $pdo tersedia
 
 // ---- Ambil film populer (rating rata-rata tertinggi) ----
-// Query ini menghitung rata-rata rating setiap film
 $query_populer = "
     SELECT f.*, 
            ROUND(AVG(r.rating), 1) AS rata_rating,
@@ -19,12 +18,11 @@ $query_populer = "
     ORDER BY rata_rating DESC, jml_review DESC
     LIMIT 6
 ";
-$hasil_populer = mysqli_query($koneksi, $query_populer);
+$hasil_populer = $pdo->query($query_populer);
 
 // ---- Ambil film terbaru ----
 $query_terbaru = "SELECT * FROM films ORDER BY id DESC LIMIT 4";
-$hasil_terbaru = mysqli_query($koneksi, $query_terbaru);
-
+$hasil_terbaru = $pdo->query($query_terbaru);
 
 ?>
 
@@ -49,7 +47,6 @@ $hasil_terbaru = mysqli_query($koneksi, $query_terbaru);
             <li><a href="rekomendasi.php">Rekomendasi</a></li>
             <li><a href="tentang.php">Tentang</a></li>
             <?php if (isset($_SESSION['user_id'])): ?>
-                <!-- Menu kalau sudah login -->
                 <?php if ($_SESSION['role'] == 'admin'): ?>
                     <li><a href="admin/dashboard.php">Dashboard Admin</a></li>
                 <?php else: ?>
@@ -57,7 +54,6 @@ $hasil_terbaru = mysqli_query($koneksi, $query_terbaru);
                 <?php endif; ?>
                 <li><a href="logout.php">Logout</a></li>
             <?php else: ?>
-                <!-- Menu kalau belum login -->
                 <li><a href="register.php">Daftar</a></li>
                 <li><a href="login.php" class="btn-nav-login">Login</a></li>
             <?php endif; ?>
@@ -69,7 +65,7 @@ $hasil_terbaru = mysqli_query($koneksi, $query_terbaru);
      HERO / BANNER UTAMA
 ============================== -->
 <section class="hero">
-    <div class="hero-badge">✦ Platform Rating Film Indonesia</div>
+    <div class="hero-badge">✦ Platform Rating Film </div>
     <h1>Temukan Film <span class="highlight">Terbaik</span><br>Versi Kamu</h1>
     <p>Baca ulasan jujur, beri rating, dan temukan rekomendasi film dari komunitas pecinta film.</p>
     <div class="hero-buttons">
@@ -78,7 +74,6 @@ $hasil_terbaru = mysqli_query($koneksi, $query_terbaru);
             <a href="register.php" class="btn btn-outline">Bergabung Gratis</a>
         <?php endif; ?>
     </div>
-
 </section>
 
 <!-- ==============================
@@ -91,11 +86,16 @@ $hasil_terbaru = mysqli_query($koneksi, $query_terbaru);
     </div>
     <div class="garis-dekorasi"></div>
     
-    <?php if (mysqli_num_rows($hasil_populer) > 0): ?>
+    <?php 
+    // Menggunakan rowCount() untuk PDO, bukan mysqli_num_rows()
+    if ($hasil_populer->rowCount() > 0): 
+    ?>
     <div class="film-grid">
-        <?php while ($film = mysqli_fetch_assoc($hasil_populer)): ?>
+        <?php 
+        // Menggunakan fetch() untuk PDO, bukan mysqli_fetch_assoc()
+        while ($film = $hasil_populer->fetch()): 
+        ?>
         <a href="detail.php?id=<?= $film['id'] ?>" class="film-card">
-            <!-- Poster film -->
             <img src="img/<?= htmlspecialchars(!empty($film['poster']) ? $film['poster'] : 'default.svg') ?>"
                  alt="<?= htmlspecialchars($film['judul']) ?>"
                  onerror="this.src='img/default.svg'">
@@ -103,7 +103,6 @@ $hasil_terbaru = mysqli_query($koneksi, $query_terbaru);
                 <div class="film-card-judul"><?= htmlspecialchars($film['judul']) ?></div>
                 <div class="film-card-genre"><?= htmlspecialchars($film['genre']) ?> &bull; <?= $film['tahun'] ?></div>
                 
-                <!-- Tampilkan bintang rating -->
                 <div class="rating-stars">
                     <?php
                     $rating = $film['rata_rating'] ?? 0;
@@ -139,7 +138,12 @@ $hasil_terbaru = mysqli_query($koneksi, $query_terbaru);
     <div class="garis-dekorasi"></div>
     
     <div class="film-grid">
-        <?php while ($film = mysqli_fetch_assoc($hasil_terbaru)): ?>
+        <?php 
+        // Reset pointer hasil_terbaru ke awal (karena sudah dipakai di atas)
+        // Atau jalankan query ulang
+        $hasil_terbaru = $pdo->query($query_terbaru);
+        while ($film = $hasil_terbaru->fetch()): 
+        ?>
         <a href="detail.php?id=<?= $film['id'] ?>" class="film-card">
             <img src="img/<?= htmlspecialchars(!empty($film['poster']) ? $film['poster'] : 'default.svg') ?>"
                  alt="<?= htmlspecialchars($film['judul']) ?>"
@@ -179,7 +183,7 @@ $hasil_terbaru = mysqli_query($koneksi, $query_terbaru);
         <div class="footer-atas">
             <div class="footer-brand">
                 <h3>Cine<span style="color:#BA3801">View</span></h3>
-                <p>Platform ulasan dan rating film terpercaya untuk pecinta sinema Indonesia.</p>
+                <p>Platform ulasan dan rating film terpercaya.</p>
             </div>
             <div class="footer-kolom">
                 <h4>Navigasi</h4>

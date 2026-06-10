@@ -21,7 +21,6 @@ $sukses = false;
 // =============================================
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
-    // Ambil data dari form
     $username = trim($_POST['username']);
     $email    = trim($_POST['email']);
     $password = $_POST['password'];
@@ -35,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $pesan = "Username minimal 3 karakter!";
         
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        // filter_var() mengecek apakah email valid formatnya
         $pesan = "Format email tidak valid!";
         
     } elseif (strlen($password) < 6) {
@@ -45,26 +43,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $pesan = "Password dan konfirmasi password tidak sama!";
         
     } else {
-        // Cek apakah username sudah dipakai
-        $cek = mysqli_prepare($koneksi, "SELECT id FROM users WHERE username = ? OR email = ?");
-        mysqli_stmt_bind_param($cek, "ss", $username, $email);
-        mysqli_stmt_execute($cek);
-        mysqli_stmt_store_result($cek);
+        // Cek apakah username atau email sudah dipakai
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
+        $stmt->execute([$username, $email]);
         
-        if (mysqli_stmt_num_rows($cek) > 0) {
+        if ($stmt->rowCount() > 0) {
             $pesan = "Username atau email sudah terdaftar!";
         } else {
-            // Hash password sebelum disimpan ke database
-            // JANGAN simpan password asli! Selalu hash dulu.
+            // Hash password
             $password_hash = password_hash($password, PASSWORD_DEFAULT);
             
-            // Simpan user baru ke database
-            $simpan = mysqli_prepare($koneksi, 
-                "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'user')"
-            );
-            mysqli_stmt_bind_param($simpan, "sss", $username, $email, $password_hash);
+            // Simpan user baru
+            $stmt = $pdo->prepare("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'user')");
             
-            if (mysqli_stmt_execute($simpan)) {
+            if ($stmt->execute([$username, $email, $password_hash])) {
                 $sukses = true;
                 $pesan  = "Akun berhasil dibuat! Silakan login.";
             } else {
@@ -99,20 +91,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <p>Bergabung dengan komunitas CineView</p>
         </div>
         
-        <!-- Pesan sukses atau error -->
         <?php if ($pesan): ?>
         <div class="alert <?= $sukses ? 'alert-sukses' : 'alert-error' ?>">
-            <?= $pesan ?>
+            <?= htmlspecialchars($pesan) ?>
         </div>
         <?php endif; ?>
         
         <?php if ($sukses): ?>
-        <!-- Kalau sukses, tampilkan tombol ke login -->
         <div style="text-align:center; margin-top:1rem;">
             <a href="login.php" class="btn btn-merah btn-submit">Pergi ke Login</a>
         </div>
         <?php else: ?>
-        <!-- Form registrasi -->
         <form method="POST" action="register.php">
             
             <div class="form-group">

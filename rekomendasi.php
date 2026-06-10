@@ -2,14 +2,12 @@
 // =============================================
 // FILE: rekomendasi.php
 // Fungsi: Halaman daftar & rekomendasi film
-//         (Film dengan rating tertinggi)
 // =============================================
 
 session_start();
 include 'koneksi.php';
 
 // ---- Ambil semua film beserta rating rata-rata ----
-// Diurutkan dari rating tertinggi
 $query = "
     SELECT f.*, 
            ROUND(AVG(r.rating), 1) AS rata_rating,
@@ -19,14 +17,14 @@ $query = "
     GROUP BY f.id
     ORDER BY rata_rating DESC, jml_review DESC
 ";
-$hasil = mysqli_query($koneksi, $query);
-$semua_film = mysqli_fetch_all($hasil, MYSQLI_ASSOC); // Ambil semua sekaligus
+$hasil = $pdo->query($query);
+$semua_film = $hasil->fetchAll(); // Ambil semua sekaligus
 
 // ---- Filter genre (jika ada) ----
 $genre_dipilih = $_GET['genre'] ?? '';
 
 // ---- Ambil semua genre unik untuk filter ----
-$hasil_genre = mysqli_query($koneksi, "SELECT DISTINCT genre FROM films ORDER BY genre");
+$hasil_genre = $pdo->query("SELECT DISTINCT genre FROM films ORDER BY genre");
 ?>
 
 <!DOCTYPE html>
@@ -39,7 +37,6 @@ $hasil_genre = mysqli_query($koneksi, "SELECT DISTINCT genre FROM films ORDER BY
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar">
     <div class="navbar-inner">
         <a href="index.php" class="navbar-logo">Cine<span>View</span></a>
@@ -61,7 +58,6 @@ $hasil_genre = mysqli_query($koneksi, "SELECT DISTINCT genre FROM films ORDER BY
     </div>
 </nav>
 
-<!-- Banner halaman -->
 <div class="rekomendasi-banner">
     <h1>✦ Rekomendasi Film</h1>
     <p style="color:#aaa; margin-top:0.5rem;">Film terbaik berdasarkan rating komunitas</p>
@@ -69,44 +65,38 @@ $hasil_genre = mysqli_query($koneksi, "SELECT DISTINCT genre FROM films ORDER BY
 
 <div class="section">
     
-    <!-- Filter & Pencarian -->
     <div style="display:flex; gap:1rem; margin-bottom:2rem; flex-wrap:wrap; align-items:center;">
-        <!-- Input pencarian -->
         <input type="text" 
                id="cari-film" 
                placeholder="🔍 Cari judul film..." 
                oninput="cariFilm()"
                style="padding:0.6rem 1rem; background:#242424; border:1px solid #333; color:#f0f0f0; border-radius:6px; font-family:'DM Sans',sans-serif; width:250px; outline:none;">
         
-        <!-- Filter genre -->
         <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
             <a href="rekomendasi.php" 
                class="btn btn-kecil <?= empty($genre_dipilih) ? 'btn-merah' : 'btn-outline' ?>">
                 Semua
             </a>
-            <?php while ($g = mysqli_fetch_assoc($hasil_genre)): ?>
+            <?php foreach ($hasil_genre as $g): ?>
             <a href="?genre=<?= urlencode($g['genre']) ?>"
                class="btn btn-kecil <?= $genre_dipilih == $g['genre'] ? 'btn-biru' : 'btn-outline' ?>">
                 <?= htmlspecialchars($g['genre']) ?>
             </a>
-            <?php endwhile; ?>
+            <?php endforeach; ?>
         </div>
     </div>
 
-    <!-- Grid film dengan nomor ranking -->
     <?php if (!empty($semua_film)): ?>
     <div class="film-grid" id="tabel-film">
         <?php 
         $nomor = 1;
         foreach ($semua_film as $film): 
-            // Skip jika filter genre aktif dan tidak cocok
             if ($genre_dipilih && $film['genre'] != $genre_dipilih) {
                 $nomor++;
                 continue;
             }
         ?>
         <div class="film-card-wrapper">
-            <!-- Nomor ranking -->
             <?php if ($nomor <= 3): ?>
             <div class="ranking-badge" 
                  style="background: <?= $nomor==1 ? '#BA3801' : ($nomor==2 ? '#4A69B3' : '#555') ?>">

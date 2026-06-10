@@ -5,7 +5,7 @@
 // =============================================
 
 session_start();
-include 'koneksi.php';
+include 'koneksi.php'; // $pdo tersedia di sini
 
 // Kalau sudah login, langsung ke halaman sesuai role
 if (isset($_SESSION['user_id'])) {
@@ -25,7 +25,7 @@ $pesan = ''; // Variabel untuk menyimpan pesan error
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     // Ambil dan bersihkan input dari form
-    $username = trim($_POST['username']); // trim() hapus spasi di ujung
+    $username = trim($_POST['username']);
     $password = $_POST['password'];
     
     // Validasi: pastikan tidak kosong
@@ -33,16 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $pesan = "Username dan password harus diisi!";
     } else {
         // Cari user berdasarkan username di database
-        // Gunakan prepared statement untuk keamanan (hindari SQL Injection)
-        $stmt = mysqli_prepare($koneksi, "SELECT * FROM users WHERE username = ?");
-        mysqli_stmt_bind_param($stmt, "s", $username); // "s" = string
-        mysqli_stmt_execute($stmt);
-        $hasil = mysqli_stmt_get_result($stmt);
-        $user  = mysqli_fetch_assoc($hasil);
+        // Menggunakan PDO prepared statement
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
+        $stmt->execute([$username]);
+        $user = $stmt->fetch();
         
         if ($user) {
             // User ditemukan, cek password
-            // password_verify() membandingkan password asli dengan hash
             if (password_verify($password, $user['password'])) {
                 // Password cocok! Simpan data ke SESSION
                 $_SESSION['user_id']  = $user['id'];
@@ -76,29 +73,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
 
-<!-- Navbar sederhana -->
 <nav class="navbar">
     <div class="navbar-inner">
         <a href="index.php" class="navbar-logo">Cine<span>View</span></a>
     </div>
 </nav>
 
-<!-- Form Login -->
 <div class="form-container">
     <div class="form-box">
         
-        <!-- Logo & judul form -->
         <div class="form-logo">
             <h2>Selamat Datang</h2>
             <p>Login untuk melanjutkan ke CineView</p>
         </div>
         
-        <!-- Tampilkan pesan error jika ada -->
         <?php if ($pesan): ?>
-        <div class="alert alert-error"><?= $pesan ?></div>
+        <div class="alert alert-error"><?= htmlspecialchars($pesan) ?></div>
         <?php endif; ?>
         
-        <!-- Form login -->
         <form method="POST" action="login.php">
             
             <div class="form-group">
@@ -125,7 +117,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </button>
         </form>
         
-        <!-- Link ke halaman register -->
         <div class="form-link">
             Belum punya akun? <a href="register.php">Daftar di sini</a>
         </div>

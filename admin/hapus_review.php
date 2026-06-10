@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
 }
 
 $review_id = intval($_GET['id'] ?? 0);
-$film_id   = intval($_GET['film_id'] ?? 0); // Untuk redirect balik ke detail film
+$film_id   = intval($_GET['film_id'] ?? 0);
 
 if ($review_id == 0) {
     header("Location: kelola_review.php");
@@ -21,17 +21,16 @@ if ($review_id == 0) {
 }
 
 // Hapus review dari database
-$stmt = mysqli_prepare($koneksi, "DELETE FROM reviews WHERE id = ?");
-mysqli_stmt_bind_param($stmt, "i", $review_id);
-
-if (mysqli_stmt_execute($stmt)) {
-    // Redirect ke halaman yang sesuai
+try {
+    $stmt = $pdo->prepare("DELETE FROM reviews WHERE id = ?");
+    $stmt->execute([$review_id]);
+    
     if ($film_id > 0) {
         header("Location: ../detail.php?id=$film_id&pesan=Review+berhasil+dihapus&tipe=sukses");
     } else {
         header("Location: kelola_review.php?pesan=Review+berhasil+dihapus&tipe=sukses");
     }
-} else {
+} catch (PDOException $e) {
     header("Location: kelola_review.php?pesan=Gagal+menghapus+review&tipe=error");
 }
 exit;

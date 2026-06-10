@@ -21,35 +21,32 @@ $sukses = false;
 // =============================================
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
-    // Ambil data dari form
     $judul     = trim($_POST['judul']);
     $genre     = trim($_POST['genre']);
     $tahun     = intval($_POST['tahun']);
     $sutradara = trim($_POST['sutradara']);
     $sinopsis  = trim($_POST['sinopsis']);
-    $poster    = 'default.svg'; // Default gambar
+    $poster    = 'default.svg';
     
-    // Validasi input wajib
     if (empty($judul)) {
         $pesan = "Judul film harus diisi!";
     } elseif ($tahun < 1900 || $tahun > 2030) {
         $pesan = "Tahun tidak valid!";
     } else {
         
-        // ---- Upload poster (opsional) ----
+        // Upload poster (opsional)
         if (isset($_FILES['poster']) && $_FILES['poster']['error'] == 0) {
             $file     = $_FILES['poster'];
             $ekstensi = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-            $boleh    = ['jpg', 'jpeg', 'png', 'webp']; // Ekstensi yang diizinkan
+            $boleh    = ['jpg', 'jpeg', 'png', 'webp'];
             
             if (in_array($ekstensi, $boleh)) {
-                if ($file['size'] <= 2 * 1024 * 1024) { // Maksimal 2MB
-                    // Buat nama file unik menggunakan timestamp
+                if ($file['size'] <= 2 * 1024 * 1024) {
                     $nama_file = 'poster_' . time() . '.' . $ekstensi;
                     $tujuan    = '../img/' . $nama_file;
                     
                     if (move_uploaded_file($file['tmp_name'], $tujuan)) {
-                        $poster = $nama_file; // Simpan nama file baru
+                        $poster = $nama_file;
                     }
                 } else {
                     $pesan = "Ukuran file maksimal 2MB!";
@@ -59,18 +56,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
         
-        // Simpan ke database kalau tidak ada error
+        // Simpan ke database
         if (empty($pesan)) {
-            $stmt = mysqli_prepare($koneksi, "
-                INSERT INTO films (judul, genre, tahun, sutradara, sinopsis, poster) 
-                VALUES (?, ?, ?, ?, ?, ?)
-            ");
-            mysqli_stmt_bind_param($stmt, "ssisss", $judul, $genre, $tahun, $sutradara, $sinopsis, $poster);
-            
-            if (mysqli_stmt_execute($stmt)) {
+            try {
+                $stmt = $pdo->prepare("INSERT INTO films (judul, genre, tahun, sutradara, sinopsis, poster) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$judul, $genre, $tahun, $sutradara, $sinopsis, $poster]);
                 $sukses = true;
                 $pesan  = "Film berhasil ditambahkan!";
-            } else {
+            } catch (PDOException $e) {
                 $pesan = "Gagal menyimpan. Coba lagi.";
             }
         }
@@ -119,9 +112,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </h1>
             <div class="garis-dekorasi"></div>
             
-            <!-- Notifikasi -->
             <?php if ($pesan): ?>
-            <div class="alert <?= $sukses ? 'alert-sukses' : 'alert-error' ?>"><?= $pesan ?></div>
+            <div class="alert <?= $sukses ? 'alert-sukses' : 'alert-error' ?>"><?= htmlspecialchars($pesan) ?></div>
             <?php endif; ?>
             
             <?php if ($sukses): ?>
@@ -131,9 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <?php else: ?>
             
-            <!-- Form tambah film -->
             <form method="POST" enctype="multipart/form-data">
-                <!-- enctype ini WAJIB untuk upload file -->
                 
                 <div class="form-group">
                     <label>Judul Film *</label>
@@ -180,14 +170,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <textarea name="sinopsis" placeholder="Deskripsi singkat film..."><?= isset($_POST['sinopsis']) ? htmlspecialchars($_POST['sinopsis']) : '' ?></textarea>
                 </div>
                 
-                <!-- Upload poster -->
                 <div class="form-group">
                     <label>Poster Film (Opsional)</label>
                     <input type="file" id="poster" name="poster" accept="image/*"
                            style="color:#aaa;">
                     <small style="color:#555; font-size:0.8rem;">Format: jpg, png, webp. Maks: 2MB</small>
                     
-                    <!-- Preview gambar (diaktifkan oleh script.js) -->
                     <div style="margin-top:0.8rem;">
                         <img id="preview-poster" src="" 
                              style="display:none; max-width:150px; border-radius:6px; border:1px solid #333;">

@@ -2,7 +2,6 @@
 // =============================================
 // FILE: admin/hapus_film.php
 // Fungsi: Menghapus data film dari database
-// File ini hanya proses, tidak ada tampilan
 // =============================================
 
 session_start();
@@ -14,7 +13,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     exit;
 }
 
-// Ambil ID dari URL
 $film_id = intval($_GET['id'] ?? 0);
 
 if ($film_id == 0) {
@@ -23,28 +21,26 @@ if ($film_id == 0) {
 }
 
 // Ambil data film (untuk hapus posternya)
-$stmt = mysqli_prepare($koneksi, "SELECT poster FROM films WHERE id = ?");
-mysqli_stmt_bind_param($stmt, "i", $film_id);
-mysqli_stmt_execute($stmt);
-$film = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+$stmt = $pdo->prepare("SELECT poster FROM films WHERE id = ?");
+$stmt->execute([$film_id]);
+$film = $stmt->fetch();
 
 if ($film) {
-    // Hapus poster dari folder img (kalau bukan gambar default)
+    // Hapus poster dari folder img
     if (!empty($film['poster']) && $film['poster'] != 'default.jpg' && $film['poster'] != 'default.svg') {
         $path_poster = '../img/' . $film['poster'];
         if (file_exists($path_poster)) {
-            unlink($path_poster); // Hapus file fisik
+            unlink($path_poster);
         }
     }
     
     // Hapus data film dari database
-    // Review terkait otomatis terhapus karena ON DELETE CASCADE di SQL
-    $stmt2 = mysqli_prepare($koneksi, "DELETE FROM films WHERE id = ?");
-    mysqli_stmt_bind_param($stmt2, "i", $film_id);
-    
-    if (mysqli_stmt_execute($stmt2)) {
+    try {
+        $stmt2 = $pdo->prepare("DELETE FROM films WHERE id = ?");
+        $stmt2->execute([$film_id]);
+        
         header("Location: dashboard.php?pesan=Film+berhasil+dihapus&tipe=sukses");
-    } else {
+    } catch (PDOException $e) {
         header("Location: dashboard.php?pesan=Gagal+menghapus+film&tipe=error");
     }
 } else {
