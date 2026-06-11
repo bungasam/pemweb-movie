@@ -1,13 +1,7 @@
 <?php
-// =============================================
-// FILE: index.php
-// Fungsi: Halaman utama / beranda CineView
-// =============================================
-
 session_start();
-include 'koneksi.php'; // $pdo tersedia
+include 'koneksi.php';
 
-// ---- Ambil film populer (rating rata-rata tertinggi) ----
 $query_populer = "
     SELECT f.*, 
            ROUND(AVG(r.rating), 1) AS rata_rating,
@@ -20,10 +14,8 @@ $query_populer = "
 ";
 $hasil_populer = $pdo->query($query_populer);
 
-// ---- Ambil film terbaru ----
 $query_terbaru = "SELECT * FROM films ORDER BY id DESC LIMIT 4";
 $hasil_terbaru = $pdo->query($query_terbaru);
-
 ?>
 
 <!DOCTYPE html>
@@ -36,16 +28,12 @@ $hasil_terbaru = $pdo->query($query_terbaru);
 </head>
 <body>
 
-<!-- ==============================
-     NAVBAR
-============================== -->
 <nav class="navbar">
     <div class="navbar-inner">
         <a href="index.php" class="navbar-logo">Cine<span>View</span></a>
         <ul class="navbar-menu">
             <li><a href="index.php">Beranda</a></li>
             <li><a href="rekomendasi.php">Rekomendasi</a></li>
-            <li><a href="tentang.php">Tentang</a></li>
             <?php if (isset($_SESSION['user_id'])): ?>
                 <?php if ($_SESSION['role'] == 'admin'): ?>
                     <li><a href="admin/dashboard.php">Dashboard Admin</a></li>
@@ -61,9 +49,6 @@ $hasil_terbaru = $pdo->query($query_terbaru);
     </div>
 </nav>
 
-<!-- ==============================
-     HERO / BANNER UTAMA
-============================== -->
 <section class="hero">
     <div class="hero-badge">✦ Platform Rating Film </div>
     <h1>Temukan Film <span class="highlight">Terbaik</span><br>Versi Kamu</h1>
@@ -76,9 +61,7 @@ $hasil_terbaru = $pdo->query($query_terbaru);
     </div>
 </section>
 
-<!-- ==============================
-     FILM POPULER
-============================== -->
+<!-- FILM POPULER -->
 <div class="section">
     <div class="section-header">
         <h2 class="section-title">Film <span>Populer</span></h2>
@@ -86,15 +69,9 @@ $hasil_terbaru = $pdo->query($query_terbaru);
     </div>
     <div class="garis-dekorasi"></div>
     
-    <?php 
-    // Menggunakan rowCount() untuk PDO, bukan mysqli_num_rows()
-    if ($hasil_populer->rowCount() > 0): 
-    ?>
+    <?php if ($hasil_populer->rowCount() > 0): ?>
     <div class="film-grid">
-        <?php 
-        // Menggunakan fetch() untuk PDO, bukan mysqli_fetch_assoc()
-        while ($film = $hasil_populer->fetch()): 
-        ?>
+        <?php while ($film = $hasil_populer->fetch()): ?>
         <a href="detail.php?id=<?= $film['id'] ?>" class="film-card">
             <img src="img/<?= htmlspecialchars(!empty($film['poster']) ? $film['poster'] : 'default.svg') ?>"
                  alt="<?= htmlspecialchars($film['judul']) ?>"
@@ -127,9 +104,7 @@ $hasil_terbaru = $pdo->query($query_terbaru);
     <?php endif; ?>
 </div>
 
-<!-- ==============================
-     FILM TERBARU DITAMBAHKAN
-============================== -->
+<!-- FILM TERBARU -->
 <div style="background: #1a1a1a; border-top: 1px solid #333; border-bottom: 1px solid #333;">
 <div class="section">
     <div class="section-header">
@@ -139,8 +114,6 @@ $hasil_terbaru = $pdo->query($query_terbaru);
     
     <div class="film-grid">
         <?php 
-        // Reset pointer hasil_terbaru ke awal (karena sudah dipakai di atas)
-        // Atau jalankan query ulang
         $hasil_terbaru = $pdo->query($query_terbaru);
         while ($film = $hasil_terbaru->fetch()): 
         ?>
@@ -158,9 +131,7 @@ $hasil_terbaru = $pdo->query($query_terbaru);
 </div>
 </div>
 
-<!-- ==============================
-     AJAKAN LOGIN (kalau belum login)
-============================== -->
+<!-- AJAKAN LOGIN -->
 <?php if (!isset($_SESSION['user_id'])): ?>
 <div class="section" style="text-align:center; padding: 3rem 2rem;">
     <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 3rem; max-width: 600px; margin: 0 auto;">
@@ -175,30 +146,26 @@ $hasil_terbaru = $pdo->query($query_terbaru);
 </div>
 <?php endif; ?>
 
-<!-- ==============================
-     FOOTER
-============================== -->
 <footer>
     <div class="footer-inner">
         <div class="footer-atas">
             <div class="footer-brand">
                 <h3>Cine<span style="color:#BA3801">View</span></h3>
-                <p>Platform ulasan dan rating film terpercaya.</p>
+                <p>Platform ulasan dan rating film terpercaya untuk semua pecinta film.</p>
             </div>
             <div class="footer-kolom">
                 <h4>Navigasi</h4>
                 <a href="index.php">Beranda</a>
                 <a href="rekomendasi.php">Rekomendasi</a>
-                <a href="tentang.php">Tentang</a>
             </div>
             <div class="footer-kolom">
-                <h4>Akun</h4>
-                <a href="login.php">Login</a>
-                <a href="register.php">Daftar</a>
+                <h4>Kontak</h4>
+                <a href="mailto:cineview@gmail.com">✉️ cineview@gmail.com</a>
+                <a href="tel:+6281234567890">📞 +62 812-3456-7890</a>
             </div>
         </div>
         <div class="footer-bawah">
-            &copy; 2024 CineView &mdash; Dibuat dengan <span>♥</span> untuk Tugas Akhir Web
+            &copy; 2026 CineView &mdash; Platform Rating Film Terpercaya
         </div>
     </div>
 </footer>

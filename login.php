@@ -5,7 +5,7 @@
 // =============================================
 
 session_start();
-include 'koneksi.php'; // $pdo tersedia di sini
+include 'koneksi.php';
 
 // Kalau sudah login, langsung ke halaman sesuai role
 if (isset($_SESSION['user_id'])) {
@@ -17,36 +17,26 @@ if (isset($_SESSION['user_id'])) {
     exit;
 }
 
-$pesan = ''; // Variabel untuk menyimpan pesan error
+$pesan = '';
 
-// =============================================
-// PROSES LOGIN: hanya berjalan saat form di-submit
-// =============================================
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
-    // Ambil dan bersihkan input dari form
     $username = trim($_POST['username']);
     $password = $_POST['password'];
     
-    // Validasi: pastikan tidak kosong
     if (empty($username) || empty($password)) {
         $pesan = "Username dan password harus diisi!";
     } else {
-        // Cari user berdasarkan username di database
-        // Menggunakan PDO prepared statement
         $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
         
         if ($user) {
-            // User ditemukan, cek password
             if (password_verify($password, $user['password'])) {
-                // Password cocok! Simpan data ke SESSION
                 $_SESSION['user_id']  = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role']     = $user['role'];
                 
-                // Arahkan ke halaman sesuai role
                 if ($user['role'] == 'admin') {
                     header("Location: admin/dashboard.php");
                 } else {
@@ -105,11 +95,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" 
-                       id="password" 
-                       name="password" 
-                       placeholder="Masukkan password"
-                       required>
+                <div class="input-password-wrapper">
+                    <input type="password" 
+                           id="password" 
+                           name="password" 
+                           placeholder="Masukkan password"
+                           required>
+                    <button type="button" class="btn-toggle-password" onclick="togglePassword('password', this)">👁️</button>
+                </div>
             </div>
             
             <button type="submit" class="btn btn-merah btn-submit">

@@ -145,3 +145,81 @@ function cariFilm() {
         pesanKosong.style.display = 'none';
     }
 }
+// =============================================
+// 7. TOGGLE SHOW/HIDE PASSWORD
+//    Tombol mata untuk lihat/sembunyikan password
+// =============================================
+function togglePassword(inputId, tombol) {
+    var input = document.getElementById(inputId);
+    
+    if (input.type === 'password') {
+        input.type = 'text';        // Tampilkan password
+        tombol.textContent = '🙈';  // Ganti ikon
+    } else {
+        input.type = 'password';    // Sembunyikan lagi
+        tombol.textContent = '👁️';
+    }
+}
+
+// =============================================
+// 8. CEK KEKUATAN PASSWORD
+//    Tampilkan indikator kuat/lemah
+// =============================================
+function cekKekuatanPassword(nilai) {
+    var info = document.getElementById('info-password');
+    var bar  = document.getElementById('isi-bar-password');
+    
+    if (!info || !bar) return;
+    
+    var panjang = nilai.length;
+    
+    if (panjang === 0) {
+        info.textContent = 'Minimal 6 karakter';
+        info.style.color = '#aaa';
+        bar.style.width  = '0%';
+        bar.style.background = '#333';
+        
+    } else if (panjang < 6) {
+        info.textContent = 'Terlalu pendek (' + panjang + '/6 karakter minimum)';
+        info.style.color = '#e74c3c';
+        bar.style.width  = '30%';
+        bar.style.background = '#e74c3c';
+        
+    } else if (panjang < 10) {
+        info.textContent = '✓ Password cukup (' + panjang + ' karakter)';
+        info.style.color = '#f39c12';
+        bar.style.width  = '60%';
+        bar.style.background = '#f39c12';
+        
+    } else {
+        info.textContent = '✓✓ Password kuat (' + panjang + ' karakter)';
+        info.style.color = '#2ecc71';
+        bar.style.width  = '100%';
+        bar.style.background = '#2ecc71';
+    }
+}
+
+// =============================================
+// 9. CEK KONFIRMASI PASSWORD
+//    Tampilkan apakah password cocok
+// =============================================
+function cekKonfirmasiPassword() {
+    var password = document.getElementById('password');
+    var konfirm  = document.getElementById('konfirm_password');
+    var info     = document.getElementById('info-konfirm');
+    
+    if (!password || !konfirm || !info) return;
+    
+    if (konfirm.value.length === 0) {
+        info.textContent = '';
+        return;
+    }
+    
+    if (password.value === konfirm.value) {
+        info.textContent = '✓ Password cocok';
+        info.style.color = '#2ecc71';
+    } else {
+        info.textContent = '✗ Password tidak sama';
+        info.style.color = '#e74c3c';
+    }
+}

@@ -11,12 +11,13 @@ USE movie_review1;
 -- TABEL: users (menyimpan data pengguna)
 -- ==============================
 CREATE TABLE users (
-    id          INT AUTO_INCREMENT PRIMARY KEY,  -- ID unik, otomatis naik
-    username    VARCHAR(50) NOT NULL UNIQUE,     -- Nama pengguna, tidak boleh sama
-    email       VARCHAR(100) NOT NULL UNIQUE,    -- Email, tidak boleh sama
-    password    VARCHAR(255) NOT NULL,           -- Password (sudah di-hash)
-    role        ENUM('admin','user') DEFAULT 'user', -- Peran: admin atau user biasa
-    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP  -- Waktu mendaftar
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    username    VARCHAR(50) NOT NULL UNIQUE,
+    email       VARCHAR(100) NOT NULL UNIQUE,
+    password    VARCHAR(255) NOT NULL,
+    foto        VARCHAR(255) DEFAULT NULL,        -- Foto profil (opsional)
+    role        ENUM('admin','user') DEFAULT 'user',
+    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ==============================
@@ -24,12 +25,12 @@ CREATE TABLE users (
 -- ==============================
 CREATE TABLE films (
     id          INT AUTO_INCREMENT PRIMARY KEY,
-    judul       VARCHAR(200) NOT NULL,           -- Judul film
-    genre       VARCHAR(100),                   -- Genre: Action, Drama, dll
-    tahun       YEAR,                           -- Tahun rilis
-    sutradara   VARCHAR(100),                   -- Nama sutradara
-    sinopsis    TEXT,                           -- Deskripsi panjang film
-    poster      VARCHAR(255) DEFAULT 'default.jpg', -- Nama file gambar poster
+    judul       VARCHAR(200) NOT NULL,
+    genre       VARCHAR(200),                    -- Bisa multi genre, contoh: "Action, Drama"
+    tahun       YEAR,
+    sutradara   VARCHAR(100),
+    sinopsis    TEXT,
+    poster      VARCHAR(255) DEFAULT 'default.jpg',
     created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -38,21 +39,19 @@ CREATE TABLE films (
 -- ==============================
 CREATE TABLE reviews (
     id          INT AUTO_INCREMENT PRIMARY KEY,
-    user_id     INT NOT NULL,                   -- Siapa yang review
-    film_id     INT NOT NULL,                   -- Film apa yang di-review
-    rating      TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5), -- Bintang 1-5
-    komentar    TEXT,                           -- Isi komentar/ulasan
+    user_id     INT NOT NULL,
+    film_id     INT NOT NULL,
+    rating      TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    komentar    TEXT,
     created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
-    -- Satu user hanya bisa review 1 film sekali
     UNIQUE KEY unik_review (user_id, film_id),
-    -- Hubungkan ke tabel users dan films
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (film_id) REFERENCES films(id) ON DELETE CASCADE
 );
 
 -- ==============================
 -- DATA AWAL: Akun Admin Default
--- Password: admin123 (sudah di-hash dengan password_hash)
+-- Password: admin123
 -- ==============================
 INSERT INTO users (username, email, password, role) VALUES
 ('admin', 'admin@cineview.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin');
@@ -76,5 +75,4 @@ INSERT INTO films (judul, genre, tahun, sutradara, sinopsis) VALUES
 ('Everything Everywhere All at Once', 'Comedy, Sci-Fi', 2022, 'The Daniels',
  'Seorang ibu imigran China-Amerika yang kewalahan menemukan dirinya dapat mengakses keterampilan dari versi-versi dirinya di multiverse lain.');
 
--- Cek data berhasil masuk
 SELECT 'Database berhasil dibuat!' AS status;

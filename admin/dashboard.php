@@ -52,6 +52,9 @@ $tipe  = $_GET['tipe'] ?? '';
         <a href="../index.php" class="navbar-logo">Cine<span>View</span></a>
         <ul class="navbar-menu">
             <li><a href="../index.php">Lihat Website</a></li>
+            <li><a href="tambah_film.php">Tambah Film</a></li>
+            <li><a href="kelola_review.php">Review</a></li>
+            <li><a href="kelola_user.php">User</a></li>
             <li><a href="../logout.php">Logout (<?= htmlspecialchars($_SESSION['username']) ?>)</a></li>
         </ul>
     </div>
@@ -65,7 +68,6 @@ $tipe  = $_GET['tipe'] ?? '';
         
         <div class="sidebar-title">Kelola Film</div>
         <a href="tambah_film.php">➕ Tambah Film</a>
-        <a href="dashboard.php#film">🎬 Daftar Film</a>
         
         <div class="sidebar-title">Kelola Lainnya</div>
         <a href="kelola_review.php">💬 Kelola Review</a>
@@ -112,7 +114,7 @@ $tipe  = $_GET['tipe'] ?? '';
         <div id="film" style="margin-bottom:2rem;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
                 <h2 style="font-family:'Playfair Display',serif; font-size:1.4rem;">Film Terbaru</h2>
-                <a href="tambah_film.php" class="btn btn-merah btn-kecil">+ Tambah Film</a>
+                <a href="../rekomendasi.php" class="btn btn-outline btn-kecil" target="_blank">Lihat Semua</a>
             </div>
             
             <div class="tabel-wrapper">

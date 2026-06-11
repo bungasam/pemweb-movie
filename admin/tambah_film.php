@@ -7,7 +7,6 @@
 session_start();
 include '../koneksi.php';
 
-// Proteksi: hanya admin
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header("Location: ../login.php");
     exit;
@@ -16,47 +15,59 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
 $pesan  = '';
 $sukses = false;
 
-// =============================================
-// PROSES: Simpan film baru ke database
-// =============================================
+// Daftar genre yang tersedia
+$daftar_genre = ['Action','Adventure','Animation','Comedy','Crime','Drama','Fantasy','Horror','Mystery','Romance','Sci-Fi','Thriller'];
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     $judul     = trim($_POST['judul']);
-    $genre     = trim($_POST['genre']);
     $tahun     = intval($_POST['tahun']);
     $sutradara = trim($_POST['sutradara']);
     $sinopsis  = trim($_POST['sinopsis']);
     $poster    = 'default.svg';
     
+    // Genre: ambil dari array checkbox, gabung dengan koma
+    $genre_dipilih = isset($_POST['genre']) ? $_POST['genre'] : [];
+    $genre         = implode(', ', $genre_dipilih);
+    
+    // ---- Validasi semua field wajib ----
     if (empty($judul)) {
         $pesan = "Judul film harus diisi!";
+    } elseif (empty($genre)) {
+        $pesan = "Pilih minimal satu genre!";
     } elseif ($tahun < 1900 || $tahun > 2030) {
         $pesan = "Tahun tidak valid!";
+    } elseif (empty($sutradara)) {
+        $pesan = "Nama sutradara harus diisi!";
+    } elseif (empty($sinopsis)) {
+        $pesan = "Sinopsis harus diisi!";
     } else {
         
-        // Upload poster (opsional)
-        if (isset($_FILES['poster']) && $_FILES['poster']['error'] == 0) {
+        // Upload poster (wajib)
+        if (!isset($_FILES['poster']) || $_FILES['poster']['error'] != 0) {
+            $pesan = "Poster film harus diupload!";
+        } else {
             $file     = $_FILES['poster'];
             $ekstensi = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
             $boleh    = ['jpg', 'jpeg', 'png', 'webp'];
             
-            if (in_array($ekstensi, $boleh)) {
-                if ($file['size'] <= 2 * 1024 * 1024) {
-                    $nama_file = 'poster_' . time() . '.' . $ekstensi;
-                    $tujuan    = '../img/' . $nama_file;
-                    
-                    if (move_uploaded_file($file['tmp_name'], $tujuan)) {
-                        $poster = $nama_file;
-                    }
-                } else {
-                    $pesan = "Ukuran file maksimal 2MB!";
-                }
-            } else {
+            if (!in_array($ekstensi, $boleh)) {
                 $pesan = "Format file harus jpg, jpeg, png, atau webp!";
+            } elseif ($file['size'] > 2 * 1024 * 1024) {
+                $pesan = "Ukuran file maksimal 2MB!";
+            } else {
+                $nama_file = 'poster_' . time() . '.' . $ekstensi;
+                $tujuan    = '../img/' . $nama_file;
+                
+                if (move_uploaded_file($file['tmp_name'], $tujuan)) {
+                    $poster = $nama_file;
+                } else {
+                    $pesan = "Gagal mengupload poster!";
+                }
             }
         }
         
-        // Simpan ke database
+        // Simpan ke database kalau tidak ada error
         if (empty($pesan)) {
             try {
                 $stmt = $pdo->prepare("INSERT INTO films (judul, genre, tahun, sutradara, sinopsis, poster) VALUES (?, ?, ?, ?, ?, ?)");
@@ -78,6 +89,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Film — CineView Admin</title>
     <link rel="stylesheet" href="../style.css">
+    <style>
+        /* Styling checkbox genre */
+        .genre-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .genre-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .genre-item input[type="checkbox"] {
+            width: auto;
+            accent-color: #BA3801;
+            cursor: pointer;
+        }
+        .genre-item label {
+            font-size: 0.88rem;
+            color: #ccc;
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+        .genre-item input[type="checkbox"]:checked + label {
+            color: #FFEC89;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
 
@@ -126,54 +166,52 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <form method="POST" enctype="multipart/form-data">
                 
                 <div class="form-group">
-                    <label>Judul Film *</label>
+                    <label>Judul Film <span style="color:#BA3801;">*</span></label>
                     <input type="text" name="judul" placeholder="Contoh: Avengers: Endgame"
                            value="<?= isset($_POST['judul']) ? htmlspecialchars($_POST['judul']) : '' ?>"
                            required>
                 </div>
                 
+                <!-- Genre: multi-checkbox -->
+                <div class="form-group">
+                    <label>Genre <span style="color:#BA3801;">*</span> <small style="color:#555; font-weight:400;">(pilih satu atau lebih)</small></label>
+                    <div class="genre-grid">
+                        <?php foreach ($daftar_genre as $g): ?>
+                        <div class="genre-item">
+                            <input type="checkbox"
+                                   id="genre_<?= $g ?>"
+                                   name="genre[]"
+                                   value="<?= $g ?>"
+                                   <?= (isset($_POST['genre']) && in_array($g, $_POST['genre'])) ? 'checked' : '' ?>>
+                            <label for="genre_<?= $g ?>"><?= $g ?></label>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                     <div class="form-group">
-                        <label>Genre</label>
-                        <select name="genre" required>
-                            <option value="">-- Pilih Genre --</option>
-                            <option value="Action" <?= isset($_POST['genre']) && $_POST['genre'] == 'Action' ? 'selected' : '' ?>>Action</option>
-                            <option value="Comedy" <?= isset($_POST['genre']) && $_POST['genre'] == 'Comedy' ? 'selected' : '' ?>>Comedy</option>
-                            <option value="Drama" <?= isset($_POST['genre']) && $_POST['genre'] == 'Drama' ? 'selected' : '' ?>>Drama</option>
-                            <option value="Horror" <?= isset($_POST['genre']) && $_POST['genre'] == 'Horror' ? 'selected' : '' ?>>Horror</option>
-                            <option value="Romance" <?= isset($_POST['genre']) && $_POST['genre'] == 'Romance' ? 'selected' : '' ?>>Romance</option>
-                            <option value="Sci-Fi" <?= isset($_POST['genre']) && $_POST['genre'] == 'Sci-Fi' ? 'selected' : '' ?>>Sci-Fi</option>
-                            <option value="Thriller" <?= isset($_POST['genre']) && $_POST['genre'] == 'Thriller' ? 'selected' : '' ?>>Thriller</option>
-                            <option value="Adventure" <?= isset($_POST['genre']) && $_POST['genre'] == 'Adventure' ? 'selected' : '' ?>>Adventure</option>
-                            <option value="Animation" <?= isset($_POST['genre']) && $_POST['genre'] == 'Animation' ? 'selected' : '' ?>>Animation</option>
-                            <option value="Crime" <?= isset($_POST['genre']) && $_POST['genre'] == 'Crime' ? 'selected' : '' ?>>Crime</option>
-                            <option value="Fantasy" <?= isset($_POST['genre']) && $_POST['genre'] == 'Fantasy' ? 'selected' : '' ?>>Fantasy</option>
-                            <option value="Mystery" <?= isset($_POST['genre']) && $_POST['genre'] == 'Mystery' ? 'selected' : '' ?>>Mystery</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Tahun Rilis</label>
+                        <label>Tahun Rilis <span style="color:#BA3801;">*</span></label>
                         <input type="number" name="tahun" placeholder="2024"
-                               min="1900" max="2030"
+                               min="1900" max="2030" required
                                value="<?= isset($_POST['tahun']) ? intval($_POST['tahun']) : date('Y') ?>">
                     </div>
+                    <div class="form-group">
+                        <label>Sutradara <span style="color:#BA3801;">*</span></label>
+                        <input type="text" name="sutradara" placeholder="Nama sutradara" required
+                               value="<?= isset($_POST['sutradara']) ? htmlspecialchars($_POST['sutradara']) : '' ?>">
+                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label>Sutradara</label>
-                    <input type="text" name="sutradara" placeholder="Nama sutradara"
-                           value="<?= isset($_POST['sutradara']) ? htmlspecialchars($_POST['sutradara']) : '' ?>">
+                    <label>Sinopsis <span style="color:#BA3801;">*</span></label>
+                    <textarea name="sinopsis" placeholder="Deskripsi singkat film..." required><?= isset($_POST['sinopsis']) ? htmlspecialchars($_POST['sinopsis']) : '' ?></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label>Sinopsis</label>
-                    <textarea name="sinopsis" placeholder="Deskripsi singkat film..."><?= isset($_POST['sinopsis']) ? htmlspecialchars($_POST['sinopsis']) : '' ?></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Poster Film (Opsional)</label>
+                    <label>Poster Film <span style="color:#BA3801;">*</span></label>
                     <input type="file" id="poster" name="poster" accept="image/*"
-                           style="color:#aaa;">
+                           style="color:#aaa;" required>
                     <small style="color:#555; font-size:0.8rem;">Format: jpg, png, webp. Maks: 2MB</small>
                     
                     <div style="margin-top:0.8rem;">

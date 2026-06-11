@@ -43,15 +43,15 @@ $hasil_genre = $pdo->query("SELECT DISTINCT genre FROM films ORDER BY genre");
         <ul class="navbar-menu">
             <li><a href="index.php">Beranda</a></li>
             <li><a href="rekomendasi.php">Rekomendasi</a></li>
-            <li><a href="tentang.php">Tentang</a></li>
             <?php if (isset($_SESSION['user_id'])): ?>
                 <?php if ($_SESSION['role'] == 'admin'): ?>
-                    <li><a href="admin/dashboard.php">Dashboard</a></li>
+                    <li><a href="admin/dashboard.php">Dashboard Admin</a></li>
                 <?php else: ?>
-                    <li><a href="user/dashboard.php">Profil</a></li>
+                    <li><a href="user/dashboard.php">Profil Saya</a></li>
                 <?php endif; ?>
                 <li><a href="logout.php">Logout</a></li>
             <?php else: ?>
+                <li><a href="register.php">Daftar</a></li>
                 <li><a href="login.php" class="btn-nav-login">Login</a></li>
             <?php endif; ?>
         </ul>

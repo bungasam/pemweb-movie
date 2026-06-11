@@ -7,20 +7,17 @@
 session_start();
 include '../koneksi.php';
 
-// Proteksi: hanya admin
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header("Location: ../login.php");
     exit;
 }
 
-// Ambil ID film dari URL
 $film_id = intval($_GET['id'] ?? 0);
 if ($film_id == 0) {
     header("Location: dashboard.php");
     exit;
 }
 
-// Ambil data film yang akan diedit
 $stmt = $pdo->prepare("SELECT * FROM films WHERE id = ?");
 $stmt->execute([$film_id]);
 $film = $stmt->fetch();
@@ -32,23 +29,37 @@ if (!$film) {
 
 $pesan = '';
 
-// =============================================
-// PROSES: Update data film
-// =============================================
+// Daftar genre yang tersedia
+$daftar_genre = ['Action','Adventure','Animation','Comedy','Crime','Drama','Fantasy','Horror','Mystery','Romance','Sci-Fi','Thriller'];
+
+// Genre film saat ini (pecah dari string "Action, Drama" jadi array)
+$genre_saat_ini = array_map('trim', explode(',', $film['genre']));
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     $judul     = trim($_POST['judul']);
-    $genre     = trim($_POST['genre']);
     $tahun     = intval($_POST['tahun']);
     $sutradara = trim($_POST['sutradara']);
     $sinopsis  = trim($_POST['sinopsis']);
     $poster    = $film['poster'];
     
+    $genre_dipilih = isset($_POST['genre']) ? $_POST['genre'] : [];
+    $genre         = implode(', ', $genre_dipilih);
+    
+    // Validasi semua field wajib
     if (empty($judul)) {
         $pesan = "Judul tidak boleh kosong!";
+    } elseif (empty($genre)) {
+        $pesan = "Pilih minimal satu genre!";
+    } elseif ($tahun < 1900 || $tahun > 2030) {
+        $pesan = "Tahun tidak valid!";
+    } elseif (empty($sutradara)) {
+        $pesan = "Nama sutradara harus diisi!";
+    } elseif (empty($sinopsis)) {
+        $pesan = "Sinopsis harus diisi!";
     } else {
         
-        // Upload poster baru kalau ada
+        // Upload poster baru (opsional saat edit)
         if (isset($_FILES['poster']) && $_FILES['poster']['error'] == 0) {
             $file     = $_FILES['poster'];
             $ekstensi = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
@@ -57,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (in_array($ekstensi, $boleh) && $file['size'] <= 2*1024*1024) {
                 $nama_file = 'poster_' . time() . '.' . $ekstensi;
                 if (move_uploaded_file($file['tmp_name'], '../img/' . $nama_file)) {
-                    // Hapus poster lama
                     if ($film['poster'] != 'default.jpg' && $film['poster'] != 'default.svg') {
                         @unlink('../img/' . $film['poster']);
                     }
@@ -66,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
         
-        // Update data di database
         try {
             $stmt = $pdo->prepare("UPDATE films SET judul=?, genre=?, tahun=?, sutradara=?, sinopsis=?, poster=? WHERE id=?");
             $stmt->execute([$judul, $genre, $tahun, $sutradara, $sinopsis, $poster, $film_id]);
@@ -78,10 +87,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
     
-    // Refresh data film
+    // Refresh data film setelah gagal
     $stmt2 = $pdo->prepare("SELECT * FROM films WHERE id = ?");
     $stmt2->execute([$film_id]);
     $film = $stmt2->fetch();
+    $genre_saat_ini = array_map('trim', explode(',', $film['genre']));
 }
 ?>
 
@@ -92,6 +102,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Film — CineView Admin</title>
     <link rel="stylesheet" href="../style.css">
+    <style>
+        .genre-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .genre-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .genre-item input[type="checkbox"] {
+            width: auto;
+            accent-color: #BA3801;
+            cursor: pointer;
+        }
+        .genre-item label {
+            font-size: 0.88rem;
+            color: #ccc;
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+        .genre-item input[type="checkbox"]:checked + label {
+            color: #FFEC89;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
 
@@ -142,50 +180,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <form method="POST" enctype="multipart/form-data">
                 
                 <div class="form-group">
-                    <label>Judul Film *</label>
+                    <label>Judul Film <span style="color:#BA3801;">*</span></label>
                     <input type="text" name="judul" 
                            value="<?= htmlspecialchars($film['judul']) ?>" required>
                 </div>
                 
+                <!-- Genre: multi-checkbox -->
+                <div class="form-group">
+                    <label>Genre <span style="color:#BA3801;">*</span> <small style="color:#555; font-weight:400;">(pilih satu atau lebih)</small></label>
+                    <div class="genre-grid">
+                        <?php foreach ($daftar_genre as $g): ?>
+                        <div class="genre-item">
+                            <input type="checkbox"
+                                   id="genre_<?= $g ?>"
+                                   name="genre[]"
+                                   value="<?= $g ?>"
+                                   <?= in_array($g, $genre_saat_ini) ? 'checked' : '' ?>>
+                            <label for="genre_<?= $g ?>"><?= $g ?></label>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                     <div class="form-group">
-                        <label>Genre</label>
-                        <select name="genre" required>
-                            <option value="">-- Pilih Genre --</option>
-                            <option value="Action" <?= $film['genre'] == 'Action' ? 'selected' : '' ?>>Action</option>
-                            <option value="Comedy" <?= $film['genre'] == 'Comedy' ? 'selected' : '' ?>>Comedy</option>
-                            <option value="Drama" <?= $film['genre'] == 'Drama' ? 'selected' : '' ?>>Drama</option>
-                            <option value="Horror" <?= $film['genre'] == 'Horror' ? 'selected' : '' ?>>Horror</option>
-                            <option value="Romance" <?= $film['genre'] == 'Romance' ? 'selected' : '' ?>>Romance</option>
-                            <option value="Sci-Fi" <?= $film['genre'] == 'Sci-Fi' ? 'selected' : '' ?>>Sci-Fi</option>
-                            <option value="Thriller" <?= $film['genre'] == 'Thriller' ? 'selected' : '' ?>>Thriller</option>
-                            <option value="Adventure" <?= $film['genre'] == 'Adventure' ? 'selected' : '' ?>>Adventure</option>
-                            <option value="Animation" <?= $film['genre'] == 'Animation' ? 'selected' : '' ?>>Animation</option>
-                            <option value="Crime" <?= $film['genre'] == 'Crime' ? 'selected' : '' ?>>Crime</option>
-                            <option value="Fantasy" <?= $film['genre'] == 'Fantasy' ? 'selected' : '' ?>>Fantasy</option>
-                            <option value="Mystery" <?= $film['genre'] == 'Mystery' ? 'selected' : '' ?>>Mystery</option>
-                        </select>
+                        <label>Tahun <span style="color:#BA3801;">*</span></label>
+                        <input type="number" name="tahun" 
+                               value="<?= $film['tahun'] ?>" min="1900" max="2030" required>
                     </div>
                     <div class="form-group">
-                        <label>Tahun</label>
-                        <input type="number" name="tahun" 
-                               value="<?= $film['tahun'] ?>" min="1900" max="2030">
+                        <label>Sutradara <span style="color:#BA3801;">*</span></label>
+                        <input type="text" name="sutradara" required
+                               value="<?= htmlspecialchars($film['sutradara']) ?>">
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label>Sutradara</label>
-                    <input type="text" name="sutradara" 
-                           value="<?= htmlspecialchars($film['sutradara']) ?>">
+                    <label>Sinopsis <span style="color:#BA3801;">*</span></label>
+                    <textarea name="sinopsis" required><?= htmlspecialchars($film['sinopsis']) ?></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label>Sinopsis</label>
-                    <textarea name="sinopsis"><?= htmlspecialchars($film['sinopsis']) ?></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Ganti Poster (Biarkan kosong jika tidak ingin ganti)</label>
+                    <label>Ganti Poster <small style="color:#555; font-weight:400;">(biarkan kosong jika tidak ingin ganti)</small></label>
                     <input type="file" id="poster" name="poster" accept="image/*" style="color:#aaa;">
                     <img id="preview-poster" src="" style="display:none; max-width:120px; margin-top:0.5rem; border-radius:6px;">
                 </div>

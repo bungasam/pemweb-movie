@@ -13,7 +13,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Admin tidak boleh akses halaman ini
 if ($_SESSION['role'] == 'admin') {
     header("Location: ../admin/dashboard.php");
     exit;
@@ -52,7 +51,6 @@ $tipe  = $_GET['tipe'] ?? '';
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar">
     <div class="navbar-inner">
         <a href="../index.php" class="navbar-logo">Cine<span>View</span></a>
@@ -74,8 +72,21 @@ $tipe  = $_GET['tipe'] ?? '';
     <?php endif; ?>
     
     <div class="profil-header">
-        <div class="profil-avatar">
-            <?= strtoupper(substr($user['username'], 0, 1)) ?>
+        <!-- Foto profil: tampilkan gambar kalau ada, kalau tidak pakai inisial -->
+        <div class="profil-avatar" style="overflow:hidden; padding:0;">
+            <?php if (!empty($user['foto'])): ?>
+                <img src="../img/<?= htmlspecialchars($user['foto']) ?>"
+                     alt="Foto Profil"
+                     onerror="this.style.display='none'; document.getElementById('inisial-avatar').style.display='flex';"
+                     style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                <div id="inisial-avatar" style="display:none; width:100%; height:100%; align-items:center; justify-content:center; font-size:2rem; font-weight:700;">
+                    <?= strtoupper(substr($user['username'], 0, 1)) ?>
+                </div>
+            <?php else: ?>
+                <div style="display:flex; width:100%; height:100%; align-items:center; justify-content:center; font-size:2rem; font-weight:700;">
+                    <?= strtoupper(substr($user['username'], 0, 1)) ?>
+                </div>
+            <?php endif; ?>
         </div>
         <div>
             <div class="profil-nama"><?= htmlspecialchars($user['username']) ?></div>
@@ -84,15 +95,19 @@ $tipe  = $_GET['tipe'] ?? '';
             <div style="font-size:0.82rem; color:#aaa; margin-top:0.5rem;">
                 📅 Bergabung <?= date('d F Y', strtotime($user['created_at'])) ?>
             </div>
+            <!-- Tombol edit profil -->
+            <div style="margin-top:0.8rem;">
+                <a href="edit_profil.php" class="btn btn-biru btn-kecil">✏️ Edit Profil</a>
+            </div>
         </div>
     </div>
     
-  <div style="margin-bottom:2rem;">
-    <div style="background:var(--card); border:0.5px solid var(--card-border); border-radius:5px; padding:0.3rem; text-align:center;">
-        <div style="font-family:'Playfair Display',serif; font-size:5rem; font-weight:950; color:#FFEC89;"><?= $jml_review ?></div>
-        <div style="font-size:0.85rem; color:#aaa; text-transform:uppercase; letter-spacing:1px; margin-top:5px;">Review Ditulis</div>
+    <div style="margin-bottom:2rem;">
+        <div style="background:var(--card); border:0.5px solid var(--card-border); border-radius:5px; padding:0.3rem; text-align:center;">
+            <div style="font-family:'Playfair Display',serif; font-size:5rem; font-weight:950; color:#FFEC89;"><?= $jml_review ?></div>
+            <div style="font-size:0.85rem; color:#aaa; text-transform:uppercase; letter-spacing:1px; margin-top:5px;">Review Ditulis</div>
+        </div>
     </div>
-</div>
     
     <h2 style="font-family:'Playfair Display',serif; font-size:1.5rem; margin-bottom:1rem;">
         Riwayat <span style="color:#FFEC89;">Ulasan</span>
@@ -149,7 +164,7 @@ $tipe  = $_GET['tipe'] ?? '';
 <footer>
     <div class="footer-inner">
         <div class="footer-bawah">
-            &copy; 2026 CineView &mdash; Dibuat dengan <span style="color:#BA3801;">♥</span>
+            &copy; 2026 CineView &mdash; Platform Rating Film
         </div>
     </div>
 </footer>

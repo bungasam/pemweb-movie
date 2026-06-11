@@ -126,20 +126,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" 
-                       id="password" 
-                       name="password" 
-                       placeholder="Minimal 6 karakter"
-                       required>
+                <div class="input-password-wrapper">
+                    <input type="password" 
+                           id="password" 
+                           name="password" 
+                           placeholder="Minimal 6 karakter"
+                           oninput="cekKekuatanPassword(this.value)"
+                           required>
+                    <button type="button" class="btn-toggle-password" onclick="togglePassword('password', this)">👁️</button>
+                </div>
+                <!-- Indikator kekuatan password -->
+                <div id="info-password" style="margin-top:0.4rem; font-size:0.8rem; color:#aaa;">
+                    Minimal 6 karakter
+                </div>
+                <div id="bar-password" style="height:4px; border-radius:4px; background:#333; margin-top:0.3rem; transition:all 0.3s;">
+                    <div id="isi-bar-password" style="height:100%; width:0%; border-radius:4px; transition:all 0.3s;"></div>
+                </div>
             </div>
             
             <div class="form-group">
                 <label for="konfirm_password">Konfirmasi Password</label>
-                <input type="password" 
-                       id="konfirm_password" 
-                       name="konfirm_password" 
-                       placeholder="Ulangi password"
-                       required>
+                <div class="input-password-wrapper">
+                    <input type="password" 
+                           id="konfirm_password" 
+                           name="konfirm_password" 
+                           placeholder="Ulangi password"
+                           oninput="cekKonfirmasiPassword()"
+                           required>
+                    <button type="button" class="btn-toggle-password" onclick="togglePassword('konfirm_password', this)">👁️</button>
+                </div>
+                <div id="info-konfirm" style="margin-top:0.4rem; font-size:0.8rem; color:#aaa;"></div>
             </div>
             
             <button type="submit" class="btn btn-merah btn-submit">

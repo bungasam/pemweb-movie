@@ -73,12 +73,13 @@ $tipe  = $_GET['tipe'] ?? '';
             <li><a href="rekomendasi.php">Rekomendasi</a></li>
             <?php if (isset($_SESSION['user_id'])): ?>
                 <?php if ($_SESSION['role'] == 'admin'): ?>
-                    <li><a href="admin/dashboard.php">Dashboard</a></li>
+                    <li><a href="admin/dashboard.php">Dashboard Admin</a></li>
                 <?php else: ?>
-                    <li><a href="user/dashboard.php">Profil</a></li>
+                    <li><a href="user/dashboard.php">Profil Saya</a></li>
                 <?php endif; ?>
                 <li><a href="logout.php">Logout</a></li>
             <?php else: ?>
+                <li><a href="register.php">Daftar</a></li>
                 <li><a href="login.php" class="btn-nav-login">Login</a></li>
             <?php endif; ?>
         </ul>
@@ -136,8 +137,10 @@ $tipe  = $_GET['tipe'] ?? '';
 
     <!-- FORM TAMBAH REVIEW -->
     <div style="margin-bottom:3rem;">
+        <?php if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin'): ?>
         <h2 class="section-title" style="margin-bottom:1rem;">Tulis <span>Ulasanmu</span></h2>
         <div class="garis-dekorasi"></div>
+        <?php endif; ?>
         
         <?php if (!isset($_SESSION['user_id'])): ?>
         <div class="alert alert-info">
@@ -145,7 +148,8 @@ $tipe  = $_GET['tipe'] ?? '';
         </div>
         
         <?php elseif ($_SESSION['role'] == 'admin'): ?>
-        <div class="alert alert-info">Admin tidak dapat menulis ulasan.</div>
+        <!-- Admin tidak melihat form review -->
+        <?php echo '' ?>
         
         <?php elseif ($sudah_review): ?>
         <div class="alert alert-info">
@@ -256,8 +260,19 @@ $tipe  = $_GET['tipe'] ?? '';
 
 <footer>
     <div class="footer-inner">
+        <div class="footer-atas">
+            <div class="footer-brand">
+                <h3>Cine<span style="color:#BA3801">View</span></h3>
+                <p>Platform ulasan dan rating film terpercaya untuk semua pecinta film.</p>
+            </div>
+            <div class="footer-kolom">
+                <h4>Kontak</h4>
+                <a href="mailto:cineview@gmail.com">✉️ cineview@gmail.com</a>
+                <a href="tel:+6281234567890">📞 +62 812-3456-7890</a>
+            </div>
+        </div>
         <div class="footer-bawah">
-            &copy; 2024 CineView &mdash; Dibuat dengan <span style="color:#BA3801;">♥</span> untuk Tugas Akhir Web
+            &copy; 2026 CineView &mdash; Platform Rating Film Terpercaya
         </div>
     </div>
 </footer>

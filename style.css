@@ -1072,3 +1072,32 @@ footer {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+/* =============================================
+   TAMBAHAN: Input password dengan tombol show/hide
+   ============================================= */
+.input-password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-password-wrapper input {
+    flex: 1;
+    padding-right: 3rem !important;  /* Beri ruang untuk tombol */
+}
+
+.btn-toggle-password {
+    position: absolute;
+    right: 0.6rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.2rem 0.4rem;
+    color: #aaa;
+    line-height: 1;
+}
+
+.btn-toggle-password:hover {
+    color: #f0f0f0;
+}
