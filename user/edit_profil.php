@@ -123,6 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profil — CineView</title>
     <link rel="stylesheet" href="../style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
@@ -133,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <li><a href="../index.php">Beranda</a></li>
             <li><a href="../rekomendasi.php">Rekomendasi</a></li>
             <li><a href="dashboard.php">Profil</a></li>
-            <li><a href="../logout.php">Logout</a></li>
+            <li><a href="#" onclick="confirmLogout(event)">Logout</a></li>
         </ul>
     </div>
 </nav>
@@ -211,7 +212,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <script src="../script.js"></script>
 <script>
-// Preview foto sebelum upload
+function confirmLogout(event) {
+    event.preventDefault();
+    Swal.fire({
+        title: '⚠️ Konfirmasi Logout',
+        text: 'Apakah Anda yakin ingin logout dari CineView?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#BA3801',
+        cancelButtonColor: '#555',
+        confirmButtonText: 'Ya, Logout!',
+        cancelButtonText: 'Batal',
+        background: '#1a1a1a',
+        color: '#f0f0f0',
+        iconColor: '#FFEC89'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '../logout.php';
+        }
+    });
+}
+
 function previewFoto(input) {
     var preview = document.getElementById('preview-foto-baru');
     var label   = document.getElementById('label-preview');

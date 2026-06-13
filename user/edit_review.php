@@ -66,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Review — CineView</title>
     <link rel="stylesheet" href="../style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
@@ -74,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <a href="../index.php" class="navbar-logo">Cine<span>View</span></a>
         <ul class="navbar-menu">
             <li><a href="dashboard.php">← Dashboard</a></li>
-            <li><a href="../logout.php">Logout</a></li>
+            <li><a href="#" onclick="confirmLogout(event)">Logout</a></li>
         </ul>
     </div>
 </nav>
@@ -123,5 +124,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 <script src="../script.js"></script>
+<script>
+function confirmLogout(event) {
+    event.preventDefault();
+    Swal.fire({
+        title: '⚠️ Konfirmasi Logout',
+        text: 'Apakah Anda yakin ingin logout dari CineView?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#BA3801',
+        cancelButtonColor: '#555',
+        confirmButtonText: 'Ya, Logout!',
+        cancelButtonText: 'Batal',
+        background: '#1a1a1a',
+        color: '#f0f0f0',
+        iconColor: '#FFEC89'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '../logout.php';
+        }
+    });
+}
+</script>
 </body>
 </html>
