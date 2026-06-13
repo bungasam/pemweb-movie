@@ -54,7 +54,6 @@ $tipe  = $_GET['tipe'] ?? '';
         <a href="../index.php" class="navbar-logo">Cine<span>View</span></a>
         <ul class="navbar-menu">
             <li><a href="../index.php">Lihat Website</a></li>
-            <li><a href="#" onclick="confirmLogout(event)">Logout (<?= htmlspecialchars($_SESSION['username']) ?>)</a></li>
         </ul>
     </div>
 </nav>
@@ -117,7 +116,7 @@ $tipe  = $_GET['tipe'] ?? '';
                 <table>
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th>No</th>
                             <th>Judul</th>
                             <th>Genre</th>
                             <th>Tahun</th>

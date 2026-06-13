@@ -177,7 +177,7 @@ $tipe  = $_GET['tipe'] ?? '';
         <a href="../index.php" class="navbar-logo">Cine<span>View</span></a>
         <ul class="navbar-menu">
             <li><a href="dashboard.php">← Dashboard</a></li>
-            <li><a href="../logout.php">Logout</a></li>
+            <li><a href="../index.php">Lihat Website</a></li>
         </ul>
     </div>
 </nav>
