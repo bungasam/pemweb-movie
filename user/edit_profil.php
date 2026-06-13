@@ -20,6 +20,10 @@ $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch();
 
+if ($user && !isset($user['foto'])) {
+    $user['foto'] = null;
+}
+
 $pesan  = '';
 $sukses = false;
 
@@ -29,7 +33,7 @@ $sukses = false;
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     $username_baru = trim($_POST['username']);
-    $foto          = $user['foto']; // Default pakai foto lama
+    $foto          = $user['foto'] ?? null; // Default pakai foto lama
     
     // Validasi username
     if (empty($username_baru)) {
@@ -47,30 +51,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             
             // Upload foto profil (opsional)
-            if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
-                $file     = $_FILES['foto'];
-                $ekstensi = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-                $boleh    = ['jpg', 'jpeg', 'png', 'webp'];
-                
-                if (!in_array($ekstensi, $boleh)) {
-                    $pesan = "Format foto harus jpg, png, atau webp!";
-                } elseif ($file['size'] > 2 * 1024 * 1024) {
-                    $pesan = "Ukuran foto maksimal 2MB!";
-                } else {
-                    $nama_file = 'foto_' . $user_id . '_' . time() . '.' . $ekstensi;
-                    $tujuan    = '../img/' . $nama_file;
-                    
-                    if (move_uploaded_file($file['tmp_name'], $tujuan)) {
-                        // Hapus foto lama kalau bukan default
-                        if (!empty($user['foto']) && $user['foto'] != 'default_user.png') {
-                            $foto_lama = '../img/' . $user['foto'];
-                            if (file_exists($foto_lama)) {
-                                @unlink($foto_lama);
-                            }
-                        }
-                        $foto = $nama_file;
+            if (isset($_FILES['foto']) && $_FILES['foto']['error'] != UPLOAD_ERR_NO_FILE) {
+                if ($_FILES['foto']['error'] != UPLOAD_ERR_OK) {
+                    // Cek jika error karena ukuran file melebihi limit PHP (upload_max_filesize / post_max_size)
+                    if ($_FILES['foto']['error'] == UPLOAD_ERR_INI_SIZE || $_FILES['foto']['error'] == UPLOAD_ERR_FORM_SIZE) {
+                        $pesan = "Ukuran foto terlalu besar! Maksimal 2MB.";
                     } else {
-                        $pesan = "Gagal mengupload foto!";
+                        $pesan = "Gagal mengupload foto! (Kode Error: " . $_FILES['foto']['error'] . ")";
+                    }
+                } else {
+                    $file     = $_FILES['foto'];
+                    $ekstensi = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                    $boleh    = ['jpg', 'jpeg', 'png', 'webp'];
+                    
+                    if (!in_array($ekstensi, $boleh)) {
+                        $pesan = "Format foto harus jpg, jpeg, png, atau webp!";
+                    } elseif ($file['size'] > 2 * 1024 * 1024) {
+                        $pesan = "Ukuran foto maksimal 2MB!";
+                    } else {
+                        $nama_file = 'foto_' . $user_id . '_' . time() . '.' . $ekstensi;
+                        $tujuan    = '../img/' . $nama_file;
+                        
+                        if (move_uploaded_file($file['tmp_name'], $tujuan)) {
+                            // Hapus foto lama kalau bukan default
+                            if (!empty($user['foto']) && $user['foto'] != 'default_user.png' && $user['foto'] != 'default.svg') {
+                                $foto_lama = '../img/' . $user['foto'];
+                                if (file_exists($foto_lama)) {
+                                    @unlink($foto_lama);
+                                }
+                            }
+                            $foto = $nama_file;
+                        } else {
+                            $pesan = "Gagal memindahkan file foto ke folder tujuan!";
+                        }
                     }
                 }
             }
