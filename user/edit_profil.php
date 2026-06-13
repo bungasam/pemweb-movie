@@ -30,6 +30,8 @@ $sukses = false;
 // =============================================
 // PROSES: Update profil
 // =============================================
+
+//foto profile
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     $username_baru = trim($_POST['username']);
