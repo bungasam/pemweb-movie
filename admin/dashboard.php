@@ -25,7 +25,7 @@ $film_terbaru = $pdo->query("SELECT * FROM films ORDER BY id DESC LIMIT 5");
 
 // ---- Ambil review terbaru ----
 $review_terbaru = $pdo->query("
-    SELECT r.*, u.username, f.judul 
+    SELECT r.*, u.username, u.foto AS foto_profil, f.judul 
     FROM reviews r 
     JOIN users u ON r.user_id = u.id 
     JOIN films f ON r.film_id = f.id 
@@ -109,7 +109,7 @@ $tipe  = $_GET['tipe'] ?? '';
         <div id="film" style="margin-bottom:2rem;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
                 <h2 style="font-family:'Playfair Display',serif; font-size:1.4rem;">Film Terbaru</h2>
-                <a href="../rekomendasi.php" class="btn btn-outline btn-kecil" target="_blank">Lihat Semua</a>
+                <a href="../rekomendasi.php" class="btn btn-outline btn-kecil">Lihat Semua</a>
             </div>
             
             <div class="tabel-wrapper">
@@ -174,7 +174,28 @@ $tipe  = $_GET['tipe'] ?? '';
                     <tbody>
                         <?php foreach ($review_terbaru as $r): ?>
                         <tr>
-                            <td style="color:#f0f0f0;"><?= htmlspecialchars($r['username']) ?></td>
+                            <td style="color:#f0f0f0;">
+                                <span style="display:inline-flex; align-items:center; gap:0.5rem;">
+                                    <?php
+                                    $nama_foto = basename((string) ($r['foto_profil'] ?? ''));
+                                    $lokasi_foto = __DIR__ . '/../img/' . $nama_foto;
+                                    ?>
+
+                                    <?php if ($nama_foto !== '' && is_file($lokasi_foto)): ?>
+                                        <img
+                                            src="../img/<?= htmlspecialchars($nama_foto, ENT_QUOTES, 'UTF-8') ?>?v=<?= (int) filemtime($lokasi_foto) ?>"
+                                            alt="Foto profil"
+                                            class="avatar-kecil avatar-kecil-foto"
+                                        >
+                                    <?php else: ?>
+                                        <span class="avatar-kecil">
+                                            <?= htmlspecialchars(strtoupper(substr($r['username'], 0, 1)), ENT_QUOTES, 'UTF-8') ?>
+                                        </span>
+                                    <?php endif; ?>
+
+                                    <?= htmlspecialchars($r['username'], ENT_QUOTES, 'UTF-8') ?>
+                                </span>
+                            </td>
                             <td><?= htmlspecialchars($r['judul']) ?></td>
                             <td>
                                 <span style="color:#FFEC89;">
@@ -183,7 +204,7 @@ $tipe  = $_GET['tipe'] ?? '';
                             </td>
                             <td><?= date('d/m/Y', strtotime($r['created_at'])) ?></td>
                             <td>
-                                <a href="hapus_review.php?id=<?= $r['id'] ?>"
+                                <a href="hapus_review.php?id=<?= $r['id'] ?>&asal=dashboard"
                                    class="btn btn-hapus btn-kecil"
                                    onclick="return konfirmasiHapus('Hapus review ini?')">
                                     Hapus

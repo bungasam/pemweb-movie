@@ -25,6 +25,7 @@ $hasil_terbaru = $pdo->query($query_terbaru);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CineView — Rating Film Terpercaya</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
@@ -36,11 +37,11 @@ $hasil_terbaru = $pdo->query($query_terbaru);
             <li><a href="rekomendasi.php">Rekomendasi</a></li>
             <?php if (isset($_SESSION['user_id'])): ?>
                 <?php if ($_SESSION['role'] == 'admin'): ?>
-                    <li><a href="admin/dashboard.php">Dashboard Admin</a></li>
+                    <li><a href="admin/dashboard.php">Dashboard</a></li>
                 <?php else: ?>
-                    <li><a href="user/dashboard.php">Profil Saya</a></li>
+                    <li><a href="user/dashboard.php">Profil</a></li>
                 <?php endif; ?>
-                <li><a href="logout.php">Logout</a></li>
+                <li><a href="logout.php" onclick="return confirmLogout(event, this.href)">Logout</a></li>
             <?php else: ?>
                 <li><a href="register.php">Daftar</a></li>
                 <li><a href="login.php" class="btn-nav-login">Login</a></li>
@@ -146,29 +147,7 @@ $hasil_terbaru = $pdo->query($query_terbaru);
 </div>
 <?php endif; ?>
 
-<footer>
-    <div class="footer-inner">
-        <div class="footer-atas">
-            <div class="footer-brand">
-                <h3>Cine<span style="color:#BA3801">View</span></h3>
-                <p>Platform ulasan dan rating film terpercaya untuk semua pecinta film.</p>
-            </div>
-            <div class="footer-kolom">
-                <h4>Navigasi</h4>
-                <a href="index.php">Beranda</a>
-                <a href="rekomendasi.php">Rekomendasi</a>
-            </div>
-            <div class="footer-kolom">
-                <h4>Kontak</h4>
-                <a href="mailto:cineview@gmail.com">✉️ cineview@gmail.com</a>
-                <a href="tel:+6281234567890">📞 +62 812-3456-7890</a>
-            </div>
-        </div>
-        <div class="footer-bawah">
-            &copy; 2026 CineView &mdash; Platform Rating Film Terpercaya
-        </div>
-    </div>
-</footer>
+<?php $footer_base = ''; include 'footer.php'; ?>
 
 <script src="script.js"></script>
 </body>

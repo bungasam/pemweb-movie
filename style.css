@@ -650,6 +650,65 @@ body {
     text-transform: uppercase;
 }
 
+
+/* Foto profil pada daftar ulasan */
+.avatar-kecil-foto {
+    object-fit: cover;
+    display: block;
+    flex-shrink: 0;
+}
+
+.avatar-kecil-fallback {
+    flex-shrink: 0;
+}
+
+/* Kotak form untuk menulis rating dan ulasan */
+.form-review-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 2rem;
+    max-width: 600px;
+}
+
+.form-review-user {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.2rem;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.avatar-review {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid var(--merah);
+}
+
+.avatar-review-fallback {
+    background: var(--merah);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.form-review-nama {
+    color: var(--teks-putih);
+    font-weight: 700;
+}
+
+.form-review-keterangan {
+    color: var(--teks-abu);
+    font-size: 0.82rem;
+}
+
 .review-tanggal {
     font-size: 0.8rem;
     color: var(--teks-abu);
@@ -814,6 +873,14 @@ tr:hover td {
 
 .empty-state p {
     font-size: 0.95rem;
+}
+
+
+
+/* Keterangan untuk rating yang dikirim tanpa komentar */
+.review-tanpa-komentar {
+    color: #777;
+    font-style: italic;
 }
 
 /* =========================================

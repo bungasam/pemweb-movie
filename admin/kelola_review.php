@@ -14,7 +14,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
 
 // Ambil semua review (tanpa filter dulu, nanti difilter oleh JavaScript)
 $semua_review = $pdo->query("
-    SELECT r.*, u.username, f.judul AS judul_film, f.id AS film_id
+    SELECT r.*, u.username, u.foto AS foto_profil, f.judul AS judul_film, f.id AS film_id
     FROM reviews r
     JOIN users u ON r.user_id = u.id
     JOIN films f ON r.film_id = f.id
@@ -288,10 +288,24 @@ $tipe  = $_GET['tipe'] ?? '';
                         <td><?= $no++ ?></td>
                         <td style="color:#f0f0f0; font-weight:600;">
                             <span style="display:inline-flex; align-items:center; gap:0.5rem;">
-                                <span style="width:28px; height:28px; border-radius:50%; background:#BA3801; display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; color:white;">
-                                    <?= strtoupper(substr($r['username'],0,1)) ?>
-                                </span>
-                                <?= htmlspecialchars($r['username']) ?>
+                                <?php
+                                $nama_foto = basename((string) ($r['foto_profil'] ?? ''));
+                                $lokasi_foto = __DIR__ . '/../img/' . $nama_foto;
+                                ?>
+
+                                <?php if ($nama_foto !== '' && is_file($lokasi_foto)): ?>
+                                    <img
+                                        src="../img/<?= htmlspecialchars($nama_foto, ENT_QUOTES, 'UTF-8') ?>?v=<?= (int) filemtime($lokasi_foto) ?>"
+                                        alt="Foto profil"
+                                        class="avatar-kecil avatar-kecil-foto"
+                                    >
+                                <?php else: ?>
+                                    <span class="avatar-kecil">
+                                        <?= htmlspecialchars(strtoupper(substr($r['username'], 0, 1)), ENT_QUOTES, 'UTF-8') ?>
+                                    </span>
+                                <?php endif; ?>
+
+                                <?= htmlspecialchars($r['username'], ENT_QUOTES, 'UTF-8') ?>
                             </span>
                         </td>
                         <td>
@@ -308,16 +322,16 @@ $tipe  = $_GET['tipe'] ?? '';
                         </td>
                         <td style="max-width:200px;">
                             <span style="display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;">
-                                <?= htmlspecialchars($r['komentar']) ?>
+                                <?= htmlspecialchars(!empty($r['komentar']) ? $r['komentar'] : 'Tanpa komentar') ?>
                             </span>
                             <button type="button"
                                     class="btn btn-outline btn-kecil"
                                     style="margin-top:0.3rem; font-size:0.7rem;"
                                     onclick="lihatKomentar(
-                                        '<?= addslashes(htmlspecialchars($r['username'])) ?>',
-                                        '<?= addslashes(htmlspecialchars($r['judul_film'])) ?>',
-                                        <?= $r['rating'] ?>,
-                                        '<?= addslashes(htmlspecialchars($r['komentar'])) ?>'
+                                        <?= htmlspecialchars(json_encode($r['username']), ENT_QUOTES, 'UTF-8') ?>,
+                                        <?= htmlspecialchars(json_encode($r['judul_film']), ENT_QUOTES, 'UTF-8') ?>,
+                                        <?= (int) $r['rating'] ?>,
+                                        <?= htmlspecialchars(json_encode(!empty($r['komentar']) ? $r['komentar'] : 'Tanpa komentar'), ENT_QUOTES, 'UTF-8') ?>
                                     )">
                                 📖 Lihat Lengkap
                             </button>
@@ -327,7 +341,7 @@ $tipe  = $_GET['tipe'] ?? '';
                             <br><small style="color:#555;"><?= date('H:i', strtotime($r['created_at'])) ?></small>
                         </td>
                         <td>
-                            <a href="hapus_review.php?id=<?= $r['id'] ?>&film_id=<?= $r['film_id'] ?>"
+                            <a href="hapus_review.php?id=<?= $r['id'] ?>&asal=kelola_review"
                                class="btn btn-hapus btn-kecil"
                                onclick="return konfirmasiHapus('Hapus review dari <?= addslashes($r['username']) ?>?')">
                                 Hapus

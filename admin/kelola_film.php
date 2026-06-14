@@ -303,7 +303,7 @@ $tipe  = $_GET['tipe'] ?? '';
                         <td>
                             <div style="display:flex; gap:0.4rem;">
                                 <a href="../detail.php?id=<?= $f['id'] ?>" 
-                                   class="btn btn-outline btn-kecil" target="_blank">Lihat</a>
+                                   class="btn btn-outline btn-kecil">Lihat</a>
                                 <a href="edit_film.php?id=<?= $f['id'] ?>" 
                                    class="btn btn-biru btn-kecil">Edit</a>
                                 <a href="hapus_film.php?id=<?= $f['id'] ?>" 

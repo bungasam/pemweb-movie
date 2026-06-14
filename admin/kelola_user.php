@@ -353,13 +353,50 @@ $tipe  = $_GET['tipe']  ?? ($tipe_hapus  ?? '');
                 <td style="width:50px;"><?= $no++ ?></td>
                 
                 <td>
-                    <span style="display:inline-flex; align-items:center; gap:0.5rem;">
-                        <span style="width:32px; height:32px; border-radius:50%; background:#BA3801; display:inline-flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:white;">
+                <span style="display:inline-flex; align-items:center; gap:0.5rem;">
+
+                    <?php
+                    $nama_foto = basename($u['foto'] ?? '');
+                    $lokasi_foto = '../img/' . $nama_foto;
+                    ?>
+
+                    <?php if (!empty($nama_foto) && file_exists($lokasi_foto)): ?>
+
+                        <img
+                            src="../img/<?= htmlspecialchars($nama_foto) ?>?v=<?= filemtime($lokasi_foto) ?>"
+                            alt="Foto Profil"
+                            style="
+                                width:32px;
+                                height:32px;
+                                border-radius:50%;
+                                object-fit:cover;
+                                border:1px solid #333;
+                            "
+                        >
+
+                    <?php else: ?>
+
+                        <span style="
+                            width:32px;
+                            height:32px;
+                            border-radius:50%;
+                            background:#BA3801;
+                            display:inline-flex;
+                            align-items:center;
+                            justify-content:center;
+                            font-size:0.8rem;
+                            font-weight:700;
+                            color:white;
+                        ">
                             <?= strtoupper(substr($u['username'],0,1)) ?>
                         </span>
-                        <?= htmlspecialchars($u['username']) ?>
-                    </span>
-                </td>
+
+                    <?php endif; ?>
+
+                    <?= htmlspecialchars($u['username']) ?>
+
+                </span>
+            </td>
                 
                 <td style="color:#aaa; font-size:0.85rem;">
                     <?= htmlspecialchars($u['email']) ?>
@@ -440,7 +477,7 @@ $tipe  = $_GET['tipe']  ?? ($tipe_hapus  ?? '');
                                 <span style="color:#aaa; font-size:0.75rem;">(<?= $rv['rating'] ?>)</span>
                             </td>
                             <td style="max-width:250px; color:#ccc; font-size:0.85rem; line-height:1.5;">
-                                <?= nl2br(htmlspecialchars($rv['komentar'])) ?>
+                                <?= !empty($rv['komentar']) ? nl2br(htmlspecialchars($rv['komentar'])) : '<em style="color:#777;">Tanpa komentar</em>' ?>
                             </td>
                             <td><?= date('d M Y', strtotime($rv['created_at'])) ?></td>
                         </tr>

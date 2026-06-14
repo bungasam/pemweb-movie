@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                            placeholder="Minimal 6 karakter"
                            oninput="cekKekuatanPassword(this.value)"
                            required>
-                    <button type="button" class="btn-toggle-password" onclick="togglePassword('password', this)">👁️</button>
+                    <button type="button" class="btn-toggle-password" onclick="togglePassword('password', this)">⌣</button>
                 </div>
                 <!-- Indikator kekuatan password -->
                 <div id="info-password" style="margin-top:0.4rem; font-size:0.8rem; color:#aaa;">
@@ -153,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                            placeholder="Ulangi password"
                            oninput="cekKonfirmasiPassword()"
                            required>
-                    <button type="button" class="btn-toggle-password" onclick="togglePassword('konfirm_password', this)">👁️</button>
+                    <button type="button" class="btn-toggle-password" onclick="togglePassword('konfirm_password', this)">⌣</button>
                 </div>
                 <div id="info-konfirm" style="margin-top:0.4rem; font-size:0.8rem; color:#aaa;"></div>
             </div>

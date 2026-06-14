@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <li><a href="../index.php">Beranda</a></li>
             <li><a href="../rekomendasi.php">Rekomendasi</a></li>
             <li><a href="dashboard.php">Profil</a></li>
-            <li><a href="#" onclick="confirmLogout(event)">Logout</a></li>
+            <li><a href="../logout.php" onclick="return confirmLogout(event, this.href)">Logout</a></li>
         </ul>
     </div>
 </nav>
@@ -156,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <!-- Foto profil saat ini -->
         <div style="text-align:center; margin-bottom:1.5rem;">
             <?php if (!empty($user['foto'])): ?>
-                <img src="../img/<?= htmlspecialchars($user['foto']) ?>"
+                <img src="../img/<?= htmlspecialchars($user['foto']) ?>?v=<?= !empty($user['foto']) && file_exists('../img/' . $user['foto']) ? filemtime('../img/' . $user['foto']) : time() ?>"
                      alt="Foto Profil"
                      onerror="this.style.display='none'; document.getElementById('avatar-fallback').style.display='flex';"
                      style="width:90px; height:90px; border-radius:50%; object-fit:cover; border:3px solid #BA3801;">
@@ -212,31 +212,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <script src="../script.js"></script>
 <script>
-function confirmLogout(event) {
-    event.preventDefault();
-    Swal.fire({
-        title: '⚠️ Konfirmasi Logout',
-        text: 'Apakah Anda yakin ingin logout dari CineView?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#BA3801',
-        cancelButtonColor: '#555',
-        confirmButtonText: 'Ya, Logout!',
-        cancelButtonText: 'Batal',
-        background: '#1a1a1a',
-        color: '#f0f0f0',
-        iconColor: '#FFEC89'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = '../logout.php';
-        }
-    });
-}
-
 function previewFoto(input) {
     var preview = document.getElementById('preview-foto-baru');
     var label   = document.getElementById('label-preview');
-    
+
     if (input.files && input.files[0]) {
         var reader = new FileReader();
         reader.onload = function(e) {

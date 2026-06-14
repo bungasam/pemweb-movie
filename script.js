@@ -23,7 +23,13 @@ window.addEventListener('DOMContentLoaded', function () {
     var alerts = document.querySelectorAll('.alert');
     
     alerts.forEach(function(alert) {
-        // Set timer 4000ms = 4 detik
+        // alert-info (misal: "Login terlebih dahulu") TIDAK dihilangkan otomatis
+        // Biar tetap terlihat selama user di halaman tersebut
+        if (alert.classList.contains('alert-info')) {
+            return; // Lewati, jangan sembunyikan
+        }
+        
+        // Alert sukses dan error hilang otomatis setelah 4 detik
         setTimeout(function() {
             // Animasi fade out (transparansi berkurang perlahan)
             alert.style.transition = 'opacity 0.5s ease';
@@ -79,28 +85,60 @@ window.addEventListener('DOMContentLoaded', function () {
 
 // =============================================
 // 5. VALIDASI FORM REVIEW
-//    Pastikan rating sudah dipilih sebelum submit
+//    Rating wajib dipilih, komentar boleh dikosongkan
 // =============================================
 function validasiReview() {
-    // Cek apakah ada radio button rating yang dipilih
     var ratingTerpilih = document.querySelector('input[name="rating"]:checked');
-    
+
     if (!ratingTerpilih) {
         alert('⚠️ Pilih rating bintang terlebih dahulu!');
-        return false; // Batalkan submit form
-    }
-    
-    var komentar = document.getElementById('komentar');
-    if (komentar && komentar.value.trim().length < 5) {
-        alert('⚠️ Tulis komentar minimal 5 karakter!');
         return false;
     }
-    
-    return true; // Lanjutkan submit
+
+    return true;
 }
 
 // =============================================
-// 6. SEARCH FILM (Filter grid film secara real-time)
+// 6. KONFIRMASI LOGOUT
+//    SweetAlert dipakai jika tersedia. Jika CDN gagal,
+//    otomatis memakai window.confirm() biasa.
+// =============================================
+function confirmLogout(event, logoutUrl) {
+    event.preventDefault();
+
+    var tujuan = logoutUrl;
+    if (!tujuan && event.currentTarget) {
+        tujuan = event.currentTarget.getAttribute('href');
+    }
+    tujuan = tujuan || 'logout.php';
+
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: '⚠️ Konfirmasi Logout',
+            text: 'Apakah Anda yakin ingin logout dari CineView?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#BA3801',
+            cancelButtonColor: '#555',
+            confirmButtonText: 'Ya, Logout!',
+            cancelButtonText: 'Batal',
+            background: '#1a1a1a',
+            color: '#f0f0f0',
+            iconColor: '#FFEC89'
+        }).then(function (hasil) {
+            if (hasil.isConfirmed) {
+                window.location.href = tujuan;
+            }
+        });
+    } else if (window.confirm('Apakah Anda yakin ingin logout dari CineView?')) {
+        window.location.href = tujuan;
+    }
+
+    return false;
+}
+
+// =============================================
+// 7. SEARCH FILM (Filter grid film secara real-time)
 //    Bekerja dengan card-based grid, bukan tabel
 // =============================================
 function cariFilm() {
@@ -146,23 +184,23 @@ function cariFilm() {
     }
 }
 // =============================================
-// 7. TOGGLE SHOW/HIDE PASSWORD
+// 8. TOGGLE SHOW/HIDE PASSWORD
 //    Tombol mata untuk lihat/sembunyikan password
 // =============================================
 function togglePassword(inputId, tombol) {
     var input = document.getElementById(inputId);
     
     if (input.type === 'password') {
-        input.type = 'text';        // Tampilkan password
-        tombol.textContent = '🙈';  // Ganti ikon
+        input.type = 'text';           // Tampilkan password
+        tombol.textContent = '👁'; // Ganti teks tombol
     } else {
-        input.type = 'password';    // Sembunyikan lagi
-        tombol.textContent = '👁️';
+        input.type = 'password';       // Sembunyikan lagi
+        tombol.textContent = '⌣';  // Kembali ke teks awal
     }
 }
 
 // =============================================
-// 8. CEK KEKUATAN PASSWORD
+// 9. CEK KEKUATAN PASSWORD
 //    Tampilkan indikator kuat/lemah
 // =============================================
 function cekKekuatanPassword(nilai) {
@@ -200,7 +238,7 @@ function cekKekuatanPassword(nilai) {
 }
 
 // =============================================
-// 9. CEK KONFIRMASI PASSWORD
+// 10. CEK KONFIRMASI PASSWORD
 //    Tampilkan apakah password cocok
 // =============================================
 function cekKonfirmasiPassword() {

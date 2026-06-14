@@ -1,15 +1,17 @@
 <?php
 // =============================================
 // FILE: logout.php
-// Fungsi: Menghancurkan session dan logout user
+// Fungsi: Menghapus session lalu kembali ke halaman login
 // =============================================
 
-session_start(); // Mulai session yang ada
+session_start();
 
-// Hapus semua data session
-session_destroy(); // Hancurkan session sepenuhnya
+// Kosongkan semua data yang tersimpan di session.
+$_SESSION = [];
 
-// Redirect ke halaman login
-header("Location: login.php");
+
+session_destroy();
+
+header('Location: login.php?pesan=Anda+berhasil+logout.&tipe=sukses');
 exit;
 ?>

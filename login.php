@@ -17,9 +17,11 @@ if (isset($_SESSION['user_id'])) {
     exit;
 }
 
-$pesan = '';
+$pesan = $_GET['pesan'] ?? '';
+$tipe  = $_GET['tipe'] ?? 'error';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $tipe = 'error';
     
     $username = trim($_POST['username']);
     $password = $_POST['password'];
@@ -78,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
         
         <?php if ($pesan): ?>
-        <div class="alert alert-error"><?= htmlspecialchars($pesan) ?></div>
+        <div class="alert <?= $tipe === 'sukses' ? 'alert-sukses' : 'alert-error' ?>"><?= htmlspecialchars($pesan) ?></div>
         <?php endif; ?>
         
         <form method="POST" action="login.php">
@@ -101,10 +103,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                            name="password" 
                            placeholder="Masukkan password"
                            required>
-                    <button type="button" class="btn-toggle-password" onclick="togglePassword('password', this)">👁️</button>
+                    <button type="button" class="btn-toggle-password" onclick="togglePassword('password', this)">⌣</button>
                 </div>
             </div>
             
+            <div style="text-align:right; margin:-0.3rem 0 1rem;">
+                <a href="forgot_password.php" style="color:#6b8fd4; font-size:0.88rem;">Lupa password?</a>
+            </div>
+
             <button type="submit" class="btn btn-merah btn-submit">
                 Masuk
             </button>
