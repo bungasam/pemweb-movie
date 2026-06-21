@@ -12,7 +12,7 @@ $footer_base = $footer_base ?? '';
         <div class="footer-atas">
             <div class="footer-brand">
                 <h3>Cine<span style="color:#BA3801">View</span></h3>
-                <p>Platform ulasan dan rating film terpercaya untuk semua pecinta film.</p>
+                <p>Temukan film favoritmu di sini. Dapatkan ulasan jujur, rating dari penonton, dan rekomendasi film yang sesuai dengan seleramu.</p>
             </div>
 
             <div class="footer-kolom">
