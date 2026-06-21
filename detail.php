@@ -322,8 +322,7 @@ $tipe  = $_GET['tipe'] ?? '';
                                 <?= nl2br(htmlspecialchars($review['komentar'], ENT_QUOTES, 'UTF-8')) ?>
                             </p>
                         <?php else: ?>
-                            <p class="review-komentar review-tanpa-komentar">
-                                Memberikan rating tanpa komentar.
+                            <p class="">
                             </p>
                         <?php endif; ?>
 
