@@ -227,10 +227,10 @@ $tipe  = $_GET['tipe'] ?? '';
                     <select id="filterRating">
                         <option value="">Semua Rating</option>
                         <option value="5">★★★★★ (5)</option>
-                        <option value="4">★★★★☆ (4+)</option>
-                        <option value="3">★★★☆☆ (3+)</option>
-                        <option value="2">★★☆☆☆ (2+)</option>
-                        <option value="1">★☆☆☆☆ (1+)</option>
+                        <option value="4">★★★★☆ (4)</option>
+                        <option value="3">★★★☆☆ (3)</option>
+                        <option value="2">★★☆☆☆ (2)</option>
+                        <option value="1">★☆☆☆☆ (1)</option>
                     </select>
                 </div>
                 
@@ -451,7 +451,7 @@ function applyFilter() {
         }
         
         // Filter rating (>= nilai yang dipilih)
-        if (match && ratingValue && rating < parseInt(ratingValue)) {
+        if (match && ratingValue && rating !== parseInt(ratingValue)) {
             match = false;
         }
         
@@ -536,10 +536,10 @@ function updateFilterInfo(film, user, rating, tanggal, count) {
         let ratingText = '';
         switch(rating) {
             case '5': ratingText = '★★★★★ (5)'; break;
-            case '4': ratingText = '★★★★☆ (4+)'; break;
-            case '3': ratingText = '★★★☆☆ (3+)'; break;
-            case '2': ratingText = '★★☆☆☆ (2+)'; break;
-            case '1': ratingText = '★☆☆☆☆ (1+)'; break;
+            case '4': ratingText = '★★★★☆ (4)'; break;
+            case '3': ratingText = '★★★☆☆ (3)'; break;
+            case '2': ratingText = '★★☆☆☆ (2)'; break;
+            case '1': ratingText = '★☆☆☆☆ (1)'; break;
         }
         hasActive = true;
         activeFiltersDiv.innerHTML += `
