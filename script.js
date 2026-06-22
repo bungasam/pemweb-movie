@@ -261,3 +261,34 @@ function cekKonfirmasiPassword() {
         info.style.color = '#e74c3c';
     }
 }
+
+// ============================================
+// KONFIRMASI HAPUS DENGAN SWEETALERT - ada di detail.php itu manggil role admin buat hapus review. mangkaknya perlu ditambahin di root ini, cek bari 359
+// kalo ndk pake dia ntr konfirmasi hapusnya ndk manggil js
+// ============================================
+function konfirmasiHapus(pesan) {
+    Swal.fire({
+        title: '⚠️ Konfirmasi Hapus',
+        text: pesan,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#BA3801',
+        cancelButtonColor: '#555',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal',
+        background: '#1a1a1a',
+        color: '#f0f0f0',
+        iconColor: '#FFEC89'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Cari link yang mengandung fungsi ini
+            const links = document.querySelectorAll('a[onclick*="konfirmasiHapus"]');
+            links.forEach(link => {
+                if (link.onclick.toString().includes(pesan)) {
+                    window.location.href = link.href;
+                }
+            });
+        }
+    });
+    return false;
+}

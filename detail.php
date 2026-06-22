@@ -357,11 +357,10 @@ $tipe  = $_GET['tipe'] ?? '';
                                         Hapus
                                     </a>
                                 <?php elseif ($admin_login): ?>
-                                    <a
-                                        href="admin/hapus_review.php?id=<?= (int) $review['id'] ?>&asal=detail"
+                                    <a 
+                                        href="hapus_review.php?id=<?= $review['id'] ?>&asal=detail"
                                         class="btn btn-hapus btn-kecil"
-                                        onclick="return konfirmasiHapus('Hapus ulasan pengguna ini?')"
-                                    >
+                                        onclick="return konfirmasiHapus('Hapus review dari <?= addslashes($review['username']) ?>?')">
                                         Hapus
                                     </a>
                                 <?php endif; ?>
