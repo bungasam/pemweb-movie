@@ -51,11 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!preg_match('/^08[0-9]{8,12}$/', $noHp)) {
         $pesan = 'Nomor HP tidak valid. Gunakan nomor Indonesia, contohnya 081234567890.';
 
-    } elseif (strlen($password) < 8) {
-        $pesan = 'Password minimal 8 karakter!';
-
-    } elseif (!preg_match('/[0-9]/', $password)) {
-        $pesan = 'Password harus mengandung minimal 1 angka!';
+    } elseif (strlen($password) < 6) {
+        $pesan = 'Password minimal 6 karakter!';
 
     } elseif ($password !== $konfirm) {
         $pesan = 'Password dan konfirmasi password tidak sama!';
@@ -123,82 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar — CineView</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Style untuk password hint bertahap */
-        .password-hint-container {
-            margin-top: 0.3rem;
-            min-height: 55px;
-        }
-        .password-hint {
-            font-size: 0.8rem;
-            padding: 0.5rem 0.7rem;
-            border-radius: 4px;
-            background: #1a1a1a;
-            transition: all 0.3s ease;
-            min-height: 38px;
-            display: flex;
-            align-items: center;
-        }
-        .password-hint .hint-text {
-            transition: all 0.3s ease;
-        }
-        .password-hint.hint-step1 {
-            border-left: 3px solid #ff9800;
-        }
-        .password-hint.hint-step2 {
-            border-left: 3px solid #ff9800;
-        }
-        .password-hint.hint-success {
-            border-left: 3px solid #4caf50;
-            background: #1a2a1a;
-        }
-        .password-hint .hint-step {
-            color: #ff9800;
-            font-weight: 500;
-        }
-        .password-hint .hint-success-text {
-            color: #4caf50;
-            font-weight: 500;
-        }
-        .password-hint .hint-info {
-            color: #888;
-        }
-        .password-hint .highlight {
-            color: #fff;
-            font-weight: 600;
-        }
-        .password-strength-bar {
-            height: 3px;
-            border-radius: 3px;
-            background: #333;
-            margin-top: 0.5rem;
-            transition: all 0.3s;
-            overflow: hidden;
-        }
-        .password-strength-fill {
-            height: 100%;
-            width: 0%;
-            border-radius: 3px;
-            transition: all 0.5s ease;
-        }
-        .strength-weak .password-strength-fill {
-            width: 50%;
-            background: #f44336;
-        }
-        .strength-strong .password-strength-fill {
-            width: 100%;
-            background: #4caf50;
-        }
-        #strength-text {
-            font-size: 0.7rem;
-            color: #666;
-            margin-top: 0.2rem;
-        }
-        .konfirm-status {
-            font-size: 0.75rem;
-            margin-top: 0.3rem;
-        }
-    </style>
 </head>
 <body>
 
@@ -227,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="login.php" class="btn btn-merah btn-submit">Pergi ke Login</a>
             </div>
         <?php else: ?>
-            <form method="POST" action="register.php" id="registerForm">
+            <form method="POST" action="register.php">
 
                 <div class="form-group">
                     <label for="username">Username</label>
@@ -274,8 +195,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             type="password"
                             id="password"
                             name="password"
-                            placeholder="Minimal 8 karakter, harus ada angka"
-                            oninput="cekPasswordBertahap(this.value)"
+                            placeholder="Minimal 6 karakter"
+                            oninput="cekKekuatanPassword(this.value)"
                             required
                         >
                         <button
@@ -285,18 +206,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         >⌣</button>
                     </div>
 
-                    <!-- HINT PASSWORD BERTAHAP (HANYA HURUF & ANGKA) -->
-                    <div class="password-hint-container">
-                        <div class="password-hint" id="passwordHint">
-                            <span class="hint-text" id="hintText">Mulai ketik password...</span>
-                        </div>
+                    <div id="info-password" style="margin-top: 0.4rem; font-size: 0.8rem; color: #aaa;">
+                        Minimal 6 karakter
                     </div>
-
-                    <!-- BAR KEKUATAN -->
-                    <div class="password-strength-bar" id="strengthBar">
-                        <div class="password-strength-fill" id="strengthFill"></div>
+                    <div id="bar-password" style="height: 4px; border-radius: 4px; background: #333; margin-top: 0.3rem; transition: all 0.3s;">
+                        <div id="isi-bar-password" style="height: 100%; width: 0%; border-radius: 4px; transition: all 0.3s;"></div>
                     </div>
-                    <div id="strength-text"></div>
                 </div>
 
                 <div class="form-group">
@@ -307,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             id="konfirm_password"
                             name="konfirm_password"
                             placeholder="Ulangi password"
-                            oninput="cekKonfirmasi()"
+                            oninput="cekKonfirmasiPassword()"
                             required
                         >
                         <button
@@ -316,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             onclick="togglePassword('konfirm_password', this)"
                         >⌣</button>
                     </div>
-                    <div id="konfirm-status" class="konfirm-status"></div>
+                    <div id="info-konfirm" style="margin-top: 0.4rem; font-size: 0.8rem; color: #aaa;"></div>
                 </div>
 
                 <button type="submit" class="btn btn-merah btn-submit">
@@ -331,141 +246,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<script>
-// =============================================
-// TOGGLE PASSWORD VISIBILITY
-// =============================================
-function togglePassword(id, btn) {
-    const input = document.getElementById(id);
-    if (input.type === 'password') {
-        input.type = 'text';
-        btn.textContent = '⌵';
-    } else {
-        input.type = 'password';
-        btn.textContent = '⌣';
-    }
-}
-
-// =============================================
-// CEK PASSWORD BERTAHAP (HANYA HURUF & ANGKA)
-// =============================================
-function cekPasswordBertahap(password) {
-    const hasLength = password.length >= 8;
-    const hasNumber = /[0-9]/.test(password);
-    
-    const hint = document.getElementById('passwordHint');
-    const text = document.getElementById('hintText');
-
-    // Hapus semua class
-    hint.className = 'password-hint';
-
-    // STEP 1: Cek panjang karakter
-    if (password.length === 0) {
-        // Belum ada input
-        hint.className = 'password-hint hint-step1';
-        text.innerHTML = '<span class="hint-info">Mulai ketik password...</span>';
-    }
-    else if (!hasLength) {
-        // Belum mencapai 8 karakter
-        hint.className = 'password-hint hint-step1';
-        text.innerHTML = '<span class="hint-step">Langkah 1:</span> Password minimal <span class="highlight">8 karakter</span> (kurang ' + (8 - password.length) + ' lagi)';
-    }
-    // STEP 2: Sudah 8 karakter, cek angka
-    else if (hasLength && !hasNumber) {
-        hint.className = 'password-hint hint-step2';
-        text.innerHTML = '<span class="hint-step">Langkah 2:</span> Tambahkan <span class="highlight">angka</span> (0-9)';
-    }
-    // STEP 3: Semua terpenuhi
-    else if (hasLength && hasNumber) {
-        hint.className = 'password-hint hint-success';
-        text.innerHTML = '<span class="hint-success-text">Password kuat! Semua syarat terpenuhi</span>';
-    }
-
-    // Update strength bar (hanya 2 level)
-    const bar = document.getElementById('strengthBar');
-    const fill = document.getElementById('strengthFill');
-    const strengthText = document.getElementById('strength-text');
-
-    bar.className = 'password-strength-bar';
-
-    if (password.length === 0) {
-        fill.style.width = '0%';
-        strengthText.textContent = '';
-        return;
-    }
-
-    let level = '';
-    let label = '';
-    let progress = 0;
-    
-    if (hasLength && hasNumber) {
-        level = 'strength-strong';
-        label = 'Kuat';
-        progress = 100;
-    } else if (hasLength) {
-        level = 'strength-weak';
-        label = 'Sedang - tambahkan angka';
-        progress = 50;
-    } else {
-        level = 'strength-weak';
-        label = 'Lemah - minimal 8 karakter';
-        progress = 25;
-    }
-    
-    bar.classList.add(level);
-    fill.style.width = progress + '%';
-    strengthText.textContent = 'Kekuatan: ' + label;
-
-    // Cek konfirmasi
-    cekKonfirmasi();
-}
-
-// =============================================
-// CEK KONFIRMASI PASSWORD
-// =============================================
-function cekKonfirmasi() {
-    const password = document.getElementById('password').value;
-    const konfirm = document.getElementById('konfirm_password').value;
-    const status = document.getElementById('konfirm-status');
-
-    if (konfirm.length === 0) {
-        status.textContent = '';
-        return;
-    }
-
-    if (password === konfirm) {
-        status.innerHTML = 'Password cocok';
-        status.style.color = '#4caf50';
-    } else {
-        status.innerHTML = 'Password tidak cocok';
-        status.style.color = '#f44336';
-    }
-}
-
-// =============================================
-// VALIDASI FORM SEBELUM SUBMIT
-// =============================================
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('registerForm');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            const password = document.getElementById('password').value;
-            const konfirm = document.getElementById('konfirm_password').value;
-            let errors = [];
-
-            if (password.length < 8) errors.push('Password minimal 8 karakter');
-            if (!/[0-9]/.test(password)) errors.push('Password harus mengandung angka');
-            if (password !== konfirm) errors.push('Password dan konfirmasi tidak sama');
-
-            if (errors.length > 0) {
-                e.preventDefault();
-                alert('Perbaiki error berikut:\n- ' + errors.join('\n- '));
-                return false;
-            }
-        });
-    }
-});
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
