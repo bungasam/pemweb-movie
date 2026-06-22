@@ -168,6 +168,30 @@ $tipe  = $_GET['tipe'] ?? '';
             color: #FFEC89;
             letter-spacing: 2px;
         }
+
+        .garis-dekorasi {
+            width: 60px;
+            height: 3px;
+            background: #BA3801;
+            margin-top: 0.5rem;
+            border-radius: 3px;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .alert-sukses {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+            color: #4CAF50;
+        }
+        .alert-error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #f44336;
+            color: #f44336;
+        }
     </style>
 </head>
 <body>
@@ -309,8 +333,9 @@ $tipe  = $_GET['tipe'] ?? '';
                             </span>
                         </td>
                         <td>
-                            <a href="../detail.php?id=<?= $r['film_id'] ?>" 
-                               style="color:#FFEC89; text-decoration:none;" target="_blank">
+                            <a 
+                                href="../detail.php?id=<?= $r['film_id'] ?>" 
+                                style="color:#FFEC89; text-decoration:none;">
                                 <?= htmlspecialchars($r['judul_film']) ?> ↗
                             </a>
                         </td>
@@ -377,292 +402,6 @@ $tipe  = $_GET['tipe'] ?? '';
     </div>
 </div>
 
-<script src="../script.js"></script>
-<script>
-// ============================================
-// FILTER REAL-TIME UNTUK KELOLA REVIEW
-// ============================================
-
-// Ambil elemen
-const filterFilm = document.getElementById('filterFilm');
-const filterUser = document.getElementById('filterUser');
-const filterRating = document.getElementById('filterRating');
-const filterTanggal = document.getElementById('filterTanggal');
-const tableBody = document.getElementById('tableBody');
-const filterInfo = document.getElementById('filterInfo');
-const activeFiltersDiv = document.getElementById('activeFilters');
-const resultCountSpan = document.getElementById('resultCount');
-
-// Fungsi untuk mendapatkan semua baris review
-function getReviewRows() {
-    return Array.from(document.querySelectorAll('#tableBody .review-row'));
-}
-
-// Fungsi untuk membandingkan tanggal
-function isDateInRange(tanggal, filter) {
-    const tgl = new Date(tanggal);
-    const sekarang = new Date();
-    const today = new Date(sekarang.getFullYear(), sekarang.getMonth(), sekarang.getDate());
-    const tglDate = new Date(tgl.getFullYear(), tgl.getMonth(), tgl.getDate());
-    
-    switch(filter) {
-        case 'today':
-            return tglDate.getTime() === today.getTime();
-        case 'week':
-            const weekAgo = new Date(today);
-            weekAgo.setDate(today.getDate() - 7);
-            return tglDate >= weekAgo;
-        case 'month':
-            return tgl.getMonth() === sekarang.getMonth() && 
-                   tgl.getFullYear() === sekarang.getFullYear();
-        case 'year':
-            return tgl.getFullYear() === sekarang.getFullYear();
-        default:
-            return true;
-    }
-}
-
-// Fungsi filter utama
-function applyFilter() {
-    const filmValue = filterFilm.value.toLowerCase().trim();
-    const userValue = filterUser.value.toLowerCase().trim();
-    const ratingValue = filterRating.value;
-    const tanggalValue = filterTanggal.value;
-    
-    const rows = getReviewRows();
-    let visibleCount = 0;
-    
-    rows.forEach(row => {
-        const judul = row.getAttribute('data-judul') || '';
-        const user = row.getAttribute('data-user') || '';
-        const rating = parseInt(row.getAttribute('data-rating')) || 0;
-        const tanggal = row.getAttribute('data-tanggal') || '';
-        
-        let match = true;
-        
-        // Filter judul film
-        if (filmValue && !judul.includes(filmValue)) {
-            match = false;
-        }
-        
-        // Filter user
-        if (match && userValue && !user.includes(userValue)) {
-            match = false;
-        }
-        
-        // Filter rating (>= nilai yang dipilih)
-        if (match && ratingValue && rating !== parseInt(ratingValue)) {
-            match = false;
-        }
-        
-        // Filter tanggal
-        if (match && tanggalValue && !isDateInRange(tanggal, tanggalValue)) {
-            match = false;
-        }
-        
-        if (match) {
-            row.classList.remove('hidden');
-            visibleCount++;
-        } else {
-            row.classList.add('hidden');
-        }
-    });
-    
-    // Update nomor urut
-    updateNomorUrut();
-    
-    // Update filter info
-    updateFilterInfo(filmValue, userValue, ratingValue, tanggalValue, visibleCount);
-    
-    // Tampilkan pesan jika tidak ada hasil
-    showEmptyMessage(visibleCount);
-}
-
-// Update nomor urut setelah filter
-function updateNomorUrut() {
-    const visibleRows = Array.from(document.querySelectorAll('#tableBody .review-row:not(.hidden)'));
-    visibleRows.forEach((row, index) => {
-        const noCell = row.cells[0];
-        if (noCell) {
-            noCell.textContent = index + 1;
-        }
-    });
-}
-
-// Tampilkan pesan "Tidak ada review"
-function showEmptyMessage(visibleCount) {
-    let emptyRow = document.getElementById('emptyRow');
-    
-    if (visibleCount === 0) {
-        if (!emptyRow) {
-            const newRow = document.createElement('tr');
-            newRow.id = 'emptyRow';
-            newRow.innerHTML = '<td colspan="7" style="text-align:center; padding:2rem; color:#aaa;">😢 Tidak ada review yang ditemukan.<br>Coba dengan filter yang berbeda.</td>';
-            tableBody.appendChild(newRow);
-        }
-    } else {
-        if (emptyRow) {
-            emptyRow.remove();
-        }
-    }
-}
-
-// Update badge filter aktif
-function updateFilterInfo(film, user, rating, tanggal, count) {
-    let hasActive = false;
-    activeFiltersDiv.innerHTML = '';
-    
-    if (film) {
-        hasActive = true;
-        activeFiltersDiv.innerHTML += `
-            <span class="badge-filter">
-                🎬 Film: "${escapeHtml(film)}" 
-                <span class="remove-filter" data-filter="film">✕</span>
-            </span>
-        `;
-    }
-    
-    if (user) {
-        hasActive = true;
-        activeFiltersDiv.innerHTML += `
-            <span class="badge-filter">
-                👤 User: "${escapeHtml(user)}" 
-                <span class="remove-filter" data-filter="user">✕</span>
-            </span>
-        `;
-    }
-    
-    if (rating) {
-        let ratingText = '';
-        switch(rating) {
-            case '5': ratingText = '★★★★★ (5)'; break;
-            case '4': ratingText = '★★★★☆ (4)'; break;
-            case '3': ratingText = '★★★☆☆ (3)'; break;
-            case '2': ratingText = '★★☆☆☆ (2)'; break;
-            case '1': ratingText = '★☆☆☆☆ (1)'; break;
-        }
-        hasActive = true;
-        activeFiltersDiv.innerHTML += `
-            <span class="badge-filter">
-                ⭐ Rating: ${ratingText}
-                <span class="remove-filter" data-filter="rating">✕</span>
-            </span>
-        `;
-    }
-    
-    if (tanggal) {
-        let tanggalText = '';
-        switch(tanggal) {
-            case 'today': tanggalText = 'Hari Ini'; break;
-            case 'week': tanggalText = '7 Hari Terakhir'; break;
-            case 'month': tanggalText = 'Bulan Ini'; break;
-            case 'year': tanggalText = 'Tahun Ini'; break;
-        }
-        hasActive = true;
-        activeFiltersDiv.innerHTML += `
-            <span class="badge-filter">
-                📅 Tanggal: ${tanggalText}
-                <span class="remove-filter" data-filter="tanggal">✕</span>
-            </span>
-        `;
-    }
-    
-    if (hasActive) {
-        filterInfo.style.display = 'flex';
-        resultCountSpan.innerHTML = `Ditemukan: ${count} review`;
-        
-        // Event listener untuk tombol hapus filter
-        document.querySelectorAll('.remove-filter').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const filterType = this.getAttribute('data-filter');
-                switch(filterType) {
-                    case 'film':
-                        filterFilm.value = '';
-                        break;
-                    case 'user':
-                        filterUser.value = '';
-                        break;
-                    case 'rating':
-                        filterRating.value = '';
-                        break;
-                    case 'tanggal':
-                        filterTanggal.value = '';
-                        break;
-                }
-                applyFilter();
-            });
-        });
-    } else {
-        filterInfo.style.display = 'none';
-    }
-}
-
-// Escape HTML
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// Event listener (real-time, tanpa tombol)
-filterFilm.addEventListener('input', applyFilter);
-filterUser.addEventListener('input', applyFilter);
-filterRating.addEventListener('change', applyFilter);
-filterTanggal.addEventListener('change', applyFilter);
-
-// Inisialisasi: tampilkan semua review
-applyFilter();
-
-// ============================================
-// MODAL KOMENTAR
-// ============================================
-function lihatKomentar(username, judulFilm, rating, komentar) {
-    document.getElementById('modal-username').textContent = username;
-    document.getElementById('modal-judul-film').textContent = judulFilm;
-    document.getElementById('modal-komentar-isi').textContent = komentar;
-    
-    let bintang = '';
-    for (let i = 1; i <= 5; i++) {
-        bintang += (i <= rating) ? '★' : '☆';
-    }
-    document.getElementById('modal-rating').innerHTML = bintang + ' (' + rating + '/5)';
-    
-    document.getElementById('modal-komentar').classList.add('aktif');
-}
-
-function tutupModal() {
-    document.getElementById('modal-komentar').classList.remove('aktif');
-}
-
-document.getElementById('modal-komentar').addEventListener('click', function(e) {
-    if (e.target === this) tutupModal();
-});
-</script>
-
-<script>
-// ============================================
-// KONFIRMASI LOGOUT DENGAN SWEETALERT
-// ============================================
-function confirmLogout(event) {
-    event.preventDefault();
-    Swal.fire({
-        title: '⚠️ Konfirmasi Logout',
-        text: 'Apakah Anda yakin ingin logout dari CineView?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#BA3801',
-        cancelButtonColor: '#555',
-        confirmButtonText: 'Ya, Logout!',
-        cancelButtonText: 'Batal',
-        background: '#1a1a1a',
-        color: '#f0f0f0',
-        iconColor: '#FFEC89'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = '../logout.php';
-        }
-    });
-}
-</script>
+<script src="admin.js"></script>
 </body>
 </html>

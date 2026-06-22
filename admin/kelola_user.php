@@ -248,6 +248,30 @@ $tipe  = $_GET['tipe']  ?? ($tipe_hapus  ?? '');
         .clear-search:hover {
             color: #BA3801;
         }
+
+        .garis-dekorasi {
+            width: 60px;
+            height: 3px;
+            background: #BA3801;
+            margin-top: 0.5rem;
+            border-radius: 3px;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .alert-sukses {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+            color: #4CAF50;
+        }
+        .alert-error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #f44336;
+            color: #f44336;
+        }
     </style>
 </head>
 <body>
@@ -466,7 +490,7 @@ $tipe  = $_GET['tipe']  ?? ($tipe_hapus  ?? '');
                             <td><?= $no2++ ?></td>
                             <td>
                                 <a href="../detail.php?id=<?= $rv['film_id'] ?>"
-                                   style="color:#FFEC89; text-decoration:none;" target="_blank">
+                                   style="color:#FFEC89; text-decoration:none;" >
                                     <?= htmlspecialchars($rv['judul_film']) ?> ↗
                                 </a>
                             </td>
@@ -494,182 +518,6 @@ $tipe  = $_GET['tipe']  ?? ($tipe_hapus  ?? '');
     </main>
 </div>
 
-<script src="../script.js"></script>
-<script>
-// ============================================
-// FILTER REAL-TIME UNTUK KELOLA USER
-// ============================================
-
-// Ambil elemen
-const searchUser = document.getElementById('searchUser');
-const clearSearchBtn = document.getElementById('clearSearch');
-const tableBodyUser = document.getElementById('tableBodyUser');
-const filterInfoUser = document.getElementById('filterInfoUser');
-const activeFiltersUser = document.getElementById('activeFiltersUser');
-const visibleCountSpan = document.getElementById('visibleCount');
-const totalUserCount = <?= $total_user ?>;
-
-// Fungsi untuk mendapatkan semua baris user
-function getUserRows() {
-    return Array.from(document.querySelectorAll('#tableBodyUser .user-row'));
-}
-
-// Fungsi filter utama
-function applyUserFilter() {
-    const searchValue = searchUser.value.toLowerCase().trim();
-    const rows = getUserRows();
-    let visibleCount = 0;
-    
-    rows.forEach(row => {
-        const username = row.getAttribute('data-username') || '';
-        const email = row.getAttribute('data-email') || '';
-        
-        let match = true;
-        
-        if (searchValue) {
-            if (!username.includes(searchValue) && !email.includes(searchValue)) {
-                match = false;
-            }
-        }
-        
-        if (match) {
-            row.classList.remove('hidden');
-            visibleCount++;
-        } else {
-            row.classList.add('hidden');
-        }
-    });
-    
-    // Update nomor urut
-    updateUserNomorUrut();
-    
-    // Update filter info
-    updateUserFilterInfo(searchValue, visibleCount);
-    
-    // Tampilkan/tombol clear search
-    if (searchValue) {
-        clearSearchBtn.style.display = 'block';
-    } else {
-        clearSearchBtn.style.display = 'none';
-    }
-}
-
-// Update nomor urut
-function updateUserNomorUrut() {
-    const visibleRows = Array.from(document.querySelectorAll('#tableBodyUser .user-row:not(.hidden)'));
-    visibleRows.forEach((row, index) => {
-        const noCell = row.cells[0];
-        if (noCell) {
-            noCell.textContent = index + 1;
-        }
-    });
-    
-    // Update total info
-    visibleCountSpan.textContent = visibleRows.length;
-}
-
-// Update filter info
-function updateUserFilterInfo(search, count) {
-    let hasActive = false;
-    activeFiltersUser.innerHTML = '';
-    
-    if (search) {
-        hasActive = true;
-        activeFiltersUser.innerHTML += `
-            <span class="badge-filter-user">
-                🔍 Pencarian: "${escapeHtml(search)}" 
-                <span class="remove-filter" data-filter="search">✕</span>
-            </span>
-        `;
-    }
-    
-    if (hasActive) {
-        filterInfoUser.style.display = 'flex';
-        
-        // Event listener untuk tombol hapus filter
-        document.querySelectorAll('#activeFiltersUser .remove-filter').forEach(btn => {
-            btn.addEventListener('click', function() {
-                searchUser.value = '';
-                applyUserFilter();
-            });
-        });
-    } else {
-        filterInfoUser.style.display = 'none';
-    }
-}
-
-// Escape HTML
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// Clear search
-if (clearSearchBtn) {
-    clearSearchBtn.addEventListener('click', function() {
-        searchUser.value = '';
-        applyUserFilter();
-        searchUser.focus();
-    });
-}
-
-// Event listener real-time
-searchUser.addEventListener('input', applyUserFilter);
-
-// Inisialisasi
-applyUserFilter();
-
-// Tampilkan pesan jika tidak ada hasil (overwrite fungsi showEmptyMessage untuk user)
-function showEmptyUserMessage() {
-    let emptyRow = document.getElementById('emptyRowUser');
-    const visibleRows = document.querySelectorAll('#tableBodyUser .user-row:not(.hidden)');
-    
-    if (visibleRows.length === 0 && getUserRows().length > 0) {
-        if (!emptyRow) {
-            const newRow = document.createElement('tr');
-            newRow.id = 'emptyRowUser';
-            newRow.innerHTML = '<td colspan="6" style="text-align:center; padding:2rem; color:#aaa;">😢 Tidak ada user yang ditemukan.<br>Coba dengan kata kunci yang berbeda.</td>';
-            tableBodyUser.appendChild(newRow);
-        }
-    } else if (emptyRow && visibleRows.length > 0) {
-        emptyRow.remove();
-    }
-}
-
-// Override applyUserFilter untuk include empty message
-const originalApplyUserFilter = applyUserFilter;
-window.applyUserFilter = function() {
-    originalApplyUserFilter();
-    showEmptyUserMessage();
-};
-applyUserFilter();
-</script>
-
-<script>
-// ============================================
-// KONFIRMASI LOGOUT DENGAN SWEETALERT
-// ============================================
-function confirmLogout(event) {
-    event.preventDefault();
-    Swal.fire({
-        title: '⚠️ Konfirmasi Logout',
-        text: 'Apakah Anda yakin ingin logout dari CineView?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#BA3801',
-        cancelButtonColor: '#555',
-        confirmButtonText: 'Ya, Logout!',
-        cancelButtonText: 'Batal',
-        background: '#1a1a1a',
-        color: '#f0f0f0',
-        iconColor: '#FFEC89'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = '../logout.php';
-        }
-    });
-}
-</script>
+<script src="admin.js"></script>
 </body>
 </html>

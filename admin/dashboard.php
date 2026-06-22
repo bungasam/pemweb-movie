@@ -109,7 +109,7 @@ $tipe  = $_GET['tipe'] ?? '';
         <div id="film" style="margin-bottom:2rem;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
                 <h2 style="font-family:'Playfair Display',serif; font-size:1.4rem;">Film Terbaru</h2>
-                <a href="../rekomendasi.php" class="btn btn-outline btn-kecil">Lihat Semua</a>
+                <a href="kelola_film.php" class="btn btn-outline btn-kecil">Lihat Semua</a>
             </div>
             
             <div class="tabel-wrapper">
@@ -220,31 +220,6 @@ $tipe  = $_GET['tipe'] ?? '';
     </main>
 </div>
 
-<script src="../script.js"></script>
-<script>
-// ============================================
-// KONFIRMASI LOGOUT DENGAN SWEETALERT
-// ============================================
-function confirmLogout(event) {
-    event.preventDefault();
-    Swal.fire({
-        title: '⚠️ Konfirmasi Logout',
-        text: 'Apakah Anda yakin ingin logout dari CineView?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#BA3801',
-        cancelButtonColor: '#555',
-        confirmButtonText: 'Ya, Logout!',
-        cancelButtonText: 'Batal',
-        background: '#1a1a1a',
-        color: '#f0f0f0',
-        iconColor: '#FFEC89'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = '../logout.php';
-        }
-    });
-}
-</script>
+<script src="admin.js"></script>
 </body>
 </html>

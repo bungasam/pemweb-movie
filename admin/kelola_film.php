@@ -179,6 +179,30 @@ $tipe  = $_GET['tipe'] ?? '';
             font-size: 0.9rem;
             margin-bottom: 1rem;
         }
+
+        .garis-dekorasi {
+            width: 60px;
+            height: 3px;
+            background: #BA3801;
+            margin-top: 0.5rem;
+            border-radius: 3px;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .alert-sukses {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+            color: #4CAF50;
+        }
+        .alert-error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #f44336;
+            color: #f44336;
+        }
     </style>
 </head>
 <body>
@@ -330,205 +354,6 @@ $tipe  = $_GET['tipe'] ?? '';
     </main>
 </div>
 
-<script src="../script.js"></script>
-<script>
-// ============================================
-// FILTER REAL-TIME TANPA AJAX
-// ============================================
-
-// Ambil elemen
-const searchInput = document.getElementById('searchInput');
-const genreSelect = document.getElementById('genreSelect');
-const tahunSelect = document.getElementById('tahunSelect');
-const tableBody = document.getElementById('tableBody');
-const filterInfo = document.getElementById('filterInfo');
-const activeFiltersDiv = document.getElementById('activeFilters');
-const resultCountSpan = document.getElementById('resultCount');
-
-// Ambil semua baris film (kecuali emptyRow)
-function getFilmRows() {
-    return Array.from(document.querySelectorAll('#tableBody .film-row'));
-}
-
-// Fungsi filter
-function applyFilter() {
-    const searchValue = searchInput.value.toLowerCase().trim();
-    const genreValue = genreSelect.value;
-    const tahunValue = tahunSelect.value;
-    
-    const rows = getFilmRows();
-    let visibleCount = 0;
-    
-    // Loop setiap baris
-    rows.forEach(row => {
-        const judul = row.getAttribute('data-judul');
-        const genre = row.getAttribute('data-genre');
-        const tahun = row.getAttribute('data-tahun');
-        
-        let match = true;
-        
-        // Filter judul
-        if (searchValue && !judul.includes(searchValue)) {
-            match = false;
-        }
-        
-        // Filter genre (cek apakah genre yang dipilih ada di kolom genre film)
-        if (match && genreValue && !genre.includes(genreValue.toLowerCase())) {
-            match = false;
-        }
-        
-        // Filter tahun
-        if (match && tahunValue && tahun !== tahunValue) {
-            match = false;
-        }
-        
-        // Tampilkan atau sembunyikan baris
-        if (match) {
-            row.classList.remove('hidden');
-            visibleCount++;
-        } else {
-            row.classList.add('hidden');
-        }
-    });
-    
-    // Update nomor urut
-    updateNomorUrut();
-    
-    // Update filter info
-    updateFilterInfo(searchValue, genreValue, tahunValue, visibleCount);
-    
-    // Tampilkan pesan jika tidak ada hasil
-    showEmptyMessage(visibleCount);
-}
-
-// Update nomor urut setelah filter
-function updateNomorUrut() {
-    const visibleRows = Array.from(document.querySelectorAll('#tableBody .film-row:not(.hidden)'));
-    visibleRows.forEach((row, index) => {
-        const noCell = row.cells[0];
-        if (noCell) {
-            noCell.textContent = index + 1;
-        }
-    });
-}
-
-// Tampilkan pesan "Tidak ada film" jika diperlukan
-function showEmptyMessage(visibleCount) {
-    let emptyRow = document.getElementById('emptyRow');
-    
-    if (visibleCount === 0) {
-        if (!emptyRow) {
-            const newRow = document.createElement('tr');
-            newRow.id = 'emptyRow';
-            newRow.innerHTML = '<td colspan="7" style="text-align:center; padding:2rem; color:#aaa;">😢 Tidak ada film yang ditemukan.<br>Coba dengan kata kunci atau filter yang berbeda.</td>';
-            tableBody.appendChild(newRow);
-        }
-    } else {
-        if (emptyRow) {
-            emptyRow.remove();
-        }
-    }
-}
-
-// Update badge filter aktif
-function updateFilterInfo(search, genre, tahun, count) {
-    let hasActive = false;
-    activeFiltersDiv.innerHTML = '';
-    
-    if (search) {
-        hasActive = true;
-        activeFiltersDiv.innerHTML += `
-            <span class="badge-filter">
-                Judul: "${escapeHtml(search)}" 
-                <span class="remove-filter" data-filter="search">✕</span>
-            </span>
-        `;
-    }
-    
-    if (genre) {
-        hasActive = true;
-        activeFiltersDiv.innerHTML += `
-            <span class="badge-filter">
-                Genre: ${escapeHtml(genre)} 
-                <span class="remove-filter" data-filter="genre">✕</span>
-            </span>
-        `;
-    }
-    
-    if (tahun) {
-        hasActive = true;
-        activeFiltersDiv.innerHTML += `
-            <span class="badge-filter">
-                Tahun: ${escapeHtml(tahun)} 
-                <span class="remove-filter" data-filter="tahun">✕</span>
-            </span>
-        `;
-    }
-    
-    if (hasActive) {
-        filterInfo.style.display = 'flex';
-        resultCountSpan.innerHTML = `Ditemukan: ${count} film`;
-        
-        // Event listener untuk tombol hapus filter
-        document.querySelectorAll('.remove-filter').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const filterType = this.getAttribute('data-filter');
-                switch(filterType) {
-                    case 'search':
-                        searchInput.value = '';
-                        break;
-                    case 'genre':
-                        genreSelect.value = '';
-                        break;
-                    case 'tahun':
-                        tahunSelect.value = '';
-                        break;
-                }
-                applyFilter(); // Terapkan filter ulang
-            });
-        });
-    } else {
-        filterInfo.style.display = 'none';
-    }
-}
-
-// Escape HTML
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// Event listener (real-time, tanpa tombol)
-searchInput.addEventListener('input', applyFilter);
-genreSelect.addEventListener('change', applyFilter);
-tahunSelect.addEventListener('change', applyFilter);
-
-// Inisialisasi: tampilkan semua film
-applyFilter();
-</script>
-
-<script>
-function confirmLogout(event) {
-    event.preventDefault();
-    Swal.fire({
-        title: '⚠️ Konfirmasi Logout',
-        text: 'Apakah Anda yakin ingin logout dari CineView?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#BA3801',
-        cancelButtonColor: '#555',
-        confirmButtonText: 'Ya, Logout!',
-        cancelButtonText: 'Batal',
-        background: '#1a1a1a',
-        color: '#f0f0f0',
-        iconColor: '#FFEC89'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = '../logout.php';
-        }
-    });
-}
-</script>
+<script src="admin.js"></script>
 </body>
 </html>
