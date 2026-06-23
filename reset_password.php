@@ -1,11 +1,4 @@
 <?php
-// =====================================================
-// FILE: reset_password.php
-// Fungsi: Membuat password baru untuk akun yang emailnya
-//         sudah ditemukan pada forgot_password.php.
-// Database tetap menggunakan PDO.
-// =====================================================
-
 session_start();
 require 'koneksi.php';
 

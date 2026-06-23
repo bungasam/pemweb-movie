@@ -1,10 +1,4 @@
 <?php
-// =============================================
-// FILE: detail.php
-// Fungsi: Menampilkan detail film dan daftar review
-// Database: PDO
-// =============================================
-
 session_start();
 require_once 'koneksi.php';
 
@@ -16,9 +10,7 @@ if ($film_id <= 0) {
     exit;
 }
 
-// =============================================
-// AMBIL DATA FILM
-// =============================================
+// ambil data film dari database
 $stmt_film = $pdo->prepare('SELECT * FROM films WHERE id = ? LIMIT 1');
 $stmt_film->execute([$film_id]);
 $film = $stmt_film->fetch(PDO::FETCH_ASSOC);
@@ -28,9 +20,7 @@ if (!$film) {
     exit;
 }
 
-// =============================================
-// HITUNG RATING FILM
-// =============================================
+// hitung rata-rata rating dan jumlah review untuk film ini
 $stmt_rating = $pdo->prepare(
     'SELECT ROUND(AVG(rating), 1) AS rata, COUNT(*) AS total
      FROM reviews
@@ -42,9 +32,7 @@ $data_rating = $stmt_rating->fetch(PDO::FETCH_ASSOC);
 $rata_rating = $data_rating['rata'] ?? null;
 $total_review = (int) ($data_rating['total'] ?? 0);
 
-// =============================================
-// CEK REVIEW USER YANG SEDANG LOGIN
-// =============================================
+// cek review user yang login 
 $sudah_review = false;
 $review_user_id = 0;
 
@@ -71,11 +59,9 @@ if (
     }
 }
 
-// =============================================
 // AMBIL SEMUA REVIEW
 // Foto selalu diambil dari tabel users agar foto terbaru
 // langsung terlihat pada komentar lama maupun komentar baru.
-// =============================================
 $stmt_review = $pdo->prepare(
     'SELECT
         r.id,

@@ -1,11 +1,4 @@
 <?php
-// =====================================================
-// FILE: forgot_password.php
-// Fungsi: Mencari akun berdasarkan email di database
-//         lalu mengarahkan user ke form password baru.
-// Catatan: Tidak mengirim email sungguhan.
-// =====================================================
-
 session_start();
 require 'koneksi.php';
 

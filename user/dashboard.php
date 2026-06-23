@@ -1,10 +1,4 @@
 <?php
-// =============================================
-// FILE: user/dashboard.php
-// Fungsi: Halaman profil dan riwayat review user
-// Database: PDO
-// =============================================
-
 session_start();
 require_once '../koneksi.php';
 
@@ -22,10 +16,7 @@ if (($_SESSION['role'] ?? '') === 'admin') {
 
 $user_id = (int) $_SESSION['user_id'];
 
-// =============================================
-// AMBIL DATA USER
-// =============================================
-
+// ambil data user dari database
 $stmt_user = $pdo->prepare(
     'SELECT * FROM users WHERE id = ? LIMIT 1'
 );
@@ -38,11 +29,7 @@ if (!$user) {
     header('Location: ../login.php');
     exit;
 }
-
-// =============================================
-// AMBIL REVIEW MILIK USER
-// =============================================
-
+// ambil semua review user dari database
 $stmt_review = $pdo->prepare(
     'SELECT
         r.id,

@@ -1,10 +1,4 @@
 <?php
-// =============================================
-// FILE: proses_review.php
-// Fungsi: Menyimpan rating dan ulasan baru
-// Database: PDO
-// =============================================
-
 session_start();
 require_once 'koneksi.php';
 

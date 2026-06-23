@@ -1,9 +1,4 @@
 <?php
-// =============================================
-// FILE: admin/kelola_film.php
-// Fungsi: Menampilkan semua film dengan filter real-time (tanpa AJAX)
-// =============================================
-
 session_start();
 include '../koneksi.php';
 

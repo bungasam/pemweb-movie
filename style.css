@@ -1,15 +1,3 @@
-/* =============================================
-   FILE: style.css
-   Fungsi: Tampilan utama seluruh website CineView
-   Tema: Y2K Professional + Estetik Modern
-   Palet Warna:
-     - Merah Tua : #BA3801 (aksen utama)
-     - Kuning     : #FFEC89 (highlight)
-     - Biru       : #4A69B3 (aksen sekunder)
-     - Hitam      : #1a1a1a (background)
-     - Abu Gelap  : #2a2a2a (card)
-============================================= */
-
 /* ---- IMPORT FONT dari Google Fonts ---- */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -119,9 +107,6 @@ body {
     color: white !important;
 }
 
-/* =========================================
-   TOMBOL-TOMBOL (Buttons)
-========================================= */
 
 /* Tombol utama merah */
 .btn {
@@ -196,9 +181,7 @@ body {
     font-size: 0.8rem;
 }
 
-/* =========================================
-   HERO / BANNER UTAMA
-========================================= */
+/* BANNER */
 .hero {
     background: linear-gradient(135deg, #1a0a00 0%, #1a1a2e 50%, #16213e 100%);
     padding: 5rem 2rem;
@@ -265,9 +248,7 @@ body {
     flex-wrap: wrap;
 }
 
-/* =========================================
-   SECTION (Bagian-bagian halaman)
-========================================= */
+/* SECTION (Bagian-bagian halaman)*/
 .section {
     padding: 4rem 2rem;
     max-width: 1200px;
@@ -299,9 +280,7 @@ body {
     border-radius: 2px;
 }
 
-/* =========================================
-   CARD FILM
-========================================= */
+/* CARD FILM*/
 .film-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -369,9 +348,7 @@ body {
     font-size: 0.8rem;
 }
 
-/* =========================================
-   HALAMAN FORM (Login, Register, dll)
-========================================= */
+/*HALAMAN FORM (Login, Register, dll)*/
 .form-container {
     max-width: 450px;
     margin: 4rem auto;
@@ -495,9 +472,7 @@ body {
     text-decoration: underline;
 }
 
-/* =========================================
-   PESAN NOTIFIKASI (Alert)
-========================================= */
+/* PESAN NOTIFIKASI (Alert)*/
 .alert {
     padding: 0.8rem 1.2rem;
     border-radius: 6px;
@@ -525,9 +500,7 @@ body {
     color: var(--biru-muda);
 }
 
-/* =========================================
-   HALAMAN DETAIL FILM
-========================================= */
+/* HALAMAN DETAIL FILM*/
 .detail-film-wrapper {
     max-width: 1100px;
     margin: 0 auto;
@@ -616,9 +589,7 @@ body {
     font-size: 0.95rem;
 }
 
-/* =========================================
-   KARTU REVIEW
-========================================= */
+/* KARTU REVIEW */
 .review-list {
     display: flex;
     flex-direction: column;
@@ -737,9 +708,7 @@ body {
     gap: 0.5rem;
 }
 
-/* =========================================
-   ADMIN & USER DASHBOARD
-========================================= */
+/* ADMIN & USER DASHBOARD*/
 .dashboard-layout {
     display: grid;
     grid-template-columns: 200px 1fr;
@@ -820,9 +789,7 @@ body {
     margin-top: 0.3rem;
 }
 
-/* =========================================
-   TABEL DATA
-========================================= */
+/* TABEL DATA */
 .tabel-wrapper {
     background: var(--card);
     border: 1px solid var(--card-border);
@@ -867,9 +834,7 @@ tr:hover td {
     color: var(--teks-putih);
 }
 
-/* =========================================
-   KONTEN KOSONG (Empty State)
-========================================= */
+/* KONTEN KOSONG (Empty State) */
 .empty-state {
     text-align: center;
     padding: 4rem 2rem;
@@ -894,9 +859,7 @@ tr:hover td {
     font-style: italic;
 }
 
-/* =========================================
-   FOOTER
-========================================= */
+/* FOOTER */
 footer {
     background: var(--card);
     border-top: 1px solid var(--card-border);
@@ -962,9 +925,7 @@ footer {
     color: var(--merah);
 }
 
-/* =========================================
-   HALAMAN TENTANG
-========================================= */
+/* HALAMAN TENTANG */
 .tentang-wrapper {
     max-width: 800px;
     margin: 0 auto;
@@ -1009,9 +970,7 @@ footer {
     margin: 0 auto 0.8rem;
 }
 
-/* =========================================
-   PROFIL USER
-========================================= */
+/* PROFIL USER */
 .profil-wrapper {
     max-width: 700px;
     margin: 0 auto;
@@ -1069,9 +1028,7 @@ footer {
     margin-top: 0.3rem;
 }
 
-/* =========================================
-   HALAMAN REKOMENDASI
-========================================= */
+/* HALAMAN REKOMENDASI */
 .rekomendasi-banner {
     background: linear-gradient(135deg, #1a0a00, #0f0f1a);
     border-bottom: 1px solid var(--card-border);
@@ -1107,9 +1064,7 @@ footer {
     position: relative;
 }
 
-/* =========================================
-   UTILITAS (Helper Classes)
-========================================= */
+/* UTILITAS (Helper Classes)*/
 .text-center { text-align: center; }
 .text-kuning { color: var(--kuning); }
 .text-abu    { color: var(--teks-abu); }
@@ -1122,9 +1077,7 @@ footer {
 .flex { display: flex; }
 .flex-center { display: flex; align-items: center; justify-content: center; }
 
-/* =========================================
-   RESPONSIVE (Tampilan di HP)
-========================================= */
+/* RESPONSIVE  */
 @media (max-width: 768px) {
     .navbar-menu { display: none; }
     
@@ -1150,9 +1103,7 @@ footer {
         grid-template-columns: repeat(2, 1fr);
     }
 }
-/* =============================================
-   TAMBAHAN: Input password dengan tombol show/hide
-   ============================================= */
+/* TAMBAHAN: Input password dengan tombol show/hide */
 .input-password-wrapper {
     position: relative;
     display: flex;

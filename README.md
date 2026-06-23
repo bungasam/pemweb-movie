@@ -346,13 +346,14 @@ CineView/
 │   ├── hapus_film.php
 │   ├── kelola_review.php
 │   ├── hapus_review.php
-│   └── kelola_user.php
+│   ├── kelola_user.php
+│   └── admin.js
 │
 ├── user/
 │   ├── dashboard.php
 │   ├── edit_profil.php
 │   ├── edit_review.php
-│   └── hapus_review.php
+│   └──  hapus_review.php 
 │
 └── img/
     ├── default.svg

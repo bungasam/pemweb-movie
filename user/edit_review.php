@@ -1,10 +1,4 @@
 <?php
-// =============================================
-// FILE: user/edit_review.php
-// Fungsi: User mengedit rating dan ulasan miliknya
-// Database: PDO
-// =============================================
-
 session_start();
 require_once '../koneksi.php';
 

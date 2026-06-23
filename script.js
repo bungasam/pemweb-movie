@@ -1,22 +1,15 @@
-// =============================================
-// FILE: script.js
-// Fungsi: Interaksi JavaScript untuk CineView
-// =============================================
-
-// =============================================
 // 1. KONFIRMASI HAPUS
 //    Muncul dialog tanya sebelum data dihapus
-// =============================================
 function konfirmasiHapus(pesan) {
     // window.confirm() menampilkan popup YA/TIDAK
     // Mengembalikan true jika klik OK, false jika Cancel
     return window.confirm(pesan || "Yakin ingin menghapus data ini?");
 }
 
-// =============================================
+
 // 2. AUTO-HIDE ALERT
 //    Pesan sukses/error otomatis hilang setelah 4 detik
-// =============================================
+
 window.addEventListener('DOMContentLoaded', function () {
     
     // Cari semua elemen dengan class 'alert'
@@ -42,10 +35,10 @@ window.addEventListener('DOMContentLoaded', function () {
         }, 4000);
     });
 
-    // =============================================
+    
     // 3. PREVIEW GAMBAR
     //    Menampilkan preview poster sebelum di-upload
-    // =============================================
+    
     var inputGambar = document.getElementById('poster');
     var previewGambar = document.getElementById('preview-poster');
     
@@ -67,10 +60,10 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // =============================================
+    
     // 4. AKTIFKAN LINK SIDEBAR
     //    Tandai menu yang sedang aktif di sidebar
-    // =============================================
+    
     var linkSidebar = document.querySelectorAll('.sidebar a');
     var urlSekarang = window.location.pathname; // URL halaman saat ini
     
@@ -83,10 +76,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
 });
 
-// =============================================
+
 // 5. VALIDASI FORM REVIEW
 //    Rating wajib dipilih, komentar boleh dikosongkan
-// =============================================
+
 function validasiReview() {
     var ratingTerpilih = document.querySelector('input[name="rating"]:checked');
 
@@ -98,11 +91,11 @@ function validasiReview() {
     return true;
 }
 
-// =============================================
+
 // 6. KONFIRMASI LOGOUT
 //    SweetAlert dipakai jika tersedia. Jika CDN gagal,
 //    otomatis memakai window.confirm() biasa.
-// =============================================
+
 function confirmLogout(event, logoutUrl) {
     event.preventDefault();
 
@@ -137,10 +130,10 @@ function confirmLogout(event, logoutUrl) {
     return false;
 }
 
-// =============================================
+
 // 7. SEARCH FILM (Filter grid film secara real-time)
 //    Bekerja dengan card-based grid, bukan tabel
-// =============================================
+
 function cariFilm() {
     var inputCari = document.getElementById('cari-film');
     var container = document.getElementById('tabel-film');
@@ -183,10 +176,10 @@ function cariFilm() {
         pesanKosong.style.display = 'none';
     }
 }
-// =============================================
+
 // 8. TOGGLE SHOW/HIDE PASSWORD
 //    Tombol mata untuk lihat/sembunyikan password
-// =============================================
+
 function togglePassword(inputId, tombol) {
     var input = document.getElementById(inputId);
     
@@ -199,10 +192,10 @@ function togglePassword(inputId, tombol) {
     }
 }
 
-// =============================================
+
 // 9. CEK KEKUATAN PASSWORD
 //    Tampilkan indikator kuat/lemah
-// =============================================
+
 function cekKekuatanPassword(nilai) {
     var info = document.getElementById('info-password');
     var bar  = document.getElementById('isi-bar-password');
@@ -237,10 +230,10 @@ function cekKekuatanPassword(nilai) {
     }
 }
 
-// =============================================
+
 // 10. CEK KONFIRMASI PASSWORD
 //    Tampilkan apakah password cocok
-// =============================================
+
 function cekKonfirmasiPassword() {
     var password = document.getElementById('password');
     var konfirm  = document.getElementById('konfirm_password');
@@ -262,10 +255,8 @@ function cekKonfirmasiPassword() {
     }
 }
 
-// ============================================
-// KONFIRMASI HAPUS DENGAN SWEETALERT - ada di detail.php itu manggil role admin buat hapus review. mangkaknya perlu ditambahin di root ini, cek bari 359
+// KONFIRMASI HAPUS  - ada di detail.php itu manggil role admin buat hapus review. mangkaknya perlu ditambahin di root ini, cek bari 359
 // kalo ndk pake dia ntr konfirmasi hapusnya ndk manggil js
-// ============================================
 function konfirmasiHapus(pesan) {
     Swal.fire({
         title: '⚠️ Konfirmasi Hapus',
@@ -291,4 +282,20 @@ function konfirmasiHapus(pesan) {
         }
     });
     return false;
+}
+
+// 11. PREVIEW FOTO PROFIL BARU di halaman edit_profil
+function previewFoto(input) {
+    var preview = document.getElementById('preview-foto-baru');
+    var label   = document.getElementById('label-preview');
+
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            label.style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
 }

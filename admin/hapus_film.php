@@ -1,9 +1,4 @@
 <?php
-// =============================================
-// FILE: admin/hapus_film.php
-// Fungsi: Menghapus data film dari database
-// =============================================
-
 session_start();
 include '../koneksi.php';
 

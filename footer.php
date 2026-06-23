@@ -1,10 +1,4 @@
 <?php
-// =====================================================
-// FILE: footer.php
-// Fungsi: Footer yang dipakai ulang agar semua halaman konsisten
-// =====================================================
-
-// Halaman di folder user memakai "../", halaman utama memakai "".
 $footer_base = $footer_base ?? '';
 ?>
 <footer>

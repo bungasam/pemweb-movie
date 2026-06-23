@@ -1,9 +1,4 @@
 <?php
-// =============================================
-// FILE: admin/kelola_review.php
-// Fungsi: Admin melihat, filter real-time, dan hapus review
-// =============================================
-
 session_start();
 include '../koneksi.php';
 

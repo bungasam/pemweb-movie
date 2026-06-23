@@ -1,29 +1,24 @@
 <?php
-// =============================================
-// FILE: admin/dashboard.php
-// Fungsi: Halaman utama panel admin
-// =============================================
-
 session_start();
 include '../koneksi.php'; // Naik satu folder ke root
 
-// ---- Cek apakah yang akses adalah admin ----
+//  Cek apakah yang akses adalah admin 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header("Location: ../login.php");
     exit;
 }
 
-// ---- Ambil statistik untuk dashboard menggunakan PDO ----
+//  Ambil statistik untuk dashboard menggunakan PDO 
 $total_film   = $pdo->query("SELECT COUNT(*) FROM films")->fetchColumn();
 $total_review = $pdo->query("SELECT COUNT(*) FROM reviews")->fetchColumn();
 $total_user   = $pdo->query("SELECT COUNT(*) FROM users WHERE role='user'")->fetchColumn();
 $rata_rating  = $pdo->query("SELECT ROUND(AVG(rating),1) FROM reviews")->fetchColumn();
 $rata_rating = $rata_rating ?: 0;
 
-// ---- Ambil film terbaru ----
+//  Ambil film terbaru 
 $film_terbaru = $pdo->query("SELECT * FROM films ORDER BY id DESC LIMIT 5");
 
-// ---- Ambil review terbaru ----
+//  Ambil review terbaru 
 $review_terbaru = $pdo->query("
     SELECT r.*, u.username, u.foto AS foto_profil, f.judul 
     FROM reviews r 

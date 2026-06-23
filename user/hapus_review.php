@@ -1,10 +1,4 @@
 <?php
-// =============================================
-// FILE: user/hapus_review.php
-// Fungsi: Menghapus review milik user
-// Database: PDO
-// =============================================
-
 session_start();
 require_once '../koneksi.php';
 

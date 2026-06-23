@@ -1,6 +1,4 @@
-// ============================================
-// KONFIRMASI LOGOUT DENGAN SWEETALERT
-// ============================================
+// konfirmasi logout pop up 
 function confirmLogout(event) {
     event.preventDefault();
     Swal.fire({
@@ -22,9 +20,7 @@ function confirmLogout(event) {
     });
 }
 
-// ============================================
-// KONFIRMASI HAPUS DENGAN SWEETALERT
-// ============================================
+// konfirmasi hapus data (film, review, user)
 function konfirmasiHapus(pesan) {
     Swal.fire({
         title: '⚠️ Konfirmasi Hapus',
@@ -47,9 +43,7 @@ function konfirmasiHapus(pesan) {
     return false;
 }
 
-// ============================================
-// DRAG & DROP UPLOAD + PREVIEW (UNTUK EDIT FILM)
-// ============================================
+// drag & drop + preview untuk tambah/edit film (dipisah agar bisa dipanggil dari event listener)
 document.addEventListener('DOMContentLoaded', function() {
     // Cek apakah elemen upload area ada di halaman
     const uploadArea = document.getElementById('uploadArea');
@@ -145,9 +139,7 @@ function handleFilePreview(file, previewImage, previewPlaceholder, posterInput) 
     reader.readAsDataURL(file);
 }
 
-// ============================================
-// FILTER REAL-TIME TANPA AJAX (UNTUK KELOLA FILM)
-// ============================================
+// filter real-time untuk halaman kelola film)
 document.addEventListener('DOMContentLoaded', function() {
     // Cek apakah elemen filter ada di halaman
     const searchInput = document.getElementById('searchInput');
@@ -323,9 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
     applyFilter();
 });
 
-// ============================================
-// FILTER REAL-TIME UNTUK KELOLA REVIEW
-// ============================================
+// filter real-time untuk halaman kelola review
 document.addEventListener('DOMContentLoaded', function() {
     // Cek apakah elemen filter ada di halaman
     const filterFilm = document.getElementById('filterFilm');
@@ -559,9 +549,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inisialisasi: tampilkan semua review
     applyFilter();
 
-    // ============================================
-    // MODAL KOMENTAR
-    // ============================================
+    // pop up liat komentar lengkap
     window.lihatKomentar = function(username, judulFilm, rating, komentar) {
         const modalUsername = document.getElementById('modal-username');
         const modalJudulFilm = document.getElementById('modal-judul-film');
@@ -596,9 +584,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// ============================================
-// FILTER REAL-TIME UNTUK KELOLA USER
-// ============================================
+// filter real-time untuk halaman kelola user
 document.addEventListener('DOMContentLoaded', function() {
     // Cek apakah elemen search user ada di halaman
     const searchUser = document.getElementById('searchUser');
@@ -744,9 +730,7 @@ document.addEventListener('DOMContentLoaded', function() {
     applyUserFilter();
 });
 
-// ============================================
-// FORM VALIDASI UNTUK TAMBAH FILM
-// ============================================
+// form validasi untuk tambah/edit film 
 document.addEventListener('DOMContentLoaded', function() {
     // Cek apakah form film ada di halaman
     const filmForm = document.getElementById('filmForm');

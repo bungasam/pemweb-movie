@@ -1,9 +1,4 @@
 <?php
-// =============================================
-// FILE: admin/tambah_film.php
-// Fungsi: Form untuk admin menambah film baru (Layout 2 Kolom)
-// =============================================
-
 session_start();
 include '../koneksi.php';
 

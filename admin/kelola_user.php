@@ -1,9 +1,4 @@
 <?php
-// =============================================
-// FILE: admin/kelola_user.php
-// Fungsi: Admin melihat, hapus user, dan lihat review per user
-// =============================================
-
 session_start();
 include '../koneksi.php';
 

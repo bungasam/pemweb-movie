@@ -1,9 +1,4 @@
 <?php
-// =============================================
-// FILE: user/edit_profil.php
-// Fungsi: Halaman edit profil user (nama & foto)
-// =============================================
-
 session_start();
 include '../koneksi.php';
 
@@ -27,10 +22,7 @@ if ($user && !isset($user['foto'])) {
 $pesan  = '';
 $sukses = false;
 
-// =============================================
-// PROSES: Update profil
-// =============================================
-
+// update profil user (username dan foto)
 //foto profile
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
@@ -211,21 +203,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 <script src="../script.js"></script>
-<script>
-function previewFoto(input) {
-    var preview = document.getElementById('preview-foto-baru');
-    var label   = document.getElementById('label-preview');
-
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-            label.style.display = 'block';
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-</script>
 </body>
 </html>

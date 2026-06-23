@@ -1,13 +1,8 @@
 <?php
-// =============================================
-// FILE: rekomendasi.php
-// Fungsi: Halaman daftar & rekomendasi film
-// =============================================
-
 session_start();
 include 'koneksi.php';
 
-// ---- Ambil semua film beserta rating rata-rata ----
+//  Ambil semua film beserta rating rata-rata 
 $query = "
     SELECT f.*, 
            ROUND(AVG(r.rating), 1) AS rata_rating,
@@ -20,10 +15,10 @@ $query = "
 $hasil = $pdo->query($query);
 $semua_film = $hasil->fetchAll(); // Ambil semua sekaligus
 
-// ---- Filter genre (jika ada) ----
+//  Filter genre (jika ada) 
 $genre_dipilih = $_GET['genre'] ?? '';
 
-// ---- Ambil semua genre unik dari field genre yang bisa multi (contoh: "Action, Drama") ----
+//  Ambil semua genre unik dari field genre yang bisa multi (contoh: "Action, Drama") 
 // Kita pecah dulu tiap genre, lalu kumpulkan yang unik
 $hasil_semua_genre = $pdo->query("SELECT genre FROM films");
 $daftar_genre = []; // Array untuk menyimpan genre unik

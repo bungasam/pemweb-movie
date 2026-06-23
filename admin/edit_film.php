@@ -1,9 +1,4 @@
 <?php
-// =============================================
-// FILE: admin/edit_film.php
-// Fungsi: Form untuk admin mengedit data film (Layout 2 Kolom)
-// =============================================
-
 session_start();
 include '../koneksi.php';
 
@@ -119,7 +114,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="../style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* Breadcrumb */
         .breadcrumb {
             display: flex;
             align-items: center;

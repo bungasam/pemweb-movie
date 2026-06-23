@@ -1,13 +1,8 @@
 <?php
-// =============================================
-// FILE: login.php
-// Fungsi: Halaman login untuk user dan admin
-// =============================================
-
 session_start();
 include 'koneksi.php';
 
-// Kalau sudah login, langsung ke halaman sesuai role
+// Kalau udah login, langsung ke halaman sesuai role
 if (isset($_SESSION['user_id'])) {
     if ($_SESSION['role'] == 'admin') {
         header("Location: admin/dashboard.php");
