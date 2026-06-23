@@ -1,12 +1,3 @@
-// 1. KONFIRMASI HAPUS
-//    Muncul dialog tanya sebelum data dihapus
-function konfirmasiHapus(pesan) {
-    // window.confirm() menampilkan popup YA/TIDAK
-    // Mengembalikan true jika klik OK, false jika Cancel
-    return window.confirm(pesan || "Yakin ingin menghapus data ini?");
-}
-
-
 // 2. AUTO-HIDE ALERT
 //    Pesan sukses/error otomatis hilang setelah 4 detik
 
