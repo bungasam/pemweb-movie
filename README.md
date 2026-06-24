@@ -317,7 +317,6 @@ CineView
 
 ## 📁 Struktur Folder
 
-```text
 CineView/
 │
 ├── index.php
@@ -328,15 +327,11 @@ CineView/
 ├── reset_password.php
 ├── rekomendasi.php
 ├── detail.php
-├── tentang.php
 ├── proses_review.php
 ├── koneksi.php
 ├── footer.php
 ├── style.css
 ├── script.js
-│
-├── includes/
-│   └── footer.php
 │
 ├── admin/
 │   ├── dashboard.php
@@ -353,13 +348,12 @@ CineView/
 │   ├── dashboard.php
 │   ├── edit_profil.php
 │   ├── edit_review.php
-│   └──  hapus_review.php 
+│   └── hapus_review.php 
 │
 └── img/
     ├── default.svg
     ├── poster_film.jpg
     └── foto_profil.jpg
-```
 
 ## 💻 Teknologi yang Digunakan
 Frontend : HTML, CSS, JavaScript

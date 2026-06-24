@@ -25,12 +25,14 @@ if (!in_array($asal, ['dashboard', 'detail'], true)) {
 
 // Dukungan untuk link lama yang masih mengirim film_id.
 if ($review_id <= 0 && $film_id_dari_url > 0) {
+    // nyari id review berdasarkan film
     $stmt_cari_id = $pdo->prepare(
         'SELECT id
          FROM reviews
          WHERE user_id = ? AND film_id = ?
          LIMIT 1'
     );
+    // jalanin pencarian id review berdasarkan user_id dan film_id.
     $stmt_cari_id->execute([$user_id, $film_id_dari_url]);
     $id_ditemukan = $stmt_cari_id->fetchColumn();
     $review_id = $id_ditemukan ? (int) $id_ditemukan : 0;
@@ -82,9 +84,7 @@ $pesan = '';
 $rating_form = (int) $review['rating'];
 $komentar_form = (string) ($review['komentar'] ?? '');
 
-// =============================================
 // PROSES SIMPAN PERUBAHAN
-// =============================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rating_form = (int) ($_POST['rating'] ?? 0);
     $komentar_form = trim($_POST['komentar'] ?? '');
@@ -108,6 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Komentar boleh kosong dan disimpan sebagai string kosong.
         $komentar_database = $komentar_form;
 
+        // update review di database
         try {
             $stmt_update = $pdo->prepare(
                 'UPDATE reviews
